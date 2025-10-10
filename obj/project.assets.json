@@ -1220,11 +1220,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\titen\\FlujoDeCajaApp\\FlujoDeCajaApp\\FlujoDeCajaApp.csproj",
+      "projectUniqueName": "C:\\Users\\titen\\FlujoCaja\\FlujoDeCajaApp.csproj",
       "projectName": "FlujoDeCajaApp",
-      "projectPath": "C:\\Users\\titen\\FlujoDeCajaApp\\FlujoDeCajaApp\\FlujoDeCajaApp.csproj",
+      "projectPath": "C:\\Users\\titen\\FlujoCaja\\FlujoDeCajaApp.csproj",
       "packagesPath": "C:\\Users\\titen\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\titen\\FlujoDeCajaApp\\FlujoDeCajaApp\\obj\\",
+      "outputPath": "C:\\Users\\titen\\FlujoCaja\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\titen\\AppData\\Roaming\\NuGet\\NuGet.Config"

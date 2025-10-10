@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "DoKXDbw1nXM=",
+  "dgSpecHash": "nwsDKhLAzxM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\titen\\FlujoDeCajaApp\\FlujoDeCajaApp\\FlujoDeCajaApp.csproj",
+  "projectFilePath": "C:\\Users\\titen\\FlujoCaja\\FlujoDeCajaApp.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\titen\\.nuget\\packages\\entityframework\\6.4.4\\entityframework.6.4.4.nupkg.sha512",
     "C:\\Users\\titen\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",

@@ -26,10 +26,13 @@ namespace FlujoDeCajaApp.Data
         {
             try
             {
+                Console.WriteLine($"Inicializando base de datos en: {rutaBaseDatos}");
+                
                 // Crear directorio si no existe
                 string? directorio = Path.GetDirectoryName(rutaBaseDatos);
                 if (!string.IsNullOrEmpty(directorio) && !Directory.Exists(directorio))
                 {
+                    Console.WriteLine($"Creando directorio: {directorio}");
                     Directory.CreateDirectory(directorio);
                 }
 
@@ -44,6 +47,7 @@ namespace FlujoDeCajaApp.Data
                             Id INTEGER PRIMARY KEY AUTOINCREMENT,
                             Usuario TEXT UNIQUE NOT NULL,
                             Contrasena TEXT NOT NULL,
+                            Correo TEXT,
                             Rol TEXT NOT NULL,
                             FechaCreacion TEXT DEFAULT CURRENT_TIMESTAMP,
                             Activo INTEGER DEFAULT 1
@@ -119,6 +123,39 @@ namespace FlujoDeCajaApp.Data
                     using (var comando = new SQLiteCommand(sqlCrearTablaCasas, conexion))
                     {
                         comando.ExecuteNonQuery();
+                    }
+
+                    // Crear tabla de movimientos si no existe
+                    string sqlCrearTablaMovimientos = @"
+                        CREATE TABLE IF NOT EXISTS Movimientos (
+                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            CasaId INTEGER NOT NULL,
+                            Fecha TEXT NOT NULL,
+                            Descripcion TEXT NOT NULL,
+                            Monto DECIMAL(10,2) NOT NULL,
+                            Categoria TEXT NOT NULL,
+                            FechaCreacion TEXT DEFAULT CURRENT_TIMESTAMP,
+                            Activo INTEGER DEFAULT 1,
+                            FOREIGN KEY (CasaId) REFERENCES Casas(Id)
+                        )";
+                    
+                    using (var comando = new SQLiteCommand(sqlCrearTablaMovimientos, conexion))
+                    {
+                        comando.ExecuteNonQuery();
+                    }
+
+                    // Agregar la columna Correo en Usuarios si no existe (para compatibilidad con BD existentes)
+                    try
+                    {
+                        string sqlAgregarColumnaCorreo = "ALTER TABLE Usuarios ADD COLUMN Correo TEXT";
+                        using (var comando = new SQLiteCommand(sqlAgregarColumnaCorreo, conexion))
+                        {
+                            comando.ExecuteNonQuery();
+                        }
+                    }
+                    catch
+                    {
+                        // La columna ya existe, continuar
                     }
 
                     // Insertar usuario administrador por defecto si no existe
@@ -748,11 +785,11 @@ namespace FlujoDeCajaApp.Data
                 using (var conexion = new SQLiteConnection(cadenaConexion))
                 {
                     conexion.Open();
-                    string nombreCompleto = $"{nombre} {apellido}";
-                    string sql = "INSERT INTO Duenos (NombreCompleto, Telefono, Email, Identificacion) VALUES (@nombre, @telefono, @email, @identificacion)";
+                    string sql = "INSERT INTO Duenos (Nombre, Apellido, Telefono, Email, Identificacion) VALUES (@nombre, @apellido, @telefono, @email, @identificacion)";
                     using (var comando = new SQLiteCommand(sql, conexion))
                     {
-                        comando.Parameters.AddWithValue("@nombre", nombreCompleto);
+                        comando.Parameters.AddWithValue("@nombre", nombre);
+                        comando.Parameters.AddWithValue("@apellido", apellido);
                         comando.Parameters.AddWithValue("@telefono", telefono);
                         comando.Parameters.AddWithValue("@email", correo);
                         comando.Parameters.AddWithValue("@identificacion", identificacion);
@@ -895,6 +932,216 @@ namespace FlujoDeCajaApp.Data
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Guarda un movimiento en la base de datos
+        /// </summary>
+        /// <param name="casaId">ID de la casa</param>
+        /// <param name="fecha">Fecha del movimiento</param>
+        /// <param name="descripcion">Descripción del movimiento</param>
+        /// <param name="monto">Monto del movimiento (positivo para ingresos, negativo para gastos)</param>
+        /// <param name="categoria">Categoría del movimiento</param>
+        /// <returns>ID del movimiento creado o -1 si hay error</returns>
+        public static int GuardarMovimiento(int casaId, DateTime fecha, string descripcion, decimal monto, string categoria)
+        {
+            try
+            {
+                using (var conexion = new SQLiteConnection(cadenaConexion))
+                {
+                    conexion.Open();
+                    string sql = "INSERT INTO Movimientos (CasaId, Fecha, Descripcion, Monto, Categoria) VALUES (@casaId, @fecha, @descripcion, @monto, @categoria)";
+                    using (var comando = new SQLiteCommand(sql, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@casaId", casaId);
+                        comando.Parameters.AddWithValue("@fecha", fecha.ToString("yyyy-MM-dd"));
+                        comando.Parameters.AddWithValue("@descripcion", descripcion);
+                        comando.Parameters.AddWithValue("@monto", monto);
+                        comando.Parameters.AddWithValue("@categoria", categoria);
+                        comando.ExecuteNonQuery();
+                        return (int)conexion.LastInsertRowId;
+                    }
+                }
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene los movimientos de una casa filtrados por mes y año
+        /// </summary>
+        /// <param name="casaId">ID de la casa</param>
+        /// <param name="año">Año a filtrar</param>
+        /// <param name="mes">Mes a filtrar (1-12)</param>
+        /// <returns>Lista de movimientos</returns>
+        public static List<(int Id, DateTime Fecha, string Descripcion, decimal Monto, string Categoria)> ObtenerMovimientosPorMes(int casaId, int año, int mes)
+        {
+            var movimientos = new List<(int Id, DateTime Fecha, string Descripcion, decimal Monto, string Categoria)>();
+            
+            try
+            {
+                using (var conexion = new SQLiteConnection(cadenaConexion))
+                {
+                    conexion.Open();
+                    string sql = @"
+                        SELECT Id, Fecha, Descripcion, Monto, Categoria 
+                        FROM Movimientos 
+                        WHERE CasaId = @casaId AND Activo = 1 
+                        AND strftime('%Y', Fecha) = @año 
+                        AND strftime('%m', Fecha) = @mes
+                        ORDER BY Fecha DESC";
+                    
+                    using (var comando = new SQLiteCommand(sql, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@casaId", casaId);
+                        comando.Parameters.AddWithValue("@año", año.ToString());
+                        comando.Parameters.AddWithValue("@mes", mes.ToString("00"));
+                        
+                        using (var reader = comando.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                movimientos.Add((
+                                    reader.GetInt32(0),
+                                    DateTime.Parse(reader.GetString(1)),
+                                    reader.GetString(2),
+                                    reader.GetDecimal(3),
+                                    reader.GetString(4)
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al obtener movimientos: {ex.Message}", ex);
+            }
+            
+            return movimientos;
+        }
+
+        /// <summary>
+        /// Actualiza un movimiento existente
+        /// </summary>
+        /// <param name="id">ID del movimiento</param>
+        /// <param name="fecha">Nueva fecha</param>
+        /// <param name="descripcion">Nueva descripción</param>
+        /// <param name="monto">Nuevo monto</param>
+        /// <param name="categoria">Nueva categoría</param>
+        /// <returns>True si se actualizó correctamente, False en caso contrario</returns>
+        public static bool ActualizarMovimiento(int id, DateTime fecha, string descripcion, decimal monto, string categoria)
+        {
+            try
+            {
+                using (var conexion = new SQLiteConnection(cadenaConexion))
+                {
+                    conexion.Open();
+                    string sql = "UPDATE Movimientos SET Fecha = @fecha, Descripcion = @descripcion, Monto = @monto, Categoria = @categoria WHERE Id = @id";
+                    using (var comando = new SQLiteCommand(sql, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@id", id);
+                        comando.Parameters.AddWithValue("@fecha", fecha.ToString("yyyy-MM-dd"));
+                        comando.Parameters.AddWithValue("@descripcion", descripcion);
+                        comando.Parameters.AddWithValue("@monto", monto);
+                        comando.Parameters.AddWithValue("@categoria", categoria);
+                        return comando.ExecuteNonQuery() > 0;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Elimina (inactiva) un movimiento
+        /// </summary>
+        /// <param name="id">ID del movimiento</param>
+        /// <returns>True si se eliminó correctamente, False en caso contrario</returns>
+        public static bool EliminarMovimiento(int id)
+        {
+            try
+            {
+                using (var conexion = new SQLiteConnection(cadenaConexion))
+                {
+                    conexion.Open();
+                    string sql = "UPDATE Movimientos SET Activo = 0 WHERE Id = @id";
+                    using (var comando = new SQLiteCommand(sql, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@id", id);
+                        return comando.ExecuteNonQuery() > 0;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene el balance anterior (hasta el mes anterior al especificado)
+        /// </summary>
+        /// <param name="casaId">ID de la casa</param>
+        /// <param name="año">Año actual</param>
+        /// <param name="mes">Mes actual</param>
+        /// <returns>Balance anterior</returns>
+        public static decimal ObtenerBalanceAnterior(int casaId, int año, int mes)
+        {
+            try
+            {
+                using (var conexion = new SQLiteConnection(cadenaConexion))
+                {
+                    conexion.Open();
+                    string sql = @"
+                        SELECT COALESCE(SUM(Monto), 0) 
+                        FROM Movimientos 
+                        WHERE CasaId = @casaId AND Activo = 1 
+                        AND (strftime('%Y', Fecha) < @año 
+                             OR (strftime('%Y', Fecha) = @año AND strftime('%m', Fecha) < @mes))";
+                    
+                    using (var comando = new SQLiteCommand(sql, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@casaId", casaId);
+                        comando.Parameters.AddWithValue("@año", año.ToString());
+                        comando.Parameters.AddWithValue("@mes", mes.ToString("00"));
+                        
+                        var result = comando.ExecuteScalar();
+                        return Convert.ToDecimal(result);
+                    }
+                }
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene las categorías más utilizadas para movimientos
+        /// </summary>
+        /// <returns>Lista de categorías</returns>
+        public static List<string> ObtenerCategoriasMovimientos()
+        {
+            var categorias = new List<string>
+            {
+                "Alquiler",
+                "Mantenimiento",
+                "Servicios Públicos",
+                "Reparaciones",
+                "Limpieza",
+                "Seguros",
+                "Impuestos",
+                "Comisiones",
+                "Otros Ingresos",
+                "Otros Gastos"
+            };
+            
+            return categorias;
         }
     }
 }

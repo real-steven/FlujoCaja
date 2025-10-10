@@ -104,7 +104,7 @@ namespace FlujoDeCajaApp.Formularios
         private void ConfigurarPlaceholders()
         {
             ConfigurarPlaceholder(txtNombreUsuario, "Ingrese el nombre");
-            ConfigurarPlaceholder(txtContrasena, "Ingrese la contraseña");
+            ConfigurarPlaceholderContrasena(txtContrasena, "Ingrese la contraseña");
             ConfigurarPlaceholder(txtCorreo, "Ingrese el correo");
         }
 
@@ -131,6 +131,38 @@ namespace FlujoDeCajaApp.Formularios
             {
                 if (string.IsNullOrWhiteSpace(textBox.Text))
                 {
+                    textBox.Text = placeholder;
+                    textBox.ForeColor = Color.Gray;
+                }
+            };
+        }
+
+        /// <summary>
+        /// Configura el placeholder de un TextBox de contraseña específico
+        /// </summary>
+        /// <param name="textBox">TextBox a configurar</param>
+        /// <param name="placeholder">Texto del placeholder</param>
+        private void ConfigurarPlaceholderContrasena(TextBox textBox, string placeholder)
+        {
+            textBox.UseSystemPasswordChar = false; // Desactivar mientras se muestra el placeholder
+            textBox.Text = placeholder;
+            textBox.ForeColor = Color.Gray;
+
+            textBox.Enter += (sender, e) =>
+            {
+                if (textBox.ForeColor == Color.Gray)
+                {
+                    textBox.Text = "";
+                    textBox.ForeColor = Color.Black;
+                    textBox.UseSystemPasswordChar = true; // Activar el carácter de contraseña
+                }
+            };
+
+            textBox.Leave += (sender, e) =>
+            {
+                if (string.IsNullOrWhiteSpace(textBox.Text))
+                {
+                    textBox.UseSystemPasswordChar = false; // Desactivar para mostrar placeholder
                     textBox.Text = placeholder;
                     textBox.ForeColor = Color.Gray;
                 }

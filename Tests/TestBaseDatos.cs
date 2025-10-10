@@ -59,8 +59,13 @@ namespace FlujoDeCajaApp.Tests
                 }
                 Console.WriteLine();
 
+                // Probar funcionalidad de usuarios
+                Console.WriteLine("5. Probando funcionalidad de usuarios...");
+                TestAgregarUsuario.EjecutarPruebas();
+                Console.WriteLine();
+
                 // Prueba de validación de usuario
-                Console.WriteLine("5. Probando validación de usuario administrador...");
+                Console.WriteLine("6. Probando validación de usuario administrador...");
                 bool usuarioValido = DatabaseHelper.ValidarCredenciales("admin", "admin123");
                 if (usuarioValido)
                 {

@@ -36,17 +36,26 @@ namespace FlujoDeCajaApp.Formularios
         {
             try
             {
+                Console.WriteLine("Inicializando FormLogin...");
+                
                 // Inicializar base de datos SQLite
+                Console.WriteLine("Llamando a DatabaseHelper.InicializarBaseDatos()...");
                 DatabaseHelper.InicializarBaseDatos();
+                Console.WriteLine("Base de datos inicializada correctamente.");
                 
                 // Configurar el formulario
+                Console.WriteLine("Configurando formulario...");
                 ConfigurarFormulario();
                 
                 // Configurar placeholders iniciales
+                Console.WriteLine("Configurando placeholders...");
                 ConfigurarPlaceholders();
+                Console.WriteLine("FormLogin inicializado correctamente.");
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"ERROR en InicializarSistema: {ex.Message}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
                 MessageBox.Show($"Error al inicializar el sistema: {ex.Message}", 
                               "Error de Inicialización", 
                               MessageBoxButtons.OK, 

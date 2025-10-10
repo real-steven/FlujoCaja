@@ -203,7 +203,7 @@ namespace FlujoDeCajaApp.Formularios
             this.txtContrasena.Size = new Size(520, 27);
             this.txtContrasena.TabIndex = 5;
             this.txtContrasena.BorderStyle = BorderStyle.FixedSingle;
-            this.txtContrasena.UseSystemPasswordChar = true;
+            // UseSystemPasswordChar se configurará dinámicamente en el código
             
             // 
             // lblCorreo

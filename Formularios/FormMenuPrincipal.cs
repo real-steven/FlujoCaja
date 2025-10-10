@@ -132,13 +132,39 @@ namespace FlujoDeCajaApp.Formularios
             // Crear gradiente azul para el encabezado
             panelEncabezado.Paint += (sender, e) =>
             {
-                using (LinearGradientBrush brush = new LinearGradientBrush(
-                    panelEncabezado.ClientRectangle,
-                    Color.FromArgb(25, 118, 210),
-                    Color.FromArgb(33, 150, 243),
-                    LinearGradientMode.Vertical))
+                try
                 {
-                    e.Graphics.FillRectangle(brush, panelEncabezado.ClientRectangle);
+                    Rectangle rect = panelEncabezado.ClientRectangle;
+                    
+                    // Validar que el rectángulo tenga dimensiones válidas
+                    if (rect.Width > 0 && rect.Height > 0)
+                    {
+                        using (LinearGradientBrush brush = new LinearGradientBrush(
+                            rect,
+                            Color.FromArgb(25, 118, 210),
+                            Color.FromArgb(33, 150, 243),
+                            LinearGradientMode.Vertical))
+                        {
+                            e.Graphics.FillRectangle(brush, rect);
+                        }
+                    }
+                    else
+                    {
+                        // Si el rectángulo no es válido, usar color sólido
+                        using (SolidBrush brush = new SolidBrush(Color.FromArgb(25, 118, 210)))
+                        {
+                            e.Graphics.FillRectangle(brush, rect);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error en Paint del panelEncabezado: {ex.Message}");
+                    // Fallback: pintar con color sólido
+                    using (SolidBrush brush = new SolidBrush(Color.FromArgb(25, 118, 210)))
+                    {
+                        e.Graphics.FillRectangle(brush, panelEncabezado.ClientRectangle);
+                    }
                 }
             };
 
@@ -983,8 +1009,26 @@ namespace FlujoDeCajaApp.Formularios
 
         private void VerMovimientosPropiedad(Propiedad propiedad)
         {
-            MessageBox.Show($"Ver movimientos de: {propiedad.Nombre}\n\nEsta funcionalidad se implementará más adelante.", 
-                          "Movimientos", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                panelActual = "movimientos";
+                panelPropiedades.Visible = false;
+                panelBusqueda.Visible = false; // Ocultar barra de búsqueda
+                panelSecundario.Visible = true;
+                panelSecundario.Controls.Clear();
+                
+                // Cargar UserControl MovimientosCasaControl
+                MovimientosCasaControl panelMovimientos = new MovimientosCasaControl();
+                panelMovimientos.Dock = DockStyle.Fill;
+                panelMovimientos.VolverSolicitado += (sender, e) => VolverAMenuPrincipal();
+                panelMovimientos.ConfigurarCasa(propiedad.Id, propiedad.Nombre);
+                panelSecundario.Controls.Add(panelMovimientos);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al abrir movimientos: {ex.Message}", 
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void DesactivarPropiedad(Propiedad propiedad)
