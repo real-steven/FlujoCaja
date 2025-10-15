@@ -24,42 +24,79 @@ namespace FlujoDeCajaApp.Formularios
         public PanelInactivas()
         {
             InitializeComponent();
-            CargarCasasInactivasDesdeBD();
-            CargarPropiedadesInactivas();
+            _ = InicializarPanelAsync();
         }
 
         /// <summary>
-        /// Carga las casas inactivas desde la base de datos
+        /// Inicializa el panel de manera asíncrona
         /// </summary>
-        private void CargarCasasInactivasDesdeBD()
+        private async Task InicializarPanelAsync()
         {
             try
             {
-                var casasInactivas = DatabaseHelper.ObtenerCasasInactivas();
-                propiedadesInactivas = new List<Propiedad>();
-                
-                foreach (var casa in casasInactivas)
-                {
-                    var propiedad = new Propiedad
-                    {
-                        Id = casa.Id,
-                        Nombre = casa.Nombre,
-                        Descripcion = $"{casa.NombreCategoria} - Dueño: {casa.NombreDueno}",
-                        RutaImagen = casa.RutaImagen,
-                        Activa = false,
-                        FechaCreacion = casa.FechaCreacion,
-                        NombreDueno = casa.NombreDueno
-                    };
-                    propiedadesInactivas.Add(propiedad);
-                }
+                await CargarCasasInactivasDesdeBD();
+                CargarPropiedadesInactivas();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar casas inactivas: {ex.Message}", 
+                MessageBox.Show($"Error al inicializar el panel de propiedades inactivas: {ex.Message}", 
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
-                // Usar lista vacía en caso de error
+            }
+        }
+
+        /// <summary>
+        /// Carga las casas inactivas desde Supabase
+        /// </summary>
+        private async Task CargarCasasInactivasDesdeBD()
+        {
+            try
+            {
+                Console.WriteLine("Cargando casas inactivas desde Supabase...");
+                var casasInactivas = await SupabaseCasaHelper.ObtenerCasasInactivas();
                 propiedadesInactivas = new List<Propiedad>();
+                
+                if (casasInactivas == null || casasInactivas.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron casas inactivas en Supabase.");
+                    return;
+                }
+                
+                foreach (var casa in casasInactivas)
+                {
+                    try
+                    {
+                        // Obtener información del dueño y categoría
+                        var dueno = await SupabaseDuenoHelper.ObtenerDuenoPorId(casa.DuenoId);
+                        var categoria = await SupabaseCategoriaHelper.ObtenerCategoriaPorId(casa.CategoriaId);
+                        
+                        var propiedad = new Propiedad
+                        {
+                            Id = casa.Id,
+                            Nombre = casa.Nombre ?? "Sin nombre",
+                            Descripcion = $"{categoria?.Nombre ?? "Sin categoría"} - Dueño: {dueno?.NombreCompleto ?? "Sin dueño"}",
+                            RutaImagen = casa.RutaImagen ?? string.Empty,
+                            Activa = false,
+                            FechaCreacion = casa.FechaCreacion,
+                            NombreDueno = dueno?.NombreCompleto ?? "Sin dueño"
+                        };
+                        propiedadesInactivas.Add(propiedad);
+                        Console.WriteLine($"Casa inactiva cargada: {propiedad.Nombre}");
+                    }
+                    catch (Exception exCasa)
+                    {
+                        Console.WriteLine($"Error al procesar casa inactiva {casa.Id}: {exCasa.Message}");
+                    }
+                }
+                
+                Console.WriteLine($"Se cargaron {propiedadesInactivas.Count} casas inactivas.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al cargar casas inactivas desde Supabase: {ex.Message}");
+                propiedadesInactivas = new List<Propiedad>();
+                
+                MessageBox.Show($"Error al cargar propiedades inactivas desde Supabase: {ex.Message}", 
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -366,7 +403,7 @@ namespace FlujoDeCajaApp.Formularios
         /// Reactiva una propiedad
         /// </summary>
         /// <param name="propiedad">Propiedad a reactivar</param>
-        private void ReactivarPropiedad(Propiedad propiedad)
+        private async void ReactivarPropiedad(Propiedad propiedad)
         {
             DialogResult resultado = MessageBox.Show(
                 $"¿Está seguro que desea reactivar '{propiedad.Nombre}'?\n\nLa casa volverá a aparecer en el menú principal.",
@@ -379,7 +416,7 @@ namespace FlujoDeCajaApp.Formularios
             {
                 try
                 {
-                    bool exito = DatabaseHelper.ReactivarCasa(propiedad.Id);
+                    bool exito = await SupabaseCasaHelper.ReactivarCasa(propiedad.Id);
                     
                     if (exito)
                     {
@@ -391,7 +428,7 @@ namespace FlujoDeCajaApp.Formularios
                         );
                         
                         // Recargar las propiedades inactivas para actualizar la vista
-                        CargarCasasInactivasDesdeBD();
+                        await CargarCasasInactivasDesdeBD();
                         CargarPropiedadesInactivas();
                     }
                     else
@@ -441,9 +478,9 @@ namespace FlujoDeCajaApp.Formularios
         /// <summary>
         /// Método público para actualizar la lista de propiedades inactivas desde fuera del panel
         /// </summary>
-        public void ActualizarPropiedadesInactivas()
+        public async Task ActualizarPropiedadesInactivas()
         {
-            CargarCasasInactivasDesdeBD();
+            await CargarCasasInactivasDesdeBD();
             CargarPropiedadesInactivas();
         }
     }

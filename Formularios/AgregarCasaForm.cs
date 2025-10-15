@@ -16,8 +16,8 @@ namespace FlujoDeCajaApp.Formularios
     {
         #region Variables privadas
         
-        private List<(int Id, string NombreCompleto, string Telefono, string Email)> duenos = new();
-        private List<(int Id, string Nombre, string Descripcion)> categorias = new();
+        private List<DuenoSupabase> duenos = new();
+        private List<CategoriaSupabase> categorias = new();
         private string rutaImagenSeleccionada = string.Empty;
         private bool imagenCargada = false;
 
@@ -150,22 +150,22 @@ namespace FlujoDeCajaApp.Formularios
         #region Carga de datos
 
         /// <summary>
-        /// Carga los datos de dueños y categorías desde la base de datos
+        /// Carga los datos de dueños y categorías desde Supabase
         /// </summary>
-        private void CargarDatos()
+        private async void CargarDatos()
         {
             try
             {
-                // Cargar dueños
-                duenos = DatabaseHelper.ObtenerDuenos();
+                // Cargar dueños desde Supabase
+                duenos = await SupabaseDuenoHelper.ObtenerTodosDuenos();
                 cmbDueno.Items.Clear();
                 foreach (var dueno in duenos)
                 {
                     cmbDueno.Items.Add(dueno.NombreCompleto);
                 }
 
-                // Cargar categorías
-                categorias = DatabaseHelper.ObtenerCategorias();
+                // Cargar categorías desde Supabase
+                categorias = await SupabaseCategoriaHelper.ObtenerTodasCategorias();
                 cmbCategoria.Items.Clear();
                 foreach (var categoria in categorias)
                 {
@@ -255,31 +255,41 @@ namespace FlujoDeCajaApp.Formularios
                     return;
                 }
                 
-                // Obtener los IDs seleccionados
+                // Obtener datos del formulario
+                string nombreCasa = txtNombre.Text.Trim();
                 int duenoId = ObtenerIdDuenoSeleccionado();
                 int categoriaId = ObtenerIdCategoriaSeleccionada();
                 
                 // Copiar la imagen si se seleccionó una
-                string rutaImagenRelativa = string.Empty;
+                string? rutaImagenRelativa = null;
                 if (imagenCargada && !string.IsNullOrEmpty(rutaImagenSeleccionada))
                 {
                     rutaImagenRelativa = await CopiarImagenACarpetaLocal();
                 }
                 
-                // Guardar en la base de datos
-                int casaId = DatabaseHelper.GuardarCasa(
-                    txtNombre.Text.Trim(),
-                    duenoId,
-                    categoriaId,
-                    rutaImagenRelativa
-                );
+                // Crear nueva casa para Supabase
+                var nuevaCasa = new CasaSupabase(nombreCasa, duenoId, categoriaId, rutaImagenRelativa);
                 
-                MessageBox.Show("Casa guardada exitosamente.", 
-                    "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Guardar en Supabase
+                bool guardadoExitoso = await SupabaseCasaHelper.CrearCasa(nuevaCasa);
                 
-                // Cerrar el formulario con resultado OK
-                this.DialogResult = DialogResult.OK;
-                this.Close();
+                if (guardadoExitoso)
+                {
+                    MessageBox.Show("Casa guardada exitosamente en Supabase.", 
+                        "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    
+                    // Cerrar el formulario con resultado OK
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Error al guardar la casa en Supabase. Intente nuevamente.", 
+                        "Error de Guardado", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    
+                    btnGuardar.Enabled = true;
+                    btnGuardar.Text = "Guardar";
+                }
             }
             catch (Exception ex)
             {
@@ -376,6 +386,10 @@ namespace FlujoDeCajaApp.Formularios
             // Si se escribió un nombre, buscar coincidencia
             string nombreSeleccionado = cmbDueno.Text;
             var dueno = duenos.FirstOrDefault(d => d.NombreCompleto.Equals(nombreSeleccionado, StringComparison.OrdinalIgnoreCase));
+            if (dueno == null)
+            {
+                throw new InvalidOperationException("No se encontró el dueño seleccionado.");
+            }
             return dueno.Id;
         }
 
@@ -393,6 +407,10 @@ namespace FlujoDeCajaApp.Formularios
             // Si se escribió un nombre, buscar coincidencia
             string nombreSeleccionado = cmbCategoria.Text;
             var categoria = categorias.FirstOrDefault(c => c.Nombre.Equals(nombreSeleccionado, StringComparison.OrdinalIgnoreCase));
+            if (categoria == null)
+            {
+                throw new InvalidOperationException("No se encontró la categoría seleccionada.");
+            }
             return categoria.Id;
         }
 

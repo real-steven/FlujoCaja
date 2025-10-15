@@ -47,6 +47,10 @@
             "System.Data.SQLite": {
               "target": "Package",
               "version": "[1.0.118, )"
+            },
+            "supabase": {
+              "target": "Package",
+              "version": "[1.0.0, )"
             }
           },
           "imports": [

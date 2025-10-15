@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using FlujoDeCajaApp.Data;
+using FlujoDeCajaApp.Modelos;
 
 namespace FlujoDeCajaApp.Formularios
 {
@@ -173,7 +174,7 @@ namespace FlujoDeCajaApp.Formularios
         /// <summary>
         /// Maneja el evento click del botón Guardar
         /// </summary>
-        private void BtnGuardar_Click(object? sender, EventArgs e)
+        private async void BtnGuardar_Click(object? sender, EventArgs e)
         {
             try
             {
@@ -191,14 +192,25 @@ namespace FlujoDeCajaApp.Formularios
                 // Obtener datos del formulario
                 string nombreCategoria = ObtenerTextoLimpio(txtNombreCategoria);
                 
-                // Guardar en la base de datos
-                int categoriaId = DatabaseHelper.GuardarCategoria(nombreCategoria, $"Categoría: {nombreCategoria}");
+                // Crear nueva categoría para Supabase (sin descripción automática)
+                var nuevaCategoria = new CategoriaSupabase(nombreCategoria);
                 
-                // Mostrar mensaje de éxito
-                MostrarMensajeExito("Categoría agregada correctamente");
+                // Guardar en Supabase
+                bool guardadoExitoso = await SupabaseCategoriaHelper.CrearCategoria(nuevaCategoria);
                 
-                // Limpiar el formulario
-                LimpiarFormulario();
+                if (guardadoExitoso)
+                {
+                    // Mostrar mensaje de éxito
+                    MostrarMensajeExito("Categoría agregada correctamente en Supabase");
+                    
+                    // Limpiar el formulario
+                    LimpiarFormulario();
+                }
+                else
+                {
+                    MessageBox.Show("Error al guardar la categoría en Supabase. Intente nuevamente.", 
+                        "Error de Guardado", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 
                 btnGuardar.Enabled = false; // Se habilitará cuando se llene el formulario nuevamente
                 btnGuardar.Text = "Guardar";
@@ -279,13 +291,16 @@ namespace FlujoDeCajaApp.Formularios
                 return false;
             }
 
-            // Verificar que la categoría no exista
+            // Verificar que la categoría no exista (comentado por ahora - usar validación simple)
+            // TODO: Implementar validación asíncrona con Supabase
+            /*
             if (mostrarMensajes && DatabaseHelper.ExisteCategoriaConNombre(nombreCategoria))
             {
                 MessageBox.Show("Ya existe una categoría con ese nombre.", 
                     "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
+            */
 
             return true;
         }

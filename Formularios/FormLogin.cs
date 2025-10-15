@@ -32,16 +32,31 @@ namespace FlujoDeCajaApp.Formularios
         /// <summary>
         /// Inicializa el sistema creando la base de datos y configurando el formulario
         /// </summary>
-        private void InicializarSistema()
+        private async void InicializarSistema()
         {
             try
             {
                 Console.WriteLine("Inicializando FormLogin...");
                 
-                // Inicializar base de datos SQLite
+                // Inicializar conexión con Supabase
+                Console.WriteLine("Inicializando conexión con Supabase...");
+                bool supabaseInicializado = await SupabaseHelper.InicializarSupabase();
+                
+                if (!supabaseInicializado)
+                {
+                    MessageBox.Show("Error al conectar con el servidor. Verifique su conexión a internet.", 
+                                  "Error de Conexión", 
+                                  MessageBoxButtons.OK, 
+                                  MessageBoxIcon.Error);
+                    return;
+                }
+                
+                Console.WriteLine("Supabase inicializado correctamente.");
+                
+                // Mantener inicialización de SQLite como respaldo
                 Console.WriteLine("Llamando a DatabaseHelper.InicializarBaseDatos()...");
                 DatabaseHelper.InicializarBaseDatos();
-                Console.WriteLine("Base de datos inicializada correctamente.");
+                Console.WriteLine("Base de datos local inicializada correctamente.");
                 
                 // Configurar el formulario
                 Console.WriteLine("Configurando formulario...");
@@ -69,7 +84,7 @@ namespace FlujoDeCajaApp.Formularios
         private void ConfigurarPlaceholders()
         {
             // Configurar placeholder del usuario
-            txtUsuario.Text = "Ingrese su usuario";
+            txtUsuario.Text = "Ingrese su email";
             txtUsuario.ForeColor = Color.Gray;
 
             // Configurar placeholder de la contraseña
@@ -333,18 +348,18 @@ namespace FlujoDeCajaApp.Formularios
         /// <summary>
         /// Procesa el intento de login validando credenciales
         /// </summary>
-        private void ProcesarLogin()
+        private async void ProcesarLogin()
         {
             try
             {
                 // Obtener valores reales de los campos (sin placeholders)
-                string usuario = txtUsuario.Text == "Ingrese su usuario" ? "" : txtUsuario.Text.Trim();
+                string emailOUsuario = txtUsuario.Text == "Ingrese su email" ? "" : txtUsuario.Text.Trim();
                 string contrasena = txtContrasena.Text == "Ingrese su contraseña" ? "" : txtContrasena.Text;
 
                 // Validar que los campos no estén vacíos
-                if (string.IsNullOrWhiteSpace(usuario))
+                if (string.IsNullOrWhiteSpace(emailOUsuario))
                 {
-                    MessageBox.Show("Por favor ingrese su nombre de usuario.", 
+                    MessageBox.Show("Por favor ingrese su email o nombre de usuario.", 
                                   "Campo Requerido", 
                                   MessageBoxButtons.OK, 
                                   MessageBoxIcon.Warning);
@@ -365,32 +380,52 @@ namespace FlujoDeCajaApp.Formularios
                 // Mostrar cursor de espera
                 this.Cursor = Cursors.WaitCursor;
                 btnIniciarSesion.Enabled = false;
+                btnIniciarSesion.Text = "Iniciando sesión...";
 
-                // Validar credenciales en la base de datos
-                bool credencialesValidas = DatabaseHelper.ValidarCredenciales(usuario, contrasena);
-
-                if (credencialesValidas)
+                // Intentar autenticación con Supabase primero
+                bool credencialesValidas = false;
+                
+                Console.WriteLine($"Intentando autenticación con Supabase para: {emailOUsuario}");
+                
+                // Validar si parece ser un email
+                bool esEmail = emailOUsuario.Contains("@");
+                
+                if (esEmail)
                 {
-                    // Obtener información del usuario
-                    var infoUsuario = DatabaseHelper.ObtenerUsuario(usuario);
-                    
-                    if (infoUsuario != null)
-                    {
-                        // Ocultar formulario de login
-                        this.Hide();
-                        
-                        // Abrir el menú principal
-                        FormMenuPrincipal menuPrincipal = new FormMenuPrincipal();
-                        menuPrincipal.ShowDialog();
-                        
-                        // Cerrar la aplicación cuando se cierre el menú principal
-                        this.Close();
-                    }
+                    // Si es un email, usar directamente con Supabase
+                    credencialesValidas = await SupabaseHelper.ValidarCredenciales(emailOUsuario, contrasena);
+                    Console.WriteLine($"Resultado autenticación Supabase (email): {credencialesValidas}");
                 }
                 else
                 {
-                    MessageBox.Show("Usuario o contraseña incorrectos.\n\n" +
-                                  "Por favor verifique sus credenciales e intente nuevamente.", 
+                    // Si no es email, asumir que es un username y convertir a email
+                    // Para simplificar, agregar un dominio por defecto o usar SQLite como respaldo
+                    Console.WriteLine("No es un email válido. Intente con su email completo.");
+                    MessageBox.Show("Por favor ingrese su email completo (ejemplo: usuario@dominio.com)", 
+                                  "Email Requerido", 
+                                  MessageBoxButtons.OK, 
+                                  MessageBoxIcon.Information);
+                    return;
+                }
+
+                if (credencialesValidas)
+                {
+                    Console.WriteLine("Credenciales válidas. Abriendo menú principal...");
+                    
+                    // Ocultar formulario de login
+                    this.Hide();
+                    
+                    // Abrir el menú principal
+                    FormMenuPrincipal menuPrincipal = new FormMenuPrincipal();
+                    menuPrincipal.ShowDialog();
+                    
+                    // Cerrar la aplicación cuando se cierre el menú principal
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Email/usuario o contraseña incorrectos.\n\n" +
+                                  "Si es su primera vez, asegúrese de usar su email completo para el login.", 
                                   "Error de Autenticación", 
                                   MessageBoxButtons.OK, 
                                   MessageBoxIcon.Error);
@@ -408,12 +443,14 @@ namespace FlujoDeCajaApp.Formularios
                               "Error del Sistema", 
                               MessageBoxButtons.OK, 
                               MessageBoxIcon.Error);
+                Console.WriteLine($"Error en ProcesarLogin: {ex}");
             }
             finally
             {
                 // Restaurar cursor y botón
                 this.Cursor = Cursors.Default;
                 btnIniciarSesion.Enabled = true;
+                btnIniciarSesion.Text = "Iniciar Sesión";
             }
         }
 
@@ -448,7 +485,7 @@ namespace FlujoDeCajaApp.Formularios
         /// </summary>
         private void TxtUsuario_Enter(object? sender, EventArgs e)
         {
-            if (txtUsuario.Text == "Ingrese su usuario")
+            if (txtUsuario.Text == "Ingrese su email")
             {
                 txtUsuario.Text = "";
                 txtUsuario.ForeColor = Color.Black;
@@ -462,7 +499,7 @@ namespace FlujoDeCajaApp.Formularios
         {
             if (string.IsNullOrWhiteSpace(txtUsuario.Text))
             {
-                txtUsuario.Text = "Ingrese su usuario";
+                txtUsuario.Text = "Ingrese su email";
                 txtUsuario.ForeColor = Color.Gray;
             }
         }

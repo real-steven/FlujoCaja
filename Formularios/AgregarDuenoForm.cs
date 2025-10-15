@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using FlujoDeCajaApp.Data;
+using FlujoDeCajaApp.Modelos;
 
 namespace FlujoDeCajaApp.Formularios
 {
@@ -175,7 +176,7 @@ namespace FlujoDeCajaApp.Formularios
         /// <summary>
         /// Maneja el evento click del botón Guardar
         /// </summary>
-        private void BtnGuardar_Click(object? sender, EventArgs e)
+        private async void BtnGuardar_Click(object? sender, EventArgs e)
         {
             try
             {
@@ -199,14 +200,25 @@ namespace FlujoDeCajaApp.Formularios
                 // Separar nombre y apellido
                 var (nombre, apellido) = SepararNombreApellido(nombreCompleto);
                 
-                // Guardar en la base de datos
-                int duenoId = DatabaseHelper.GuardarDueno(nombre, apellido, identificacion, correo, telefono);
+                // Crear nuevo dueño para Supabase
+                var nuevoDueno = new DuenoSupabase(nombre, apellido, telefono, correo);
                 
-                // Mostrar mensaje de éxito
-                MostrarMensajeExito("Dueño agregado correctamente");
+                // Guardar en Supabase
+                bool guardadoExitoso = await SupabaseDuenoHelper.CrearDueno(nuevoDueno);
                 
-                // Limpiar el formulario
-                LimpiarFormulario();
+                if (guardadoExitoso)
+                {
+                    // Mostrar mensaje de éxito
+                    MostrarMensajeExito("Dueño agregado correctamente en Supabase");
+                    
+                    // Limpiar el formulario
+                    LimpiarFormulario();
+                }
+                else
+                {
+                    MessageBox.Show("Error al guardar el dueño en Supabase. Intente nuevamente.", 
+                        "Error de Guardado", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 
                 btnGuardar.Enabled = false; // Se habilitará cuando se llene el formulario nuevamente
                 btnGuardar.Text = "Guardar";

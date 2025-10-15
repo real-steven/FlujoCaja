@@ -41,20 +41,40 @@ namespace FlujoDeCajaApp.Formularios
 
         public FormMenuPrincipal()
         {
+            // Inicializar listas para evitar nulls
+            propiedades = new List<Propiedad>();
+            propiedadesFiltradas = new List<Propiedad>();
+            
             InitializeComponent();
-            InicializarDatos();
-            CargarPropiedades();
+            _ = InicializarFormularioAsync();
         }
 
         /// <summary>
-        /// Inicializa los datos del sistema cargando las casas desde la base de datos
+        /// Inicializa el formulario de manera asíncrona
         /// </summary>
-        private void InicializarDatos()
+        private async Task InicializarFormularioAsync()
         {
             try
             {
-                // Cargar casas desde la base de datos
-                CargarCasasDesdeBD();
+                await InicializarDatos();
+                CargarPropiedades();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al inicializar el formulario: {ex.Message}", 
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Inicializa los datos del sistema cargando las casas desde Supabase
+        /// </summary>
+        private async Task InicializarDatos()
+        {
+            try
+            {
+                // Cargar casas desde Supabase
+                await CargarCasasDesdeBD();
             }
             catch (Exception ex)
             {
@@ -68,35 +88,62 @@ namespace FlujoDeCajaApp.Formularios
         }
 
         /// <summary>
-        /// Carga las casas desde la base de datos y las convierte a propiedades
+        /// Carga las casas desde Supabase y las convierte a propiedades
         /// </summary>
-        private void CargarCasasDesdeBD()
+        private async Task CargarCasasDesdeBD()
         {
             try
             {
-                var casas = DatabaseHelper.ObtenerCasas();
+                Console.WriteLine("Iniciando carga de casas desde Supabase...");
+                var casas = await SupabaseCasaHelper.ObtenerTodasCasas();
                 propiedades = new List<Propiedad>();
+                
+                if (casas == null || casas.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron casas en Supabase.");
+                    propiedadesFiltradas = new List<Propiedad>(propiedades);
+                    return;
+                }
                 
                 foreach (var casa in casas)
                 {
-                    var propiedad = new Propiedad
+                    try
                     {
-                        Id = casa.Id,
-                        Nombre = casa.Nombre,
-                        Descripcion = $"{casa.NombreCategoria} - Dueño: {casa.NombreDueno}",
-                        RutaImagen = casa.RutaImagen,
-                        Activa = true,
-                        FechaCreacion = casa.FechaCreacion,
-                        NombreDueno = casa.NombreDueno
-                    };
-                    propiedades.Add(propiedad);
+                        // Obtener información del dueño y categoría de forma segura
+                        var dueno = await SupabaseDuenoHelper.ObtenerDuenoPorId(casa.DuenoId);
+                        var categoria = await SupabaseCategoriaHelper.ObtenerCategoriaPorId(casa.CategoriaId);
+                        
+                        var propiedad = new Propiedad
+                        {
+                            Id = casa.Id,
+                            Nombre = casa.Nombre ?? "Sin nombre",
+                            Descripcion = $"{categoria?.Nombre ?? "Sin categoría"} - Dueño: {dueno?.NombreCompleto ?? "Sin dueño"}",
+                            RutaImagen = casa.RutaImagen ?? string.Empty,
+                            Activa = casa.Activo,
+                            FechaCreacion = casa.FechaCreacion,
+                            NombreDueno = dueno?.NombreCompleto ?? "Sin dueño"
+                        };
+                        propiedades.Add(propiedad);
+                        Console.WriteLine($"Casa cargada: {propiedad.Nombre}");
+                    }
+                    catch (Exception exCasa)
+                    {
+                        Console.WriteLine($"Error al procesar casa {casa.Id}: {exCasa.Message}");
+                        // Continuar con la siguiente casa
+                    }
                 }
                 
                 propiedadesFiltradas = new List<Propiedad>(propiedades);
+                Console.WriteLine($"Se cargaron {propiedades.Count} casas exitosamente.");
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al cargar casas desde la base de datos: {ex.Message}", ex);
+                Console.WriteLine($"Error al cargar casas desde Supabase: {ex.Message}");
+                propiedades = new List<Propiedad>();
+                propiedadesFiltradas = new List<Propiedad>();
+                
+                MessageBox.Show($"Error al cargar propiedades desde Supabase: {ex.Message}\n\nSe mostrará una lista vacía.", 
+                    "Error de Conexión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -768,7 +815,7 @@ namespace FlujoDeCajaApp.Formularios
 
         private void TxtBusqueda_TextChanged(object? sender, EventArgs e)
         {
-            if (txtBusqueda.Text != "Ingrese el nombre")
+            if (txtBusqueda.Text != "Ingrese el nombre" && propiedades != null)
             {
                 FiltrarPropiedades(txtBusqueda.Text);
             }
@@ -800,6 +847,14 @@ namespace FlujoDeCajaApp.Formularios
         /// <param name="filtro">Texto a buscar</param>
         private void FiltrarPropiedades(string filtro)
         {
+            // Verificar que propiedades no sea null
+            if (propiedades == null)
+            {
+                propiedades = new List<Propiedad>();
+                propiedadesFiltradas = new List<Propiedad>();
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(filtro))
             {
                 propiedadesFiltradas = new List<Propiedad>(propiedades);
@@ -889,15 +944,15 @@ namespace FlujoDeCajaApp.Formularios
         /// <summary>
         /// Vuelve al menú principal de propiedades
         /// </summary>
-        private void VolverAMenuPrincipal()
+        private async void VolverAMenuPrincipal()
         {
             panelActual = "propiedades";
             panelSecundario.Visible = false;
             panelPropiedades.Visible = true;
             panelBusqueda.Visible = true; // Mostrar barra de búsqueda
             
-            // Recargar casas desde la base de datos para mostrar las nuevas
-            CargarCasasDesdeBD();
+            // Recargar casas desde Supabase para mostrar las nuevas
+            await CargarCasasDesdeBD();
             CargarPropiedades();
         }
 
@@ -1031,7 +1086,7 @@ namespace FlujoDeCajaApp.Formularios
             }
         }
 
-        private void DesactivarPropiedad(Propiedad propiedad)
+        private async void DesactivarPropiedad(Propiedad propiedad)
         {
             DialogResult resultado = MessageBox.Show(
                 $"¿Está seguro que desea desactivar '{propiedad.Nombre}'?\n\nLa casa se moverá al panel de propiedades inactivas pero conservará todos sus datos.",
@@ -1044,7 +1099,7 @@ namespace FlujoDeCajaApp.Formularios
             {
                 try
                 {
-                    bool exito = DatabaseHelper.DesactivarCasa(propiedad.Id);
+                    bool exito = await SupabaseCasaHelper.EliminarCasa(propiedad.Id);
                     
                     if (exito)
                     {
@@ -1056,7 +1111,7 @@ namespace FlujoDeCajaApp.Formularios
                         );
                         
                         // Recargar las propiedades para actualizar la vista
-                        CargarCasasDesdeBD();
+                        await CargarCasasDesdeBD();
                         CargarPropiedades();
                     }
                     else
