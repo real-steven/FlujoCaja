@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FlujoDeCajaApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5bae61bbba0ae162f6073cced262a75f858c503c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b95c5386b83a81e5f40741d36df070aee8a16a09")]
 [assembly: System.Reflection.AssemblyProductAttribute("FlujoDeCajaApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FlujoDeCajaApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

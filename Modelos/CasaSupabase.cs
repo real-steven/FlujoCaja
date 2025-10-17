@@ -2,6 +2,7 @@ using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace FlujoDeCajaApp.Modelos
@@ -53,6 +54,13 @@ namespace FlujoDeCajaApp.Modelos
         public string? RutaImagen { get; set; } = null;
 
         /// <summary>
+        /// Moneda utilizada para la casa (USD, CRC, EUR)
+        /// </summary>
+        [Column("moneda")]
+        [Required(ErrorMessage = "La moneda es requerida")]
+        public string Moneda { get; set; } = "USD";
+
+        /// <summary>
         /// Fecha de creación del registro
         /// </summary>
         [Column("fechacreacion")]
@@ -69,19 +77,20 @@ namespace FlujoDeCajaApp.Modelos
         /// <summary>
         /// Constructor con parámetros básicos
         /// </summary>
-        public CasaSupabase(string nombre, int duenoId, int categoriaId)
+        public CasaSupabase(string nombre, int duenoId, int categoriaId, string moneda = "USD")
         {
             Nombre = nombre;
             DuenoId = duenoId;
             CategoriaId = categoriaId;
+            Moneda = moneda;
             FechaCreacion = DateTime.UtcNow;
         }
 
         /// <summary>
         /// Constructor completo
         /// </summary>
-        public CasaSupabase(string nombre, int duenoId, int categoriaId, string? rutaImagen = null) 
-            : this(nombre, duenoId, categoriaId)
+        public CasaSupabase(string nombre, int duenoId, int categoriaId, string? rutaImagen = null, string moneda = "USD") 
+            : this(nombre, duenoId, categoriaId, moneda)
         {
             RutaImagen = rutaImagen;
         }
@@ -91,9 +100,12 @@ namespace FlujoDeCajaApp.Modelos
         /// </summary>
         public bool EsValido()
         {
+            var monedasValidas = new[] { "USD", "CRC", "EUR" };
             return !string.IsNullOrWhiteSpace(Nombre) && 
                    DuenoId > 0 && 
-                   CategoriaId > 0;
+                   CategoriaId > 0 &&
+                   !string.IsNullOrWhiteSpace(Moneda) &&
+                   monedasValidas.Contains(Moneda);
         }
 
         /// <summary>

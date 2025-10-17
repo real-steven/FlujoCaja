@@ -8,9 +8,9 @@ using FlujoDeCajaApp.Modelos;
 namespace FlujoDeCajaApp.Formularios
 {
     /// <summary>
-    /// Formulario para agregar nuevas categorías al sistema
+    /// Formulario para agregar nuevas categorías de movimiento al sistema
     /// </summary>
-    public partial class AgregarCategoriaForm : Form
+    public partial class AgregarCategoriaMovimientoForm : Form
     {
         #region Variables privadas
 
@@ -23,7 +23,7 @@ namespace FlujoDeCajaApp.Formularios
         /// <summary>
         /// Constructor del formulario
         /// </summary>
-        public AgregarCategoriaForm()
+        public AgregarCategoriaMovimientoForm()
         {
             InitializeComponent();
             InicializarFormulario();
@@ -64,7 +64,7 @@ namespace FlujoDeCajaApp.Formularios
 
                 // Configurar KeyPress para Enter
                 this.KeyPreview = true;
-                this.KeyPress += AgregarCategoriaForm_KeyPress;
+                this.KeyPress += AgregarCategoriaMovimientoForm_KeyPress;
             }
             catch (Exception ex)
             {
@@ -102,7 +102,7 @@ namespace FlujoDeCajaApp.Formularios
         /// </summary>
         private void ConfigurarPlaceholder()
         {
-            string placeholder = "Ingrese el nombre de la categoría";
+            string placeholder = "Ingrese el nombre de la categoría de movimiento";
             txtNombreCategoria.Text = placeholder;
             txtNombreCategoria.ForeColor = Color.Gray;
 
@@ -131,15 +131,14 @@ namespace FlujoDeCajaApp.Formularios
         private void ConfigurarDropdownTipoEntidad()
         {
             cmbTipoEntidad.Items.Clear();
+            cmbTipoEntidad.Items.Add("Categoría de Movimiento");
             cmbTipoEntidad.Items.Add("Categoría de Propiedad");
-            cmbTipoEntidad.Items.Add("Dueño");
-            cmbTipoEntidad.Items.Add("Usuario");
             
-            // Seleccionar "Categoría de Propiedad" por defecto
+            // Seleccionar "Categoría de Movimiento" por defecto
             cmbTipoEntidad.SelectedIndex = 0;
             
-            // Deshabilitar temporalmente otros tipos
-            cmbTipoEntidad.Enabled = false; // Solo Categoría de Propiedad por ahora
+            // Deshabilitar temporalmente - solo categoría de movimiento
+            cmbTipoEntidad.Enabled = false;
         }
 
         /// <summary>
@@ -162,7 +161,7 @@ namespace FlujoDeCajaApp.Formularios
         /// <summary>
         /// Maneja el evento KeyPress del formulario para detectar Enter
         /// </summary>
-        private void AgregarCategoriaForm_KeyPress(object? sender, KeyPressEventArgs e)
+        private void AgregarCategoriaMovimientoForm_KeyPress(object? sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == (char)Keys.Enter && btnGuardar.Enabled)
             {
@@ -192,27 +191,30 @@ namespace FlujoDeCajaApp.Formularios
                 // Obtener datos del formulario
                 string nombreCategoria = ObtenerTextoLimpio(txtNombreCategoria);
                 
-                // Crear nueva categoría para Supabase (sin descripción automática)
-                var nuevaCategoria = new CategoriaSupabase(nombreCategoria);
+                // Crear nueva categoría para Supabase (especificando que es de movimiento)
+                var nuevaCategoriaMovimiento = new CategoriaMovimientoSupabase(nombreCategoria);
                 
                 // Guardar en Supabase
-                bool guardadoExitoso = await SupabaseCategoriaHelper.CrearCategoria(nuevaCategoria);
+                bool guardadoExitoso = await SupabaseCategoriaMovimientoHelper.CrearCategoriaMovimiento(nuevaCategoriaMovimiento);
                 
                 if (guardadoExitoso)
                 {
                     // Mostrar mensaje de éxito
-                    MostrarMensajeExito("Categoría agregada correctamente en Supabase");
+                    MostrarMensajeExito("Categoría de movimiento agregada correctamente en Supabase");
                     
                     // Limpiar el formulario
                     LimpiarFormulario();
+                    
+                    // Cerrar el formulario con resultado OK
+                    this.DialogResult = DialogResult.OK;
                 }
                 else
                 {
-                    MessageBox.Show("Error al guardar la categoría en Supabase. Intente nuevamente.", 
+                    MessageBox.Show("Error al guardar la categoría de movimiento en Supabase. Intente nuevamente.", 
                         "Error de Guardado", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 
-                btnGuardar.Enabled = false; // Se habilitará cuando se llene el formulario nuevamente
+                btnGuardar.Enabled = false;
                 btnGuardar.Text = "Guardar";
             }
             catch (Exception ex)
@@ -220,7 +222,7 @@ namespace FlujoDeCajaApp.Formularios
                 btnGuardar.Enabled = true;
                 btnGuardar.Text = "Guardar";
                 
-                MessageBox.Show($"Error al guardar la categoría: {ex.Message}", 
+                MessageBox.Show($"Error al guardar la categoría de movimiento: {ex.Message}", 
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -268,7 +270,7 @@ namespace FlujoDeCajaApp.Formularios
             if (string.IsNullOrWhiteSpace(nombreCategoria))
             {
                 if (mostrarMensajes)
-                    MessageBox.Show("Debe ingresar el nombre de la categoría.", 
+                    MessageBox.Show("Debe ingresar el nombre de la categoría de movimiento.", 
                         "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
@@ -290,17 +292,6 @@ namespace FlujoDeCajaApp.Formularios
                         "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
-
-            // Verificar que la categoría no exista (comentado por ahora - usar validación simple)
-            // TODO: Implementar validación asíncrona con Supabase
-            /*
-            if (mostrarMensajes && DatabaseHelper.ExisteCategoriaConNombre(nombreCategoria))
-            {
-                MessageBox.Show("Ya existe una categoría con ese nombre.", 
-                    "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
-            */
 
             return true;
         }
@@ -350,28 +341,6 @@ namespace FlujoDeCajaApp.Formularios
             
             // Enfocar el campo de nombre
             txtNombreCategoria.Focus();
-        }
-
-        /// <summary>
-        /// Capitaliza la primera letra de cada palabra
-        /// </summary>
-        /// <param name="texto">Texto a capitalizar</param>
-        /// <returns>Texto capitalizado</returns>
-        private string CapitalizarTexto(string texto)
-        {
-            if (string.IsNullOrWhiteSpace(texto))
-                return texto;
-
-            var palabras = texto.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < palabras.Length; i++)
-            {
-                if (palabras[i].Length > 0)
-                {
-                    palabras[i] = char.ToUpper(palabras[i][0]) + palabras[i].Substring(1).ToLower();
-                }
-            }
-            
-            return string.Join(" ", palabras);
         }
 
         #endregion

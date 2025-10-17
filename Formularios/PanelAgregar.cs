@@ -18,6 +18,7 @@ namespace FlujoDeCajaApp.Formularios
         private Button btnAgregarUsuario = null!;
         private Button btnAgregarCategoria = null!;
         private Button btnAgregarMovimiento = null!;
+        private Button btnAgregarCategoriaMovimiento = null!;
         private Button btnVolver = null!;
         
         // Evento para notificar al formulario padre
@@ -80,7 +81,7 @@ namespace FlujoDeCajaApp.Formularios
             // Panel de opciones
             panelOpciones = new Panel
             {
-                Size = new Size(800, 450),
+                Size = new Size(800, 600),
                 Location = new Point(100, 120),
                 BackColor = Color.Transparent
             };
@@ -100,28 +101,32 @@ namespace FlujoDeCajaApp.Formularios
         private void CrearBotones()
         {
             // Botón Agregar Casa
-            btnAgregarPropiedad = CrearBotonOpcion("�️", "Nueva Casa", "Agregar una nueva casa al sistema", 0, 0);
+            btnAgregarPropiedad = CrearBotonOpcion("🏠️", "Nueva Propiedad", "Agregar una nueva propiedad al sistema", 0, 0);
             btnAgregarPropiedad.Click += BtnAgregarPropiedad_Click;
 
             // Botón Agregar Dueño
-            btnAgregarDueno = CrearBotonOpcion("�‍💼", "Nuevo Dueño", "Registrar un nuevo propietario", 1, 0);
+            btnAgregarDueno = CrearBotonOpcion(icono: "💼", "Nuevo Dueño", "Registrar un nuevo propietario", 1, 0);
             btnAgregarDueno.Click += BtnAgregarDueno_Click;
 
             // Botón Agregar Usuario
-            btnAgregarUsuario = CrearBotonOpcion("�", "Nuevo Usuario", "Registrar un nuevo usuario del sistema", 0, 1);
+            btnAgregarUsuario = CrearBotonOpcion("👥", "Crear Usuario", "Registrar un nuevo usuario del sistema", 0, 1);
             btnAgregarUsuario.Click += BtnAgregarUsuario_Click;
 
             // Botón Agregar Categoría
-            btnAgregarCategoria = CrearBotonOpcion("�", "Nueva Categoría", "Crear una nueva categoría de propiedad", 1, 1);
+            btnAgregarCategoria = CrearBotonOpcion("📂", "Categoría Propiedad", "Crear una nueva categoría de propiedad", 1, 1);
             btnAgregarCategoria.Click += BtnAgregarCategoria_Click;
 
             // Botón Agregar Movimiento
-            btnAgregarMovimiento = CrearBotonOpcion("�", "Nuevo Movimiento", "Registrar ingreso o gasto", 0, 2);
+            btnAgregarMovimiento = CrearBotonOpcion("💰", "Nuevo Movimiento", "Registrar ingreso o gasto", 0, 2);
             btnAgregarMovimiento.Click += BtnAgregarMovimiento_Click;
+
+            // Botón Agregar Categoría de Movimiento
+            btnAgregarCategoriaMovimiento = CrearBotonOpcion("📊", "Categoría Movimiento", "Para gasto o ingreso de facturas", 1, 2);
+            btnAgregarCategoriaMovimiento.Click += BtnAgregarCategoriaMovimiento_Click;
 
             panelOpciones.Controls.AddRange(new Control[] {
                 btnAgregarPropiedad, btnAgregarDueno, btnAgregarUsuario, 
-                btnAgregarCategoria, btnAgregarMovimiento
+                btnAgregarCategoria, btnAgregarMovimiento, btnAgregarCategoriaMovimiento
             });
         }
 
@@ -329,6 +334,27 @@ namespace FlujoDeCajaApp.Formularios
         {
             MessageBox.Show("Agregar Nuevo Movimiento\n\nEsta funcionalidad se implementará más adelante.\n\nIncluirá formulario con:\n• Tipo (Ingreso/Gasto)\n• Monto\n• Descripción\n• Propiedad\n• Categoría", 
                           "Nuevo Movimiento", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void BtnAgregarCategoriaMovimiento_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                using (var formularioAgregarCategoriaMovimiento = new AgregarCategoriaMovimientoForm())
+                {
+                    if (formularioAgregarCategoriaMovimiento.ShowDialog() == DialogResult.OK)
+                    {
+                        MessageBox.Show("Categoría de movimiento agregada exitosamente.\n\nLos datos estarán disponibles inmediatamente.", 
+                            "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        VolverSolicitado?.Invoke(this, EventArgs.Empty);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al abrir el formulario de agregar categoría de movimiento: {ex.Message}", 
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         
         private void BtnVolver_Click(object? sender, EventArgs e)

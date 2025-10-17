@@ -59,9 +59,13 @@ namespace FlujoDeCajaApp.Formularios
                 txtNombre.TextChanged += ValidarFormulario;
                 cmbDueno.SelectedIndexChanged += ValidarFormulario;
                 cmbCategoria.SelectedIndexChanged += ValidarFormulario;
+                cmbMoneda.SelectedIndexChanged += ValidarFormulario;
 
                 // Configurar autocompletado personalizado para ComboBox
                 ConfigurarAutocompletado();
+                
+                // Configurar opciones de moneda
+                ConfigurarOpcionesMoneda();
 
                 // Configurar imagen por defecto
                 MostrarImagenPorDefecto();
@@ -107,6 +111,27 @@ namespace FlujoDeCajaApp.Formularios
         {
             // El autocompletado ya está configurado en el Designer
             // Aquí se pueden agregar configuraciones adicionales si es necesario
+        }
+
+        /// <summary>
+        /// Configura las opciones de moneda disponibles
+        /// </summary>
+        private void ConfigurarOpcionesMoneda()
+        {
+            try
+            {
+                cmbMoneda.Items.Clear();
+                cmbMoneda.Items.Add("Dólares (USD)");
+                cmbMoneda.Items.Add("Colones (CRC)");
+                cmbMoneda.Items.Add("Euros (EUR)");
+                
+                // Seleccionar dólares por defecto
+                cmbMoneda.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al configurar opciones de moneda: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -259,6 +284,7 @@ namespace FlujoDeCajaApp.Formularios
                 string nombreCasa = txtNombre.Text.Trim();
                 int duenoId = ObtenerIdDuenoSeleccionado();
                 int categoriaId = ObtenerIdCategoriaSeleccionada();
+                string moneda = ObtenerMonedaSeleccionada();
                 
                 // Copiar la imagen si se seleccionó una
                 string? rutaImagenRelativa = null;
@@ -268,7 +294,7 @@ namespace FlujoDeCajaApp.Formularios
                 }
                 
                 // Crear nueva casa para Supabase
-                var nuevaCasa = new CasaSupabase(nombreCasa, duenoId, categoriaId, rutaImagenRelativa);
+                var nuevaCasa = new CasaSupabase(nombreCasa, duenoId, categoriaId, rutaImagenRelativa, moneda);
                 
                 // Guardar en Supabase
                 bool guardadoExitoso = await SupabaseCasaHelper.CrearCasa(nuevaCasa);
@@ -365,6 +391,15 @@ namespace FlujoDeCajaApp.Formularios
                 return false;
             }
 
+            // Validar moneda
+            if (cmbMoneda.SelectedIndex < 0)
+            {
+                if (mostrarMensajes)
+                    MessageBox.Show("Debe seleccionar una moneda.", 
+                        "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
             return true;
         }
 
@@ -412,6 +447,30 @@ namespace FlujoDeCajaApp.Formularios
                 throw new InvalidOperationException("No se encontró la categoría seleccionada.");
             }
             return categoria.Id;
+        }
+
+        /// <summary>
+        /// Obtiene la moneda seleccionada y extrae el código de moneda
+        /// </summary>
+        /// <returns>Código de la moneda (USD, CRC, EUR)</returns>
+        private string ObtenerMonedaSeleccionada()
+        {
+            if (cmbMoneda.SelectedIndex < 0)
+            {
+                throw new InvalidOperationException("No se ha seleccionado una moneda.");
+            }
+
+            string opcionSeleccionada = cmbMoneda.Text;
+            
+            // Extraer el código de moneda del texto seleccionado
+            if (opcionSeleccionada.Contains("USD"))
+                return "USD";
+            else if (opcionSeleccionada.Contains("CRC"))
+                return "CRC";
+            else if (opcionSeleccionada.Contains("EUR"))
+                return "EUR";
+            else
+                return "USD"; // Por defecto
         }
 
         /// <summary>

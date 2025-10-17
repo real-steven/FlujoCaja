@@ -39,6 +39,8 @@ namespace FlujoDeCajaApp.Formularios
             this.cmbDueno = new ComboBox();
             this.lblCategoria = new Label();
             this.cmbCategoria = new ComboBox();
+            this.lblMoneda = new Label();
+            this.cmbMoneda = new ComboBox();
             this.lblFoto = new Label();
             this.panelFoto = new Panel();
             this.pictureBoxFoto = new PictureBox();
@@ -67,7 +69,7 @@ namespace FlujoDeCajaApp.Formularios
             this.panelPrincipal.Dock = DockStyle.Fill;
             this.panelPrincipal.Location = new Point(0, 0);
             this.panelPrincipal.Name = "panelPrincipal";
-            this.panelPrincipal.Size = new Size(600, 700);
+            this.panelPrincipal.Size = new Size(600, 770);
             this.panelPrincipal.TabIndex = 0;
             this.panelPrincipal.BackColor = Color.FromArgb(245, 245, 245);
             
@@ -114,12 +116,14 @@ namespace FlujoDeCajaApp.Formularios
             this.panelFormulario.Controls.Add(this.cmbDueno);
             this.panelFormulario.Controls.Add(this.lblCategoria);
             this.panelFormulario.Controls.Add(this.cmbCategoria);
+            this.panelFormulario.Controls.Add(this.lblMoneda);
+            this.panelFormulario.Controls.Add(this.cmbMoneda);
             this.panelFormulario.Controls.Add(this.lblFoto);
             this.panelFormulario.Controls.Add(this.panelFoto);
             this.panelFormulario.Dock = DockStyle.Fill;
             this.panelFormulario.Location = new Point(0, 80);
             this.panelFormulario.Name = "panelFormulario";
-            this.panelFormulario.Size = new Size(600, 550);
+            this.panelFormulario.Size = new Size(600, 620);
             this.panelFormulario.TabIndex = 1;
             this.panelFormulario.Padding = new Padding(30);
             
@@ -194,15 +198,37 @@ namespace FlujoDeCajaApp.Formularios
             this.cmbCategoria.AutoCompleteSource = AutoCompleteSource.ListItems;
             
             // 
+            // lblMoneda
+            // 
+            this.lblMoneda.AutoSize = true;
+            this.lblMoneda.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            this.lblMoneda.ForeColor = Color.FromArgb(52, 73, 94);
+            this.lblMoneda.Location = new Point(30, 240);
+            this.lblMoneda.Name = "lblMoneda";
+            this.lblMoneda.Size = new Size(65, 19);
+            this.lblMoneda.TabIndex = 6;
+            this.lblMoneda.Text = "Moneda:";
+            
+            // 
+            // cmbMoneda
+            // 
+            this.cmbMoneda.Font = new Font("Segoe UI", 10F);
+            this.cmbMoneda.Location = new Point(30, 265);
+            this.cmbMoneda.Name = "cmbMoneda";
+            this.cmbMoneda.Size = new Size(540, 25);
+            this.cmbMoneda.TabIndex = 7;
+            this.cmbMoneda.DropDownStyle = ComboBoxStyle.DropDownList;
+            
+            // 
             // lblFoto
             // 
             this.lblFoto.AutoSize = true;
             this.lblFoto.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             this.lblFoto.ForeColor = Color.FromArgb(52, 73, 94);
-            this.lblFoto.Location = new Point(30, 240);
+            this.lblFoto.Location = new Point(30, 310);
             this.lblFoto.Name = "lblFoto";
             this.lblFoto.Size = new Size(40, 19);
-            this.lblFoto.TabIndex = 6;
+            this.lblFoto.TabIndex = 8;
             this.lblFoto.Text = "Foto:";
             
             // 
@@ -211,10 +237,10 @@ namespace FlujoDeCajaApp.Formularios
             this.panelFoto.Controls.Add(this.pictureBoxFoto);
             this.panelFoto.Controls.Add(this.btnSeleccionarFoto);
             this.panelFoto.Controls.Add(this.btnEliminarFoto);
-            this.panelFoto.Location = new Point(30, 265);
+            this.panelFoto.Location = new Point(30, 335);
             this.panelFoto.Name = "panelFoto";
             this.panelFoto.Size = new Size(540, 250);
-            this.panelFoto.TabIndex = 7;
+            this.panelFoto.TabIndex = 9;
             this.panelFoto.BorderStyle = BorderStyle.FixedSingle;
             this.panelFoto.BackColor = Color.White;
             
@@ -267,7 +293,7 @@ namespace FlujoDeCajaApp.Formularios
             this.panelBotones.Controls.Add(this.btnCancelar);
             this.panelBotones.Controls.Add(this.btnGuardar);
             this.panelBotones.Dock = DockStyle.Bottom;
-            this.panelBotones.Location = new Point(0, 630);
+            this.panelBotones.Location = new Point(0, 700);
             this.panelBotones.Name = "panelBotones";
             this.panelBotones.Size = new Size(600, 70);
             this.panelBotones.TabIndex = 2;
@@ -315,7 +341,7 @@ namespace FlujoDeCajaApp.Formularios
             // 
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
-            this.ClientSize = new Size(600, 700);
+            this.ClientSize = new Size(600, 770);
             this.Controls.Add(this.panelPrincipal);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -349,6 +375,8 @@ namespace FlujoDeCajaApp.Formularios
         private ComboBox cmbDueno;
         private Label lblCategoria;
         private ComboBox cmbCategoria;
+        private Label lblMoneda;
+        private ComboBox cmbMoneda;
         private Label lblFoto;
         private Panel panelFoto;
         private PictureBox pictureBoxFoto;
