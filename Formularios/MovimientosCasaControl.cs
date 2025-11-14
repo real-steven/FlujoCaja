@@ -519,7 +519,12 @@ namespace FlujoDeCajaApp.Formularios
         {
             var contextMenu = new ContextMenuStrip();
             
-            // Opción Editar - Permitir editar toda la fila
+            // Opción Agregar - Habilitar edición directa sin justificación
+            var menuAgregar = new ToolStripMenuItem("Agregar movimiento", null, (s, e) => {
+                HabilitarEdicionFilaAutomatica(filaIndex);
+            });
+            
+            // Opción Editar - Permitir editar toda la fila (con justificación)
             var menuEditar = new ToolStripMenuItem("Editar Fila", null, (s, e) => {
                 HabilitarEdicionFila(filaIndex);
             });
@@ -529,6 +534,8 @@ namespace FlujoDeCajaApp.Formularios
                 EliminarMovimiento(filaIndex);
             });
             
+            contextMenu.Items.Add(menuAgregar);
+            contextMenu.Items.Add(new ToolStripSeparator()); // Separador visual
             contextMenu.Items.Add(menuEditar);
             contextMenu.Items.Add(menuEliminar);
             
@@ -605,6 +612,24 @@ namespace FlujoDeCajaApp.Formularios
         private void HabilitarEdicionFila(int filaIndex)
         {
             if (filaIndex < 0 || filaIndex >= dgvMovimientos.Rows.Count) return;
+            if (filaIndex >= movimientos.Count) return;
+
+            var movimiento = movimientos[filaIndex];
+            
+            // Solicitar justificación antes de permitir la edición
+            string? justificacion = DialogoJustificacion.SolicitarJustificacionEdicion(
+                this, 
+                movimiento.Descripcion
+            );
+
+            // Si el usuario canceló, no continuar con la edición
+            if (string.IsNullOrEmpty(justificacion))
+            {
+                return;
+            }
+
+            // TODO: Aquí se podría guardar la justificación en un log de auditoría
+            Console.WriteLine($"Editando movimiento '{movimiento.Descripcion}' - Justificación: {justificacion}");
 
             try
             {
@@ -714,14 +739,29 @@ namespace FlujoDeCajaApp.Formularios
 
             var movimiento = movimientos[filaIndex];
             
+            // Solicitar justificación antes de mostrar la confirmación
+            string? justificacion = DialogoJustificacion.SolicitarJustificacionEliminacion(
+                this, 
+                movimiento.Descripcion
+            );
+
+            // Si el usuario canceló en la justificación, no continuar
+            if (string.IsNullOrEmpty(justificacion))
+            {
+                return;
+            }
+
+            // Mostrar confirmación final con la justificación
             var resultado = MessageBox.Show(
-                $"¿Está seguro de que desea eliminar este movimiento?\n\nFecha: {movimiento.FechaTexto}\nDescripción: {movimiento.Descripcion}\nMonto: {FormatearMoneda(movimiento.Monto)}",
+                $"¿Está seguro de que desea eliminar este movimiento?\n\nFecha: {movimiento.FechaTexto}\nDescripción: {movimiento.Descripcion}\nMonto: {FormatearMoneda(movimiento.Monto)}\n\nJustificación: {justificacion}",
                 "Confirmar Eliminación",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
             if (resultado == DialogResult.Yes)
             {
+                // TODO: Aquí se podría guardar la justificación en un log de auditoría
+                Console.WriteLine($"Eliminando movimiento '{movimiento.Descripcion}' - Justificación: {justificacion}");
                 if (movimiento.Id > 0)
                 {
                     // Eliminar de la base de datos

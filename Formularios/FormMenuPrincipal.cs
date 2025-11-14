@@ -18,6 +18,7 @@ namespace FlujoDeCajaApp.Formularios
         private Panel panelBotones = null!;
         private Button btnAgregar = null!;
         private Button btnHistorial = null!;
+        private Button btnResumen = null!;
         private Button btnInactivas = null!;
         private Button btnCerrar = null!;
         
@@ -317,8 +318,8 @@ namespace FlujoDeCajaApp.Formularios
             // Panel de botones en la parte superior derecha
             panelBotones = new Panel
             {
-                Size = new Size(400, 80),
-                Location = new Point(950, 20),
+                Size = new Size(475, 80),
+                Location = new Point(875, 20),
                 BackColor = Color.Transparent
             };
 
@@ -330,16 +331,20 @@ namespace FlujoDeCajaApp.Formularios
             btnHistorial = CrearBotonEncabezado("Historial", "📋", 1);
             btnHistorial.Click += BtnHistorial_Click;
 
+            // Botón Resumen
+            btnResumen = CrearBotonEncabezado("Resumen", "📊", 2);
+            btnResumen.Click += BtnResumen_Click;
+
             // Botón Inactivas
-            btnInactivas = CrearBotonEncabezado("Inactivas", "🏠", 2);
+            btnInactivas = CrearBotonEncabezado("Inactivas", "🏠", 3);
             btnInactivas.Click += BtnInactivas_Click;
 
             // Botón Cerrar
-            btnCerrar = CrearBotonEncabezado("Cerrar", "❌", 3);
+            btnCerrar = CrearBotonEncabezado("Cerrar", "❌", 4);
             btnCerrar.Click += BtnCerrar_Click;
 
             panelBotones.Controls.AddRange(new Control[] {
-                btnAgregar, btnHistorial, btnInactivas, btnCerrar
+                btnAgregar, btnHistorial, btnResumen, btnInactivas, btnCerrar
             });
 
             panelEncabezado.Controls.AddRange(new Control[] {
@@ -458,6 +463,13 @@ namespace FlujoDeCajaApp.Formularios
                         g.DrawRectangle(new Pen(Color.FromArgb(52, 152, 219), 2), 2, 2, 16, 16);
                         for (int i = 5; i < 15; i += 3)
                             g.DrawLine(new Pen(Color.FromArgb(52, 152, 219), 1), 5, i, 15, i);
+                        break;
+                    case "Resumen":
+                        // Dibujar gráfico de barras simple
+                        g.FillRectangle(new SolidBrush(Color.FromArgb(52, 152, 219)), 3, 12, 3, 6);
+                        g.FillRectangle(new SolidBrush(Color.FromArgb(52, 152, 219)), 7, 8, 3, 10);
+                        g.FillRectangle(new SolidBrush(Color.FromArgb(52, 152, 219)), 11, 5, 3, 13);
+                        g.FillRectangle(new SolidBrush(Color.FromArgb(52, 152, 219)), 15, 10, 3, 8);
                         break;
                     case "Inactivas":
                         g.DrawRectangle(new Pen(Color.FromArgb(231, 76, 60), 2), 2, 2, 16, 12);
@@ -801,6 +813,11 @@ namespace FlujoDeCajaApp.Formularios
             MostrarPanelHistorial();
         }
 
+        private void BtnResumen_Click(object? sender, EventArgs e)
+        {
+            MostrarPanelResumen();
+        }
+
         private void BtnInactivas_Click(object? sender, EventArgs e)
         {
             MostrarPropiedadesInactivas();
@@ -921,6 +938,24 @@ namespace FlujoDeCajaApp.Formularios
             panelHistorial.Dock = DockStyle.Fill;
             panelHistorial.VolverSolicitado += (sender, e) => VolverAMenuPrincipal();
             panelSecundario.Controls.Add(panelHistorial);
+        }
+
+        /// <summary>
+        /// Muestra el panel de resumen consolidado
+        /// </summary>
+        private void MostrarPanelResumen()
+        {
+            panelActual = "resumen";
+            panelPropiedades.Visible = false;
+            panelBusqueda.Visible = false; // Ocultar barra de búsqueda
+            panelSecundario.Visible = true;
+            panelSecundario.Controls.Clear();
+            
+            // Cargar UserControl PanelResumenConsolidado
+            PanelResumenConsolidado panelResumen = new PanelResumenConsolidado();
+            panelResumen.Dock = DockStyle.Fill;
+            panelResumen.VolverSolicitado += (sender, e) => VolverAMenuPrincipal();
+            panelSecundario.Controls.Add(panelResumen);
         }
 
         /// <summary>
