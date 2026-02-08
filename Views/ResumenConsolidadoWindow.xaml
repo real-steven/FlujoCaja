@@ -1,0 +1,416 @@
+<Window x:Class="FlujoCajaWpf.Views.ResumenConsolidadoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="📊 Resumen Consolidado - Flujo de Caja" 
+        Height="750" Width="1300"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Background="{StaticResource BackgroundBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource PrimaryGradient}" Padding="20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="📊 Resumen Consolidado" 
+                               FontSize="24" 
+                               FontWeight="Bold" 
+                               Foreground="White"/>
+                    <TextBlock Text="Vista general de todas las propiedades" 
+                               FontSize="13" 
+                               Foreground="{StaticResource LightYellowBrush}" 
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <Button Grid.Column="1"
+                        Content="✖️ Cerrar"
+                        Click="Cerrar_Click"
+                        Style="{StaticResource OutlineButton}"
+                        Foreground="White"
+                        BorderBrush="White"
+                        Padding="20,10"/>
+            </Grid>
+        </Border>
+
+        <!-- Contenido Principal -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="30">
+                
+                <!-- Filtros -->
+                <Border Background="White" 
+                        CornerRadius="12" 
+                        Padding="20" 
+                        Margin="0,0,0,20">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="15" ShadowDepth="0" Opacity="0.1" Color="Black"/>
+                    </Border.Effect>
+                    
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Filtro por Año -->
+                        <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                            <TextBlock Text="📅 Año" 
+                                       FontSize="13" 
+                                       FontWeight="SemiBold" 
+                                       Foreground="{StaticResource DarkBlueBrush}"
+                                       Margin="0,0,0,8"/>
+                            <ComboBox x:Name="cmbAnio" 
+                                      Width="120"
+                                      Height="38"
+                                      SelectionChanged="Filtro_SelectionChanged"/>
+                        </StackPanel>
+
+                        <!-- Filtro por Mes -->
+                        <StackPanel Grid.Column="1" Margin="0,0,20,0">
+                            <TextBlock Text="📆 Mes" 
+                                       FontSize="13" 
+                                       FontWeight="SemiBold" 
+                                       Foreground="{StaticResource DarkBlueBrush}"
+                                       Margin="0,0,0,8"/>
+                            <ComboBox x:Name="cmbMes" 
+                                      Width="150"
+                                      Height="38"
+                                      SelectionChanged="Filtro_SelectionChanged">
+                                <ComboBoxItem Content="Todos" Tag="0" IsSelected="True"/>
+                                <ComboBoxItem Content="Enero" Tag="1"/>
+                                <ComboBoxItem Content="Febrero" Tag="2"/>
+                                <ComboBoxItem Content="Marzo" Tag="3"/>
+                                <ComboBoxItem Content="Abril" Tag="4"/>
+                                <ComboBoxItem Content="Mayo" Tag="5"/>
+                                <ComboBoxItem Content="Junio" Tag="6"/>
+                                <ComboBoxItem Content="Julio" Tag="7"/>
+                                <ComboBoxItem Content="Agosto" Tag="8"/>
+                                <ComboBoxItem Content="Septiembre" Tag="9"/>
+                                <ComboBoxItem Content="Octubre" Tag="10"/>
+                                <ComboBoxItem Content="Noviembre" Tag="11"/>
+                                <ComboBoxItem Content="Diciembre" Tag="12"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- Botón Limpiar Filtros -->
+                        <Button Grid.Column="2"
+                                Content="🔄 Toda la vida"
+                                Click="LimpiarFiltros_Click"
+                                Background="#F59E0B"
+                                Foreground="White"
+                                Padding="15,8"
+                                Margin="0,22,0,0"
+                                Height="38"
+                                VerticalAlignment="Bottom"
+                                BorderThickness="0"
+                                Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="8"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#D97706"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- KPIs - 3 Cards en fila -->
+                <UniformGrid Columns="3" Margin="0,0,0,20">
+                    
+                    <!-- Card 1: Total Casas Activas -->
+                    <Border Background="White" 
+                            CornerRadius="12" 
+                            Padding="20" 
+                            Margin="0,0,10,0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="15" ShadowDepth="0" Opacity="0.1" Color="Black"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="🏠" 
+                                       FontSize="32" 
+                                       TextAlignment="Center"
+                                       Margin="0,0,0,10"/>
+                            <TextBlock Text="Casas Activas" 
+                                       FontSize="13" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       TextAlignment="Center"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock x:Name="txtTotalCasas"
+                                       Text="0" 
+                                       FontSize="32" 
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource DarkBlueBrush}"
+                                       TextAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Card 2: Casas en USD -->
+                    <Border Background="White" 
+                            CornerRadius="12" 
+                            Padding="20" 
+                            Margin="5,0,5,0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="15" ShadowDepth="0" Opacity="0.1" Color="Black"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="💵" 
+                                       FontSize="32" 
+                                       TextAlignment="Center"
+                                       Margin="0,0,0,10"/>
+                            <TextBlock Text="Casas USD" 
+                                       FontSize="13" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       TextAlignment="Center"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock x:Name="txtCasasUSD"
+                                       Text="0" 
+                                       FontSize="32" 
+                                       FontWeight="Bold"
+                                       Foreground="#10B981"
+                                       TextAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Card 3: Casas en CRC -->
+                    <Border Background="White" 
+                            CornerRadius="12" 
+                            Padding="20" 
+                            Margin="10,0,0,0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="15" ShadowDepth="0" Opacity="0.1" Color="Black"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="💴" 
+                                       FontSize="32" 
+                                       TextAlignment="Center"
+                                       Margin="0,0,0,10"/>
+                            <TextBlock Text="Casas CRC" 
+                                       FontSize="13" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       TextAlignment="Center"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock x:Name="txtCasasCRC"
+                                       Text="0" 
+                                       FontSize="32" 
+                                       FontWeight="Bold"
+                                       Foreground="#3B82F6"
+                                       TextAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <!-- Balances por Moneda - 2 Cards grandes -->
+                <Grid Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Balance USD -->
+                    <Border Grid.Column="0"
+                            Background="White" 
+                            CornerRadius="12" 
+                            Padding="30">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="15" ShadowDepth="0" Opacity="0.1" Color="Black"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="💵 Balance Total USD" 
+                                       FontSize="16" 
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource DarkBlueBrush}"
+                                       Margin="0,0,0,15"/>
+                            
+                            <Border Background="#F0FDF4" 
+                                    CornerRadius="8" 
+                                    Padding="20">
+                                <StackPanel>
+                                    <TextBlock Text="Ingresos" 
+                                               FontSize="12" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Margin="0,0,0,5"/>
+                                    <TextBlock x:Name="txtIngresosUSD"
+                                               Text="$0.00" 
+                                               FontSize="20" 
+                                               FontWeight="Bold"
+                                               Foreground="#10B981"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="#FEF2F2" 
+                                    CornerRadius="8" 
+                                    Padding="20"
+                                    Margin="0,10,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="Gastos" 
+                                               FontSize="12" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Margin="0,0,0,5"/>
+                                    <TextBlock x:Name="txtGastosUSD"
+                                               Text="$0.00" 
+                                               FontSize="20" 
+                                               FontWeight="Bold"
+                                               Foreground="#DC2626"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border BorderBrush="#E5E7EB"
+                                    BorderThickness="0,1,0,0"
+                                    Padding="0,15,0,0"
+                                    Margin="0,15,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="Balance Neto" 
+                                               FontSize="13" 
+                                               FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Margin="0,0,0,8"/>
+                                    <TextBlock x:Name="txtBalanceUSD"
+                                               Text="$0.00" 
+                                               FontSize="36" 
+                                               FontWeight="Bold"
+                                               Foreground="#10B981"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Balance CRC -->
+                    <Border Grid.Column="2"
+                            Background="White" 
+                            CornerRadius="12" 
+                            Padding="30">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="15" ShadowDepth="0" Opacity="0.1" Color="Black"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="💴 Balance Total CRC (Colones)" 
+                                       FontSize="16" 
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource DarkBlueBrush}"
+                                       Margin="0,0,0,15"/>
+                            
+                            <Border Background="#EFF6FF" 
+                                    CornerRadius="8" 
+                                    Padding="20">
+                                <StackPanel>
+                                    <TextBlock Text="Ingresos" 
+                                               FontSize="12" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Margin="0,0,0,5"/>
+                                    <TextBlock x:Name="txtIngresosCRC"
+                                               Text="₡0.00" 
+                                               FontSize="20" 
+                                               FontWeight="Bold"
+                                               Foreground="#3B82F6"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="#FEF2F2" 
+                                    CornerRadius="8" 
+                                    Padding="20"
+                                    Margin="0,10,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="Gastos" 
+                                               FontSize="12" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Margin="0,0,0,5"/>
+                                    <TextBlock x:Name="txtGastosCRC"
+                                               Text="₡0.00" 
+                                               FontSize="20" 
+                                               FontWeight="Bold"
+                                               Foreground="#DC2626"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border BorderBrush="#E5E7EB"
+                                    BorderThickness="0,1,0,0"
+                                    Padding="0,15,0,0"
+                                    Margin="0,15,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="Balance Neto" 
+                                               FontSize="13" 
+                                               FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Margin="0,0,0,8"/>
+                                    <TextBlock x:Name="txtBalanceCRC"
+                                               Text="₡0.00" 
+                                               FontSize="36" 
+                                               FontWeight="Bold"
+                                               Foreground="#3B82F6"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Detalle por Casa -->
+                <Border Background="White" 
+                        CornerRadius="12" 
+                        Padding="25">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="15" ShadowDepth="0" Opacity="0.1" Color="Black"/>
+                    </Border.Effect>
+                    
+                    <StackPanel>
+                        <TextBlock Text="📋 Detalle por Casa" 
+                                   FontSize="18" 
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource DarkBlueBrush}"
+                                   Margin="0,0,0,20"/>
+
+                        <DataGrid x:Name="dgCasas"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  Background="White"
+                                  BorderBrush="#E5E7EB"
+                                  BorderThickness="1"
+                                  RowHeight="45"
+                                  HeadersVisibility="Column"
+                                  GridLinesVisibility="Horizontal"
+                                  HorizontalGridLinesBrush="#F3F4F6">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Casa" Binding="{Binding Nombre}" Width="*"/>
+                                <DataGridTextColumn Header="Moneda" Binding="{Binding Moneda}" Width="80"/>
+                                <DataGridTextColumn Header="Dueño" Binding="{Binding DuenoNombre}" Width="*"/>
+                                <DataGridTextColumn Header="Balance" Binding="{Binding BalanceFormateado}" Width="150"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

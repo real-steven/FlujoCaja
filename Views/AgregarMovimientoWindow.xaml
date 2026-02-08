@@ -1,0 +1,303 @@
+<Window x:Class="FlujoCajaWpf.Views.AgregarMovimientoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Agregar Movimiento"
+        Height="600" Width="550"
+        WindowStartupLocation="CenterOwner"
+        Background="#F3F4F6"
+        FontFamily="Segoe UI"
+        ResizeMode="NoResize">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Padding="20,15">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#0F172A" Offset="0"/>
+                    <GradientStop Color="#1E3A8A" Offset="0.5"/>
+                    <GradientStop Color="#3B82F6" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <TextBlock x:Name="txtTitulo" 
+                       Text="Nuevo Movimiento" 
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Foreground="White"/>
+        </Border>
+
+        <!-- Formulario -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20,15">
+            <StackPanel>
+                <!-- Tipo -->
+                <TextBlock Text="Tipo*" FontSize="13" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+                <ComboBox x:Name="cmbTipo"
+                          SelectionChanged="CmbTipo_SelectionChanged"
+                          Background="White"
+                          BorderBrush="#E5E7EB"
+                          BorderThickness="1"
+                          Padding="10,8"
+                          FontSize="13"
+                          Margin="0,0,0,12">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ComboBox">
+                                        <Grid>
+                                            <ToggleButton x:Name="ToggleButton"
+                                                          Grid.Column="2"
+                                                          Focusable="false"
+                                                          IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                                          ClickMode="Press">
+                                                <ToggleButton.Style>
+                                                    <Style TargetType="ToggleButton">
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="ToggleButton">
+                                                                    <Border x:Name="Border" 
+                                                                            Background="{TemplateBinding Background}"
+                                                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                                                            CornerRadius="8">
+                                                                        <Grid>
+                                                                            <Grid.ColumnDefinitions>
+                                                                                <ColumnDefinition/>
+                                                                                <ColumnDefinition Width="32"/>
+                                                                            </Grid.ColumnDefinitions>
+                                                                            <ContentPresenter Grid.Column="0"/>
+                                                                            <Path Grid.Column="1"
+                                                                                  x:Name="Arrow"
+                                                                                  Fill="#6B7280"
+                                                                                  HorizontalAlignment="Center"
+                                                                                  VerticalAlignment="Center"
+                                                                                  Data="M 0 0 L 4 4 L 8 0 Z"/>
+                                                                        </Grid>
+                                                                    </Border>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </ToggleButton.Style>
+                                            </ToggleButton>
+                                            <ContentPresenter x:Name="ContentSite"
+                                                              IsHitTestVisible="False"
+                                                              Content="{TemplateBinding SelectionBoxItem}"
+                                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                              Margin="10,8,32,8"
+                                                              VerticalAlignment="Center"
+                                                              HorizontalAlignment="Left"/>
+                                            <Popup x:Name="Popup"
+                                                   Placement="Bottom"
+                                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                                   AllowsTransparency="True"
+                                                   Focusable="False"
+                                                   PopupAnimation="Slide">
+                                                <Grid x:Name="DropDown"
+                                                      SnapsToDevicePixels="True"
+                                                      MinWidth="{TemplateBinding ActualWidth}"
+                                                      MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                                    <Border x:Name="DropDownBorder"
+                                                            Background="White"
+                                                            BorderThickness="1"
+                                                            BorderBrush="#E5E7EB"
+                                                            CornerRadius="8">
+                                                        <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                                        </ScrollViewer>
+                                                    </Border>
+                                                </Grid>
+                                            </Popup>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ComboBox.Style>
+                    <ComboBoxItem Content="💰 Ingreso"/>
+                    <ComboBoxItem Content="💸 Egreso"/>
+                </ComboBox>
+
+                <!-- Categoría -->
+                <TextBlock Text="Categoría*" FontSize="13" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+                <Grid Margin="0,0,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox x:Name="cmbCategoria"
+                              IsEditable="True"
+                              DisplayMemberPath="Nombre"
+                              Background="White"
+                              BorderBrush="#E5E7EB"
+                              BorderThickness="1"
+                              Padding="10,8"
+                              FontSize="13"
+                              ToolTip="Selecciona una categoría existente o escribe una nueva"/>
+                </Grid>
+                <CheckBox x:Name="chkGuardarCategoria"
+                          Content="💾 Guardar esta categoría para uso futuro"
+                          FontSize="12"
+                          Foreground="#6B7280"
+                          Margin="0,5,0,12"
+                          ToolTip="Si está marcado, la categoría se guardará en la base de datos y estará disponible en el futuro"/>
+
+                <!-- Monto -->
+                <TextBlock Text="Monto*" FontSize="13" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+                <TextBox x:Name="txtMonto"
+                         Background="White"
+                         BorderBrush="#E5E7EB"
+                         BorderThickness="1"
+                         Padding="10,8"
+                         FontSize="13"
+                         Margin="0,0,0,12"
+                         PreviewTextInput="TxtMonto_PreviewTextInput">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TextBox">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="8">
+                                            <ScrollViewer x:Name="PART_ContentHost" Margin="5,0"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+                <!-- Fecha -->
+                <TextBlock Text="Fecha*" FontSize="13" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+                <DatePicker x:Name="dpFecha"
+                            Background="White"
+                            BorderBrush="#E5E7EB"
+                            BorderThickness="1"
+                            Padding="10,8"
+                            FontSize="13"
+                            Margin="0,0,0,12"/>
+
+                <!-- Descripción -->
+                <TextBlock Text="Descripción" FontSize="13" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+                <TextBox x:Name="txtDescripcion"
+                         Background="White"
+                         BorderBrush="#E5E7EB"
+                         BorderThickness="1"
+                         Padding="10,8"
+                         FontSize="13"
+                         Height="80"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         VerticalScrollBarVisibility="Auto"
+                         Margin="0,0,0,12">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TextBox">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="8">
+                                            <ScrollViewer x:Name="PART_ContentHost" Margin="5"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Botones -->
+        <Border Grid.Row="2" Background="White" Padding="20,15" BorderBrush="#E5E7EB" BorderThickness="0,1,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Click="Cancelar_Click"
+                        Background="#6B7280"
+                        Foreground="White"
+                        BorderBrush="Transparent"
+                        Padding="0,12"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Cursor="Hand"
+                        Margin="0,0,5,0">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#6B7280"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="8"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#4B5563"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <TextBlock Text="Cancelar" FontSize="14" FontWeight="SemiBold"/>
+                </Button>
+
+                <Button Grid.Column="1"
+                        Click="Guardar_Click"
+                        Background="#10B981"
+                        Foreground="White"
+                        BorderBrush="Transparent"
+                        Padding="0,12"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Cursor="Hand"
+                        Margin="5,0,0,0">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#10B981"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="8"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#059669"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <TextBlock Text="💾 Guardar" FontSize="14" FontWeight="SemiBold"/>
+                </Button>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

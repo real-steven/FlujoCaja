@@ -1,0 +1,348 @@
+<Window x:Class="FlujoCajaWpf.Views.MenuPrincipalWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Flujo de Caja - Menú Principal" 
+        Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Background="{StaticResource BackgroundBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource PrimaryGradient}" Padding="20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Logo y título -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <Image Source="/Resources/LogoSamaraRental.PNG" 
+                           Width="50" Height="50" 
+                           Margin="0,0,15,0"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Sistema de Flujo de Caja" 
+                                   FontSize="20" 
+                                   FontWeight="Bold" 
+                                   Foreground="White"/>
+                        <TextBlock Text="{Binding NombreUsuario}" 
+                                   FontSize="12" 
+                                   Foreground="{StaticResource LightYellowBrush}" 
+                                   Opacity="1"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Botones de acción -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Content="⚙️ Gestión" 
+                            Click="AbrirGestion_Click"
+                            Padding="15,8"
+                            Margin="0,0,10,0">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+                                <Setter Property="Background" Value="#F59E0B"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#FBBF24"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    
+                    <Button Content="� Resumen" 
+                            Click="AbrirResumen_Click"
+                            Padding="15,8"
+                            Margin="0,0,10,0">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+                                <Setter Property="Background" Value="#10B981"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#059669"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    
+                    <Button Content="�📜 Historial" 
+                            Style="{StaticResource OutlineButton}"
+                            Command="{Binding AbrirHistorialCommand}"
+                            Foreground="White"
+                            BorderBrush="White"
+                            Padding="15,8"
+                            Margin="0,0,10,0"/>
+                    
+                    <Button Content="🏚️ Inactivas" 
+                            Style="{StaticResource OutlineButton}"
+                            Command="{Binding AbrirInactivasCommand}"
+                            Foreground="White"
+                            BorderBrush="White"
+                            Padding="15,8"
+                            Margin="0,0,10,0"/>
+                    
+                    <Button Content="� Tutorial" 
+                            Style="{StaticResource OutlineButton}"
+                            Command="{Binding AbrirTutorialCommand}"
+                            Foreground="White"
+                            BorderBrush="White"
+                            Padding="15,8"
+                            Margin="0,0,10,0"/>
+                    
+                    <Button Content="�🚪 Cerrar Sesión" 
+                            Style="{StaticResource OutlineButton}"
+                            Command="{Binding CerrarSesionCommand}"
+                            Foreground="White"
+                            BorderBrush="White"
+                            Padding="15,8"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Contenido principal -->
+        <Grid Grid.Row="1" Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Barra de búsqueda -->
+            <Border Grid.Row="0" 
+                    Background="White" 
+                    CornerRadius="8" 
+                    Padding="10"
+                    Margin="0,0,0,16">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="12" ShadowDepth="0" Opacity="0.08" Color="Black"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Grid.Column="0"
+                             Style="{StaticResource ModernTextBox}"
+                             Text="{Binding TextoBusqueda, UpdateSourceTrigger=PropertyChanged}"
+                             BorderThickness="0"
+                             FontSize="15"
+                             Padding="4"
+                             VerticalAlignment="Center">
+                        <TextBox.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="0"/>
+                            </Style>
+                        </TextBox.Resources>
+                    </TextBox>
+
+                    <TextBlock Grid.Column="0"
+                               Text="🔍 Buscar por nombre de casa, dueño, categoría o estado..."
+                               FontSize="15"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               VerticalAlignment="Center"
+                               Margin="5,0,0,0"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding TextoBusqueda}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <!-- Botón de Ordenamiento -->
+                    <Button Grid.Column="1"
+                            Click="BtnOrdenar_Click"
+                            Background="Transparent"
+                            BorderBrush="{StaticResource TextSecondaryBrush}"
+                            BorderThickness="1"
+                            Padding="10,5"
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            Cursor="Hand"
+                            ToolTip="Cambiar ordenamiento">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="⇅" 
+                                       FontSize="16" 
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource DarkBlueBrush}"
+                                       Margin="0,0,6,0"/>
+                            <TextBlock Text="{Binding TextoOrdenamiento}" 
+                                       FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="6"
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#F0F0F0"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Grid de propiedades -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <Grid MinHeight="570">
+                    <ItemsControl ItemsSource="{Binding PropiedadesFiltradas}" VerticalAlignment="Top">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="4"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!-- Tarjeta de propiedad -->
+                                <Border Background="White" 
+                                    BorderBrush="{Binding ColorBorde}"
+                                    BorderThickness="{Binding GrosordeBorde}"
+                                    CornerRadius="12" 
+                                    Padding="12"
+                                    Margin="5"
+                                    MinWidth="200"
+                                    MaxWidth="350"
+                                    Cursor="Hand">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="15" 
+                                                      ShadowDepth="0" 
+                                                      Opacity="0.12" 
+                                                      Color="Black"/>
+                                </Border.Effect>
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect BlurRadius="20" 
+                                                                          ShadowDepth="0" 
+                                                                          Opacity="0.2" 
+                                                                          Color="Black"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Border.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" 
+                                                  Command="{Binding DataContext.AbrirCasaCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                  CommandParameter="{Binding}"/>
+                                </Border.InputBindings>
+
+                                <StackPanel>
+                                    <!-- Nombre -->
+                                    <TextBlock Text="{Binding Nombre}" 
+                                               FontSize="16" 
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource DarkBlueBrush}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,8"/>
+                                    
+                                    <!-- Barra acento amarillo -->
+                                    <Border Background="{StaticResource AccentYellowBrush}"
+                                            Height="2"
+                                            CornerRadius="1"
+                                            Margin="0,0,0,8"/>
+
+                                    <!-- Información -->
+                                    <TextBlock Text="{Binding CategoriaNombre}" 
+                                               FontSize="11"
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Margin="0,0,0,4"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    
+                                    <TextBlock FontSize="11"
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Margin="0,0,0,8">
+                                        <Run Text="💰"/>
+                                        <Run Text="{Binding Moneda}"/>
+                                        <Run Text="  |  👤"/>
+                                        <Run Text="{Binding DuenoNombre}"/>
+                                    </TextBlock>
+
+                                    <!-- Información de detalle -->
+                                    <Border Background="{StaticResource BackgroundBrush}"
+                                            CornerRadius="4"
+                                            Padding="8,6">
+                                        <TextBlock Text="Clic para ver detalles" 
+                                                   FontSize="10"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   TextAlignment="Center"/>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                </Grid>
+            </ScrollViewer>
+
+            <!-- Mensaje cuando no hay casas -->
+            <StackPanel Grid.Row="1"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Visibility="{Binding MostrarMensajeVacio, Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock Text="📭" 
+                           FontSize="72"
+                           TextAlignment="Center"
+                           Margin="0,0,0,20"/>
+                <TextBlock Text="No hay casas registradas" 
+                           FontSize="20"
+                           FontWeight="Medium"
+                           Foreground="{StaticResource TextSecondaryBrush}"
+                           TextAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Loading overlay -->
+        <Grid Grid.RowSpan="2"
+              Background="#80000000"
+              Visibility="{Binding EstaCargando, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" 
+                             Width="200" 
+                             Height="6"
+                             Margin="0,0,0,15"/>
+                <TextBlock Text="Cargando..." 
+                           FontSize="16"
+                           Foreground="White"
+                           TextAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

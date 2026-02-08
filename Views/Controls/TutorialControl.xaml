@@ -1,0 +1,224 @@
+<UserControl x:Class="FlujoCajaWpf.Views.Controls.TutorialControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1000"
+             Background="#F3F4F6">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40,30">
+        <StackPanel MaxWidth="900">
+            <!-- Encabezado -->
+            <Border Background="White" CornerRadius="12" Padding="40,30" Margin="0,0,0,30">
+                <Border.Effect>
+                    <DropShadowEffect Color="#E0E0E0" Direction="270" ShadowDepth="2" BlurRadius="10" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="📚 TUTORIAL - Sistema de Flujo de Caja" 
+                               FontSize="32" FontWeight="Bold" Foreground="Black" 
+                               HorizontalAlignment="Center" Margin="0,0,0,15"/>
+                    <TextBlock Text="Guía completa para nuevos usuarios" 
+                               FontSize="16" Foreground="#6B7280" 
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Introducción -->
+            <Border Background="White" CornerRadius="12" Padding="30" Margin="0,0,0,20">
+                <Border.Effect>
+                    <DropShadowEffect Color="#E0E0E0" Direction="270" ShadowDepth="2" BlurRadius="10" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="🏠 ¿Qué es este sistema?" 
+                               FontSize="20" FontWeight="Bold" Foreground="Black" Margin="0,0,0,15"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="14" Foreground="#374151" LineHeight="24">
+                        <Run Text="Este sistema te permite gestionar el flujo de caja de múltiples propiedades inmobiliarias de forma eficiente. "/>
+                        <Run Text="Podrás registrar ingresos y gastos, controlar movimientos mensuales, gestionar propiedades y dueños, "/>
+                        <Run Text="visualizar resúmenes detallados y mantener un historial completo de todas las operaciones."/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Módulo 1: Panel Principal -->
+            <Border Background="White" CornerRadius="12" Padding="30" Margin="0,0,0,20">
+                <Border.Effect>
+                    <DropShadowEffect Color="#E0E0E0" Direction="270" ShadowDepth="2" BlurRadius="10" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="📊 Panel Principal" 
+                               FontSize="20" FontWeight="Bold" Foreground="Black" Margin="0,0,0,15"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="14" Foreground="#374151" LineHeight="22" Margin="0,0,0,10">
+                        <Run FontWeight="SemiBold" Text="Vista general de todas tus propiedades:"/>
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Tarjetas de casas:"/> Visualiza todas tus propiedades activas con su información básica.
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Indicadores de salud financiera:"/> Badges de color indican el estado: CRÍTICO (rojo, balance ≤ ₡0) o ATENCIÓN (amarillo, balance entre ₡1-₡1,000).
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Acceso rápido:"/> Haz clic en cualquier tarjeta para ver el detalle completo de la propiedad.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Módulo 2: Gestión -->
+            <Border Background="White" CornerRadius="12" Padding="30" Margin="0,0,0,20">
+                <Border.Effect>
+                    <DropShadowEffect Color="#E0E0E0" Direction="270" ShadowDepth="2" BlurRadius="10" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="⚙️ Gestión" 
+                               FontSize="20" FontWeight="Bold" Foreground="Black" Margin="0,0,0,15"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="14" Foreground="#374151" LineHeight="22" Margin="0,0,0,10">
+                        <Run FontWeight="SemiBold" Text="Centro de administración completo:"/>
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Casas:"/> Crea, edita y elimina propiedades. Visualiza en DataGrid, asigna dueños, categorías, sube fotos y gestiona toda la información.
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Dueños:"/> Gestiona la información completa de propietarios: nombre, apellido, teléfono y email. Visualiza, edita y elimina registros.
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Categorías:"/> Organiza tus propiedades por tipo (Residencial, Comercial, Vacacional, Bodega, Terreno, etc.).
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Categorías de Movimiento:"/> Define tipos de ingresos y gastos predefinidos para uso frecuente (Alquiler, Electricidad, Agua, Reparaciones, etc.).
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#10B981" LineHeight="20" Margin="20,5,0,0" FontStyle="Italic">
+                        💡 Tip: Todas las operaciones CRUD (Crear, Leer, Actualizar, Eliminar) se realizan desde este módulo centralizado.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Módulo 3: Detalle de Casa -->
+            <Border Background="White" CornerRadius="12" Padding="30" Margin="0,0,0,20">
+                <Border.Effect>
+                    <DropShadowEffect Color="#E0E0E0" Direction="270" ShadowDepth="2" BlurRadius="10" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="🏡 Detalle de Casa" 
+                               FontSize="20" FontWeight="Bold" Foreground="Black" Margin="0,0,0,15"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="14" Foreground="#374151" LineHeight="22" Margin="0,0,0,10">
+                        <Run FontWeight="SemiBold" Text="Vista completa de cada propiedad:"/>
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Resumen:"/> Estado general, balance actual, últimos movimientos y detalles mensuales con gráfico de salud financiera.
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Movimientos:"/> Lista completa de ingresos y gastos con filtros por tipo y búsqueda. Agrega, edita o elimina movimientos. Al agregar, puedes escribir categorías personalizadas y opcionalmente guardarlas para uso futuro.
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Detalles:"/> Timeline anual con evolución del balance mes a mes.
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Notas:"/> Añade y gestiona observaciones específicas de cada propiedad (3 tarjetas por fila).
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Fotos:"/> Galería de imágenes con vista previa y gestión de fotos.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Módulo 4: Historial -->
+            <Border Background="White" CornerRadius="12" Padding="30" Margin="0,0,0,20">
+                <Border.Effect>
+                    <DropShadowEffect Color="#E0E0E0" Direction="270" ShadowDepth="2" BlurRadius="10" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="📅 Historial" 
+                               FontSize="20" FontWeight="Bold" Foreground="Black" Margin="0,0,0,15"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="14" Foreground="#374151" LineHeight="22" Margin="0,0,0,10">
+                        <Run FontWeight="SemiBold" Text="Auditoría completa del sistema:"/>
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Casas:"/> Registro de todas las acciones: crear, editar, eliminar, activar/desactivar casas.
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Movimientos:"/> Historial de ingresos y gastos con opción de deshacer cambios recientes.
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Filtros:"/> Busca por usuario, módulo, tipo de acción y rango de fechas.
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#4B5563" LineHeight="20" Margin="20,0,0,8">
+                        • <Run FontWeight="SemiBold" Text="Paginación:"/> Navega fácilmente por todos los registros (20 por página).
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Consejos de uso -->
+            <Border Background="#EFF6FF" CornerRadius="12" Padding="30" Margin="0,0,0,20" BorderBrush="#3B82F6" BorderThickness="2">
+                <StackPanel>
+                    <TextBlock Text="💡 Consejos de Uso" 
+                               FontSize="20" FontWeight="Bold" Foreground="#1E40AF" Margin="0,0,0,15"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#1E3A8A" LineHeight="20" Margin="0,0,0,8">
+                        1. <Run FontWeight="SemiBold" Text="Configura primero:"/> Crea dueños y categorías antes de agregar casas.
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#1E3A8A" LineHeight="20" Margin="0,0,0,8">
+                        2. <Run FontWeight="SemiBold" Text="Organización:"/> Crea categorías predefinidas en Gestión para gastos/ingresos frecuentes. Para categorías únicas, escríbelas directamente al agregar movimientos.
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#1E3A8A" LineHeight="20" Margin="0,0,0,8">
+                        3. <Run FontWeight="SemiBold" Text="Movimientos regulares:"/> Registra ingresos y gastos mensualmente para mantener el balance actualizado.
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#1E3A8A" LineHeight="20" Margin="0,0,0,8">
+                        4. <Run FontWeight="SemiBold" Text="Hojas mensuales:"/> Los movimientos se asignan por hoja mensual (ID), no por fecha del movimiento.
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#1E3A8A" LineHeight="20" Margin="0,0,0,8">
+                        5. <Run FontWeight="SemiBold" Text="Indicadores de salud:"/> Mantén el balance positivo para evitar alertas críticas en el panel principal.
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#1E3A8A" LineHeight="20" Margin="0,0,0,8">
+                        6. <Run FontWeight="SemiBold" Text="Historial:"/> Usa el botón "Deshacer" en movimientos para revertir cambios accidentales.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Créditos -->
+            <Border Background="#202355" CornerRadius="12" Padding="40,30" Margin="0,0,0,20">
+                <Border.Effect>
+                    <DropShadowEffect Color="#202355" Direction="270" ShadowDepth="3" BlurRadius="15" Opacity="0.4"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="👥 CRÉDITOS" 
+                               FontSize="24" FontWeight="Bold" Foreground="White" 
+                               HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                    
+                    <StackPanel Margin="0,0,0,15">
+                        <TextBlock Text="💻 Programador Principal" 
+                                   FontSize="14" FontWeight="SemiBold" Foreground="#F59E0B" 
+                                   Margin="0,0,0,8"/>
+                        <TextBlock Text="Steven Venegas" 
+                                   FontSize="16" FontWeight="Bold" Foreground="White" 
+                                   Margin="20,0,0,0"/>
+                    </StackPanel>
+
+                    <Separator Background="#4B5563" Height="1" Margin="0,10,0,15"/>
+
+                    <StackPanel Margin="0,0,0,15">
+                        <TextBlock Text="🤝 Equipo de Desarrollo" 
+                                   FontSize="14" FontWeight="SemiBold" Foreground="#10B981" 
+                                   Margin="0,0,0,8"/>
+                        <TextBlock Text="• Andrés" 
+                                   FontSize="14" Foreground="White" 
+                                   Margin="20,0,0,5"/>
+                        <TextBlock Text="• Felipe" 
+                                   FontSize="14" Foreground="White" 
+                                   Margin="20,0,0,5"/>
+                        <TextBlock Text="• Daniela" 
+                                   FontSize="14" Foreground="White" 
+                                   Margin="20,0,0,5"/>
+                    </StackPanel>
+
+                    <Separator Background="#4B5563" Height="1" Margin="0,10,0,15"/>
+
+                    <TextBlock Text="Sistema de Flujo de Caja v1.0" 
+                               FontSize="12" Foreground="#9CA3AF" 
+                               HorizontalAlignment="Center" Margin="0,10,0,5"/>
+                    <TextBlock Text="© 2026 - Todos los derechos reservados" 
+                               FontSize="11" Foreground="#6B7280" 
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
