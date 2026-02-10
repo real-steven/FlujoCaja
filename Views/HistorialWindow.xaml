@@ -5,7 +5,7 @@
         Height="700" Width="1200"
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized"
-        Background="#F9FAFB">
+        Background="{DynamicResource BackgroundBrush}">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
@@ -98,7 +98,7 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="TabItem">
                                     <Border Name="Border" 
-                                            Background="White" 
+                                            Background="{DynamicResource CardBackgroundBrush}" 
                                             BorderBrush="#E5E7EB" 
                                             BorderThickness="1,1,1,0"
                                             CornerRadius="8,8,0,0"
@@ -129,7 +129,7 @@
 
                 <!-- Tab Casas -->
                 <TabItem Header="🏠 Casas">
-                    <Grid Background="White">
+                    <Grid Background="{DynamicResource CardBackgroundBrush}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
@@ -137,9 +137,9 @@
                         </Grid.RowDefinitions>
 
                         <!-- Filtros -->
-                        <Border Grid.Row="0" Background="#F9FAFB" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1" Padding="20">
+                        <Border Grid.Row="0" Background="{DynamicResource BackgroundBrush}" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1" Padding="20">
                             <StackPanel>
-                                <TextBlock Text="Filtros" FontSize="14" FontWeight="SemiBold" Foreground="#374151" Margin="0,0,0,10"/>
+                                <TextBlock Text="Filtros" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,10"/>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -149,12 +149,12 @@
                                     </Grid.ColumnDefinitions>
 
                                     <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                        <TextBlock Text="Usuario" FontSize="12" Foreground="#6B7280" Margin="0,0,0,5"/>
+                                        <TextBlock Text="Usuario" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
                                         <ComboBox Name="cmbUsuarioCasas" Height="36" FontSize="13"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="1" Margin="0,0,10,0">
-                                        <TextBlock Text="Acción" FontSize="12" Foreground="#6B7280" Margin="0,0,0,5"/>
+                                        <TextBlock Text="Acción" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
                                         <ComboBox Name="cmbAccionCasas" Height="36" FontSize="13" SelectionChanged="FiltrosCasas_Changed">
                                             <ComboBoxItem Content="Todas" IsSelected="True" Tag=""/>
                                             <ComboBoxItem Content="➕ Crear" Tag="crear"/>
@@ -166,7 +166,7 @@
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="2" Margin="0,0,10,0">
-                                        <TextBlock Text="Buscar" FontSize="12" Foreground="#6B7280" Margin="0,0,0,5"/>
+                                        <TextBlock Text="Buscar" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
                                         <TextBox Name="txtBuscarCasas" Height="36" FontSize="13" Padding="10,8" TextChanged="FiltrosCasas_Changed"/>
                                     </StackPanel>
 
@@ -194,7 +194,7 @@
                                   HeadersVisibility="Column"
                                   GridLinesVisibility="Horizontal"
                                   RowHeight="50"
-                                  Background="White"
+                                  Background="{DynamicResource CardBackgroundBrush}"
                                   BorderThickness="0"
                                   FontSize="13">
                             <DataGrid.Columns>
@@ -207,17 +207,17 @@
                         </DataGrid>
 
                         <!-- Paginación -->
-                        <Border Grid.Row="2" Background="#F9FAFB" BorderBrush="#E5E7EB" BorderThickness="0,1,0,0" Padding="20,15">
+                        <Border Grid.Row="2" Background="{DynamicResource BackgroundBrush}" BorderBrush="#E5E7EB" BorderThickness="0,1,0,0" Padding="20,15">
                             <Grid>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                                     <TextBlock Name="txtInfoCasas" Text="Mostrando 1-50 de 150 registros" 
-                                               VerticalAlignment="Center" FontSize="13" Foreground="#6B7280"/>
+                                               VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"/>
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Name="btnAnteriorCasas" Content="◀ Anterior" 
                                             Padding="15,8" Margin="0,0,10,0"
-                                            Background="White" BorderBrush="#D1D5DB" BorderThickness="1"
+                                            Background="{DynamicResource CardBackgroundBrush}" BorderBrush="#D1D5DB" BorderThickness="1"
                                             FontSize="13" Cursor="Hand" Click="BtnAnteriorCasas_Click"/>
                                     
                                     <TextBlock Name="txtPaginaCasas" Text="Página 1 de 3" 
@@ -226,7 +226,7 @@
                                     
                                     <Button Name="btnSiguienteCasas" Content="Siguiente ▶" 
                                             Padding="15,8" Margin="10,0,0,0"
-                                            Background="White" BorderBrush="#D1D5DB" BorderThickness="1"
+                                            Background="{DynamicResource CardBackgroundBrush}" BorderBrush="#D1D5DB" BorderThickness="1"
                                             FontSize="13" Cursor="Hand" Click="BtnSiguienteCasas_Click"/>
                                 </StackPanel>
                             </Grid>
@@ -236,7 +236,7 @@
 
                 <!-- Tab Movimientos -->
                 <TabItem Header="💰 Movimientos">
-                    <Grid Background="White">
+                    <Grid Background="{DynamicResource CardBackgroundBrush}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
@@ -244,7 +244,7 @@
                         </Grid.RowDefinitions>
 
                         <!-- Filtros Movimientos -->
-                        <Border Grid.Row="0" Background="#F9FAFB" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1" Padding="20">
+                        <Border Grid.Row="0" Background="{DynamicResource BackgroundBrush}" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1" Padding="20">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -254,12 +254,12 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                    <TextBlock Text="Usuario" FontSize="12" Foreground="#6B7280" Margin="0,0,0,5"/>
+                                    <TextBlock Text="Usuario" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
                                     <ComboBox Name="cmbUsuarioMovimientos" Height="36" FontSize="13"/>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Margin="0,0,10,0">
-                                    <TextBlock Text="Acción" FontSize="12" Foreground="#6B7280" Margin="0,0,0,5"/>
+                                    <TextBlock Text="Acción" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
                                     <ComboBox Name="cmbAccionMovimientos" Height="36" FontSize="13" SelectionChanged="FiltrosMovimientos_Changed">
                                         <ComboBoxItem Content="Todas" IsSelected="True" Tag=""/>
                                         <ComboBoxItem Content="➕ Crear" Tag="crear"/>
@@ -269,7 +269,7 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="2" Margin="0,0,10,0">
-                                    <TextBlock Text="Buscar" FontSize="12" Foreground="#6B7280" Margin="0,0,0,5"/>
+                                    <TextBlock Text="Buscar" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
                                     <TextBox Name="txtBuscarMovimientos" Height="36" FontSize="13" Padding="10,8" TextChanged="FiltrosMovimientos_Changed"/>
                                 </StackPanel>
 
@@ -296,7 +296,7 @@
                                   HeadersVisibility="Column"
                                   GridLinesVisibility="Horizontal"
                                   RowHeight="50"
-                                  Background="White"
+                                  Background="{DynamicResource CardBackgroundBrush}"
                                   BorderThickness="0"
                                   FontSize="13">
                             <DataGrid.Columns>
@@ -347,17 +347,17 @@
                         </DataGrid>
 
                         <!-- Paginación Movimientos -->
-                        <Border Grid.Row="2" Background="#F9FAFB" BorderBrush="#E5E7EB" BorderThickness="0,1,0,0" Padding="20,15">
+                        <Border Grid.Row="2" Background="{DynamicResource BackgroundBrush}" BorderBrush="#E5E7EB" BorderThickness="0,1,0,0" Padding="20,15">
                             <Grid>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                                     <TextBlock Name="txtInfoMovimientos" Text="Mostrando registros" 
-                                               VerticalAlignment="Center" FontSize="13" Foreground="#6B7280"/>
+                                               VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"/>
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Name="btnAnteriorMovimientos" Content="◀ Anterior" 
                                             Padding="15,8" Margin="0,0,10,0"
-                                            Background="White" BorderBrush="#D1D5DB" BorderThickness="1"
+                                            Background="{DynamicResource CardBackgroundBrush}" BorderBrush="#D1D5DB" BorderThickness="1"
                                             FontSize="13" Cursor="Hand" Click="BtnAnteriorMovimientos_Click"/>
                                     
                                     <TextBlock Name="txtPaginaMovimientos" Text="Página" 
@@ -366,7 +366,7 @@
                                     
                                     <Button Name="btnSiguienteMovimientos" Content="Siguiente ▶" 
                                             Padding="15,8" Margin="10,0,0,0"
-                                            Background="White" BorderBrush="#D1D5DB" BorderThickness="1"
+                                            Background="{DynamicResource CardBackgroundBrush}" BorderBrush="#D1D5DB" BorderThickness="1"
                                             FontSize="13" Cursor="Hand" Click="BtnSiguienteMovimientos_Click"/>
                                 </StackPanel>
                             </Grid>
@@ -376,23 +376,23 @@
 
                 <!-- Tab Dueños -->
                 <TabItem Header="👤 Dueños">
-                    <Grid Background="White">
+                    <Grid Background="{DynamicResource CardBackgroundBrush}">
                         <TextBlock Text="Próximamente: Historial de Dueños" 
                                    HorizontalAlignment="Center" 
                                    VerticalAlignment="Center"
                                    FontSize="16" 
-                                   Foreground="#9CA3AF"/>
+                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
                     </Grid>
                 </TabItem>
 
                 <!-- Tab Categorías -->
                 <TabItem Header="📁 Categorías">
-                    <Grid Background="White">
+                    <Grid Background="{DynamicResource CardBackgroundBrush}">
                         <TextBlock Text="Próximamente: Historial de Categorías" 
                                    HorizontalAlignment="Center" 
                                    VerticalAlignment="Center"
                                    FontSize="16" 
-                                   Foreground="#9CA3AF"/>
+                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
                     </Grid>
                 </TabItem>
             </TabControl>

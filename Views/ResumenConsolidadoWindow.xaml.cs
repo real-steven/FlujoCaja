@@ -12,6 +12,7 @@ namespace FlujoCajaWpf.Views
         private List<Casa> todasLasCasas = new List<Casa>();
         private int? anioFiltro = null;
         private int? mesFiltro = null;
+        private bool estaCargando = false;
 
         public ResumenConsolidadoWindow()
         {
@@ -45,6 +46,8 @@ namespace FlujoCajaWpf.Views
         {
             try
             {
+                // Mostrar loading
+                MostrarLoading(true);
                 // Obtener usuario actual
                 var usuarioActual = SupabaseAuthHelper.GetCurrentUser();
                 if (usuarioActual == null)
@@ -159,6 +162,7 @@ namespace FlujoCajaWpf.Views
             }
             catch (Exception ex)
             {
+                MostrarLoading(false);
                 CustomMessageBox.Show(
                     $"Error al cargar el resumen: {ex.Message}",
                     "Error",
@@ -166,6 +170,17 @@ namespace FlujoCajaWpf.Views
                     CustomMessageBox.MessageBoxButtons.OK
                 );
             }
+            finally
+            {
+                // Ocultar loading
+                MostrarLoading(false);
+            }
+        }
+
+        private void MostrarLoading(bool mostrar)
+        {
+            estaCargando = mostrar;
+            loadingOverlay.Visibility = mostrar ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private string FormatearMoneda(decimal monto, string moneda)
@@ -181,7 +196,7 @@ namespace FlujoCajaWpf.Views
 
         private async void Filtro_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!IsLoaded) return;
+            if (!IsLoaded || estaCargando) return;
 
             // Actualizar filtros
             anioFiltro = cmbAnio.SelectedIndex >= 0 ? (int?)cmbAnio.SelectedItem : null;

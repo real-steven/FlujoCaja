@@ -6,7 +6,7 @@
         Width="550"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Background="#F3F4F6">
+        Background="{DynamicResource BackgroundBrush}">
     
     <Grid>
         <Grid.RowDefinitions>
@@ -40,10 +40,10 @@
             <TextBlock Text="Nombre de la Categoría *"
                        FontSize="14"
                        FontWeight="SemiBold"
-                       Foreground="#374151"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8"/>
             <TextBox x:Name="txtNombreCategoria"
-                     Background="White"
+                     Background="{DynamicResource CardBackgroundBrush}"
                      BorderBrush="#D1D5DB"
                      BorderThickness="1"
                      Padding="12,10"
@@ -54,10 +54,10 @@
             <TextBlock Text="Tipo de Movimiento *"
                        FontSize="14"
                        FontWeight="SemiBold"
-                       Foreground="#374151"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8"/>
             <ComboBox x:Name="cmbTipo"
-                      Background="White"
+                      Background="{DynamicResource CardBackgroundBrush}"
                       BorderBrush="#D1D5DB"
                       BorderThickness="1"
                       Padding="12,10"

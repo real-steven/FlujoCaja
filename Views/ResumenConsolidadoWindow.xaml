@@ -8,7 +8,7 @@
         Height="750" Width="1300"
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized"
-        Background="{StaticResource BackgroundBrush}">
+        Background="{DynamicResource BackgroundBrush}">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -50,7 +50,7 @@
             <StackPanel Margin="30">
                 
                 <!-- Filtros -->
-                <Border Background="White" 
+                <Border Background="{DynamicResource CardBackgroundBrush}" 
                         CornerRadius="12" 
                         Padding="20" 
                         Margin="0,0,0,20">
@@ -71,7 +71,7 @@
                             <TextBlock Text="📅 Año" 
                                        FontSize="13" 
                                        FontWeight="SemiBold" 
-                                       Foreground="{StaticResource DarkBlueBrush}"
+                                       Foreground="{DynamicResource DarkBlueBrush}"
                                        Margin="0,0,0,8"/>
                             <ComboBox x:Name="cmbAnio" 
                                       Width="120"
@@ -84,7 +84,7 @@
                             <TextBlock Text="📆 Mes" 
                                        FontSize="13" 
                                        FontWeight="SemiBold" 
-                                       Foreground="{StaticResource DarkBlueBrush}"
+                                       Foreground="{DynamicResource DarkBlueBrush}"
                                        Margin="0,0,0,8"/>
                             <ComboBox x:Name="cmbMes" 
                                       Width="150"
@@ -146,7 +146,7 @@
                 <UniformGrid Columns="3" Margin="0,0,0,20">
                     
                     <!-- Card 1: Total Casas Activas -->
-                    <Border Background="White" 
+                    <Border Background="{DynamicResource CardBackgroundBrush}" 
                             CornerRadius="12" 
                             Padding="20" 
                             Margin="0,0,10,0">
@@ -161,20 +161,20 @@
                             <TextBlock Text="Casas Activas" 
                                        FontSize="13" 
                                        FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
                                        TextAlignment="Center"
                                        Margin="0,0,0,8"/>
                             <TextBlock x:Name="txtTotalCasas"
                                        Text="0" 
                                        FontSize="32" 
                                        FontWeight="Bold"
-                                       Foreground="{StaticResource DarkBlueBrush}"
+                                       Foreground="{DynamicResource DarkBlueBrush}"
                                        TextAlignment="Center"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Card 2: Casas en USD -->
-                    <Border Background="White" 
+                    <Border Background="{DynamicResource CardBackgroundBrush}" 
                             CornerRadius="12" 
                             Padding="20" 
                             Margin="5,0,5,0">
@@ -189,20 +189,20 @@
                             <TextBlock Text="Casas USD" 
                                        FontSize="13" 
                                        FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
                                        TextAlignment="Center"
                                        Margin="0,0,0,8"/>
                             <TextBlock x:Name="txtCasasUSD"
                                        Text="0" 
                                        FontSize="32" 
                                        FontWeight="Bold"
-                                       Foreground="#10B981"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                        TextAlignment="Center"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Card 3: Casas en CRC -->
-                    <Border Background="White" 
+                    <Border Background="{DynamicResource CardBackgroundBrush}" 
                             CornerRadius="12" 
                             Padding="20" 
                             Margin="10,0,0,0">
@@ -217,14 +217,14 @@
                             <TextBlock Text="Casas CRC" 
                                        FontSize="13" 
                                        FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
                                        TextAlignment="Center"
                                        Margin="0,0,0,8"/>
                             <TextBlock x:Name="txtCasasCRC"
                                        Text="0" 
                                        FontSize="32" 
                                        FontWeight="Bold"
-                                       Foreground="#3B82F6"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                        TextAlignment="Center"/>
                         </StackPanel>
                     </Border>
@@ -240,7 +240,7 @@
 
                     <!-- Balance USD -->
                     <Border Grid.Column="0"
-                            Background="White" 
+                            Background="{DynamicResource CardBackgroundBrush}" 
                             CornerRadius="12" 
                             Padding="30">
                         <Border.Effect>
@@ -250,7 +250,7 @@
                             <TextBlock Text="💵 Balance Total USD" 
                                        FontSize="16" 
                                        FontWeight="Bold"
-                                       Foreground="{StaticResource DarkBlueBrush}"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                        Margin="0,0,0,15"/>
                             
                             <Border Background="#F0FDF4" 
@@ -259,13 +259,13 @@
                                 <StackPanel>
                                     <TextBlock Text="Ingresos" 
                                                FontSize="12" 
-                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Foreground="#1F2937"
                                                Margin="0,0,0,5"/>
                                     <TextBlock x:Name="txtIngresosUSD"
                                                Text="$0.00" 
                                                FontSize="20" 
                                                FontWeight="Bold"
-                                               Foreground="#10B981"/>
+                                               Foreground="#1F2937"/>
                                 </StackPanel>
                             </Border>
 
@@ -276,13 +276,13 @@
                                 <StackPanel>
                                     <TextBlock Text="Gastos" 
                                                FontSize="12" 
-                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Foreground="#1F2937"
                                                Margin="0,0,0,5"/>
                                     <TextBlock x:Name="txtGastosUSD"
                                                Text="$0.00" 
                                                FontSize="20" 
                                                FontWeight="Bold"
-                                               Foreground="#DC2626"/>
+                                               Foreground="#1F2937"/>
                                 </StackPanel>
                             </Border>
 
@@ -294,13 +294,13 @@
                                     <TextBlock Text="Balance Neto" 
                                                FontSize="13" 
                                                FontWeight="SemiBold"
-                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
                                                Margin="0,0,0,8"/>
                                     <TextBlock x:Name="txtBalanceUSD"
                                                Text="$0.00" 
                                                FontSize="36" 
                                                FontWeight="Bold"
-                                               Foreground="#10B981"/>
+                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
@@ -308,7 +308,7 @@
 
                     <!-- Balance CRC -->
                     <Border Grid.Column="2"
-                            Background="White" 
+                            Background="{DynamicResource CardBackgroundBrush}" 
                             CornerRadius="12" 
                             Padding="30">
                         <Border.Effect>
@@ -318,7 +318,7 @@
                             <TextBlock Text="💴 Balance Total CRC (Colones)" 
                                        FontSize="16" 
                                        FontWeight="Bold"
-                                       Foreground="{StaticResource DarkBlueBrush}"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                        Margin="0,0,0,15"/>
                             
                             <Border Background="#EFF6FF" 
@@ -327,13 +327,13 @@
                                 <StackPanel>
                                     <TextBlock Text="Ingresos" 
                                                FontSize="12" 
-                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Foreground="#1F2937"
                                                Margin="0,0,0,5"/>
                                     <TextBlock x:Name="txtIngresosCRC"
                                                Text="₡0.00" 
                                                FontSize="20" 
                                                FontWeight="Bold"
-                                               Foreground="#3B82F6"/>
+                                               Foreground="#1F2937"/>
                                 </StackPanel>
                             </Border>
 
@@ -344,13 +344,13 @@
                                 <StackPanel>
                                     <TextBlock Text="Gastos" 
                                                FontSize="12" 
-                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Foreground="#1F2937"
                                                Margin="0,0,0,5"/>
                                     <TextBlock x:Name="txtGastosCRC"
                                                Text="₡0.00" 
                                                FontSize="20" 
                                                FontWeight="Bold"
-                                               Foreground="#DC2626"/>
+                                               Foreground="#1F2937"/>
                                 </StackPanel>
                             </Border>
 
@@ -362,13 +362,13 @@
                                     <TextBlock Text="Balance Neto" 
                                                FontSize="13" 
                                                FontWeight="SemiBold"
-                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
                                                Margin="0,0,0,8"/>
                                     <TextBlock x:Name="txtBalanceCRC"
                                                Text="₡0.00" 
                                                FontSize="36" 
                                                FontWeight="Bold"
-                                               Foreground="#3B82F6"/>
+                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
@@ -376,7 +376,7 @@
                 </Grid>
 
                 <!-- Detalle por Casa -->
-                <Border Background="White" 
+                <Border Background="{DynamicResource CardBackgroundBrush}" 
                         CornerRadius="12" 
                         Padding="25">
                     <Border.Effect>
@@ -387,13 +387,13 @@
                         <TextBlock Text="📋 Detalle por Casa" 
                                    FontSize="18" 
                                    FontWeight="Bold"
-                                   Foreground="{StaticResource DarkBlueBrush}"
+                                   Foreground="{DynamicResource DarkBlueBrush}"
                                    Margin="0,0,0,20"/>
 
                         <DataGrid x:Name="dgCasas"
                                   AutoGenerateColumns="False"
                                   IsReadOnly="True"
-                                  Background="White"
+                                  Background="{DynamicResource CardBackgroundBrush}"
                                   BorderBrush="#E5E7EB"
                                   BorderThickness="1"
                                   RowHeight="45"
@@ -412,5 +412,31 @@
 
             </StackPanel>
         </ScrollViewer>
+
+        <!-- Loading Overlay -->
+        <Grid x:Name="loadingOverlay" 
+              Grid.RowSpan="2"
+              Background="#80000000" 
+              Visibility="Collapsed">
+            <Border Background="{DynamicResource CardBackgroundBrush}" 
+                    CornerRadius="10" 
+                    Padding="30"
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center">
+                <StackPanel>
+                    <ProgressBar IsIndeterminate="True" 
+                                 Width="200" 
+                                 Height="8" 
+                                 Foreground="{StaticResource PrimaryBrush}"/>
+                    <TextBlock Text="⏳ Cargando resumen..." 
+                               FontSize="14" 
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" 
+                               Margin="0,15,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </Window>
+

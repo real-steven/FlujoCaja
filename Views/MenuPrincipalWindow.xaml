@@ -8,7 +8,7 @@
         Height="700" Width="1200"
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized"
-        Background="{StaticResource BackgroundBrush}">
+        Background="{DynamicResource BackgroundBrush}">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -102,6 +102,16 @@
                             Padding="15,8"
                             Margin="0,0,10,0"/>
                     
+                    <Button x:Name="btnTema"
+                            Content="🌙" 
+                            Style="{StaticResource OutlineButton}"
+                            Click="CambiarTema_Click"
+                            Foreground="White"
+                            BorderBrush="White"
+                            Padding="15,8"
+                            Margin="0,0,10,0"
+                            ToolTip="Cambiar tema"/>
+                    
                     <Button Content="�🚪 Cerrar Sesión" 
                             Style="{StaticResource OutlineButton}"
                             Command="{Binding CerrarSesionCommand}"
@@ -121,7 +131,7 @@
 
             <!-- Barra de búsqueda -->
             <Border Grid.Row="0" 
-                    Background="White" 
+                    Background="{DynamicResource CardBackgroundBrush}" 
                     CornerRadius="8" 
                     Padding="10"
                     Margin="0,0,0,16">
@@ -151,7 +161,7 @@
                     <TextBlock Grid.Column="0"
                                Text="🔍 Buscar por nombre de casa, dueño, categoría o estado..."
                                FontSize="15"
-                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
                                VerticalAlignment="Center"
                                Margin="5,0,0,0"
                                IsHitTestVisible="False">
@@ -171,7 +181,7 @@
                     <Button Grid.Column="1"
                             Click="BtnOrdenar_Click"
                             Background="Transparent"
-                            BorderBrush="{StaticResource TextSecondaryBrush}"
+                            BorderBrush="{DynamicResource TextSecondaryBrush}"
                             BorderThickness="1"
                             Padding="10,5"
                             Margin="8,0,0,0"
@@ -182,11 +192,11 @@
                             <TextBlock Text="⇅" 
                                        FontSize="16" 
                                        FontWeight="Bold"
-                                       Foreground="{StaticResource DarkBlueBrush}"
+                                       Foreground="{DynamicResource DarkBlueBrush}"
                                        Margin="0,0,6,0"/>
                             <TextBlock Text="{Binding TextoOrdenamiento}" 
                                        FontSize="13"
-                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
                         </StackPanel>
                         <Button.Style>
                             <Style TargetType="Button">
@@ -227,7 +237,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <!-- Tarjeta de propiedad -->
-                                <Border Background="White" 
+                                <Border Background="{DynamicResource CardBackgroundBrush}" 
                                     BorderBrush="{Binding ColorBorde}"
                                     BorderThickness="{Binding GrosordeBorde}"
                                     CornerRadius="12" 
@@ -269,7 +279,7 @@
                                     <TextBlock Text="{Binding Nombre}" 
                                                FontSize="16" 
                                                FontWeight="Bold"
-                                               Foreground="{StaticResource DarkBlueBrush}"
+                                               Foreground="{DynamicResource TextPrimaryBrush}"
                                                TextWrapping="Wrap"
                                                Margin="0,0,0,8"/>
                                     
@@ -282,12 +292,12 @@
                                     <!-- Información -->
                                     <TextBlock Text="{Binding CategoriaNombre}" 
                                                FontSize="11"
-                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
                                                Margin="0,0,0,4"
                                                TextTrimming="CharacterEllipsis"/>
                                     
                                     <TextBlock FontSize="11"
-                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
                                                Margin="0,0,0,8">
                                         <Run Text="💰"/>
                                         <Run Text="{Binding Moneda}"/>
@@ -296,12 +306,12 @@
                                     </TextBlock>
 
                                     <!-- Información de detalle -->
-                                    <Border Background="{StaticResource BackgroundBrush}"
+                                    <Border Background="{DynamicResource BackgroundBrush}"
                                             CornerRadius="4"
                                             Padding="8,6">
                                         <TextBlock Text="Clic para ver detalles" 
                                                    FontSize="10"
-                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                                    TextAlignment="Center"/>
                                     </Border>
                                 </StackPanel>
@@ -324,7 +334,7 @@
                 <TextBlock Text="No hay casas registradas" 
                            FontSize="20"
                            FontWeight="Medium"
-                           Foreground="{StaticResource TextSecondaryBrush}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
                            TextAlignment="Center"/>
             </StackPanel>
         </Grid>
@@ -346,3 +356,4 @@
         </Grid>
     </Grid>
 </Window>
+

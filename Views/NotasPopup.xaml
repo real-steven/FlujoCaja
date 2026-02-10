@@ -13,7 +13,7 @@
         WindowStyle="None">
     
     <Grid Background="Transparent">
-        <Border Background="White" 
+        <Border Background="{DynamicResource CardBackgroundBrush}" 
                 CornerRadius="16" 
                 Margin="40"
                 Padding="0"
@@ -103,28 +103,28 @@
                         <TextBlock Text="👤 Dueño Principal" 
                                    FontSize="14" 
                                    FontWeight="SemiBold"
-                                   Foreground="{StaticResource DarkBlueBrush}"
+                                   Foreground="{DynamicResource DarkBlueBrush}"
                                    Margin="0,0,0,10"/>
                         
-                        <Border Background="{StaticResource BackgroundBrush}"
+                        <Border Background="{DynamicResource BackgroundBrush}"
                                 CornerRadius="8"
                                 Padding="15"
                                 Margin="0,0,0,20">
                             <TextBlock Text="{Binding DuenoPrincipal}" 
                                        FontSize="14"
-                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </Border>
 
                         <!-- Notas -->
                         <TextBlock Text="📋 Notas" 
                                    FontSize="14" 
                                    FontWeight="SemiBold"
-                                   Foreground="{StaticResource DarkBlueBrush}"
+                                   Foreground="{DynamicResource DarkBlueBrush}"
                                    Margin="0,0,0,10"/>
                         
                         <TextBlock Text="Agrega dueños secundarios, información adicional u observaciones sobre la propiedad." 
                                    FontSize="11"
-                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                    TextWrapping="Wrap"
                                    Margin="0,0,0,10"/>
                         
@@ -136,8 +136,8 @@
                                  Height="180"
                                  Padding="12"
                                  FontSize="13"
-                                 Background="White"
-                                 BorderBrush="{StaticResource BorderBrush}"
+                                 Background="{DynamicResource CardBackgroundBrush}"
+                                 BorderBrush="{DynamicResource BorderBrush}"
                                  BorderThickness="1">
                             <TextBox.Style>
                                 <Style TargetType="TextBox">
@@ -162,7 +162,7 @@
 
                 <!-- Footer -->
                 <Border Grid.Row="2" 
-                        BorderBrush="{StaticResource BorderBrush}" 
+                        BorderBrush="{DynamicResource BorderBrush}" 
                         BorderThickness="0,1,0,0"
                         Padding="25,15">
                     <Grid>
@@ -190,3 +190,4 @@
         </Border>
     </Grid>
 </Window>
+

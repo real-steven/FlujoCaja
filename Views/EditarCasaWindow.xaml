@@ -8,7 +8,7 @@
         SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Background="#F3F4F6">
+        Background="{DynamicResource BackgroundBrush}">
     <Window.Resources>
         <Style x:Key="FocusTextBox" TargetType="TextBox">
             <Setter Property="Template">
@@ -98,7 +98,7 @@
                                    PopupAnimation="Slide">
                                 <Border BorderBrush="#9CA3AF"
                                         BorderThickness="1"
-                                        Background="White"
+                                        Background="{DynamicResource CardBackgroundBrush}"
                                         CornerRadius="6"
                                         MaxHeight="200">
                                     <ScrollViewer>
@@ -182,11 +182,11 @@
             <TextBlock Text="Nombre de la Casa *"
                        FontSize="14"
                        FontWeight="SemiBold"
-                       Foreground="#374151"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8"/>
             <TextBox x:Name="txtNombre"
                      Style="{StaticResource FocusTextBox}"
-                     Background="White"
+                     Background="{DynamicResource CardBackgroundBrush}"
                      BorderBrush="#D1D5DB"
                      BorderThickness="1"
                      Padding="12,10"
@@ -197,11 +197,11 @@
             <TextBlock Text="Dueño *"
                        FontSize="14"
                        FontWeight="SemiBold"
-                       Foreground="#374151"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8"/>
             <ComboBox x:Name="cmbDueno"
                       Style="{StaticResource FocusComboBox}"
-                      Background="White"
+                      Background="{DynamicResource CardBackgroundBrush}"
                       BorderBrush="#D1D5DB"
                       BorderThickness="1"
                       Height="42"
@@ -214,11 +214,11 @@
             <TextBlock Text="Categoría de Propiedad *"
                        FontSize="14"
                        FontWeight="SemiBold"
-                       Foreground="#374151"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8"/>
             <ComboBox x:Name="cmbCategoria"
                       Style="{StaticResource FocusComboBox}"
-                      Background="White"
+                      Background="{DynamicResource CardBackgroundBrush}"
                       BorderBrush="#D1D5DB"
                       BorderThickness="1"
                       Height="42"
@@ -231,11 +231,11 @@
             <TextBlock Text="Moneda *"
                        FontSize="14"
                        FontWeight="SemiBold"
-                       Foreground="#374151"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8"/>
             <ComboBox x:Name="cmbMoneda"
                       Style="{StaticResource FocusComboBox}"
-                      Background="White"
+                      Background="{DynamicResource CardBackgroundBrush}"
                       BorderBrush="#D1D5DB"
                       BorderThickness="1"
                       Height="42"
@@ -252,7 +252,7 @@
                       Content="Casa Activa"
                       FontSize="14"
                       FontWeight="SemiBold"
-                      Foreground="#374151"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
                       IsChecked="True"
                       Margin="0,0,0,20">
                 <CheckBox.Style>
@@ -264,7 +264,7 @@
                                         <Border x:Name="checkBorder"
                                                 Width="20"
                                                 Height="20"
-                                                Background="White"
+                                                Background="{DynamicResource CardBackgroundBrush}"
                                                 BorderBrush="#D1D5DB"
                                                 BorderThickness="1"
                                                 CornerRadius="4"
@@ -301,11 +301,11 @@
             <TextBlock Text="Notas"
                        FontSize="14"
                        FontWeight="SemiBold"
-                       Foreground="#374151"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8"/>
             <TextBox x:Name="txtNotas"
                      Style="{StaticResource FocusTextBox}"
-                     Background="White"
+                     Background="{DynamicResource CardBackgroundBrush}"
                      BorderBrush="#D1D5DB"
                      BorderThickness="1"
                      Padding="12,10"

@@ -8,7 +8,7 @@
         SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Background="#F3F4F6">
+        Background="{DynamicResource BackgroundBrush}">
     <Window.Resources>
         <Style x:Key="FocusTextBox" TargetType="TextBox">
             <Setter Property="Template">
@@ -98,7 +98,7 @@
                                    PopupAnimation="Slide">
                                 <Border BorderBrush="#9CA3AF"
                                         BorderThickness="1"
-                                        Background="White"
+                                        Background="{DynamicResource CardBackgroundBrush}"
                                         CornerRadius="6"
                                         MaxHeight="200">
                                     <ScrollViewer>
@@ -182,11 +182,11 @@
             <TextBlock Text="Nombre Completo *"
                        FontSize="14"
                        FontWeight="SemiBold"
-                       Foreground="#374151"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8"/>
             <TextBox x:Name="txtNombreCompleto"
                      Style="{StaticResource FocusTextBox}"
-                     Background="White"
+                     Background="{DynamicResource CardBackgroundBrush}"
                      BorderBrush="#D1D5DB"
                      BorderThickness="1"
                      Padding="12,10"
@@ -197,11 +197,11 @@
             <TextBlock Text="Cédula de Identidad *"
                        FontSize="14"
                        FontWeight="SemiBold"
-                       Foreground="#374151"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8"/>
             <TextBox x:Name="txtCedula"
                      Style="{StaticResource FocusTextBox}"
-                     Background="White"
+                     Background="{DynamicResource CardBackgroundBrush}"
                      BorderBrush="#D1D5DB"
                      BorderThickness="1"
                      Padding="12,10"
@@ -212,11 +212,11 @@
             <TextBlock Text="Tipo de Cédula *"
                        FontSize="14"
                        FontWeight="SemiBold"
-                       Foreground="#374151"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8"/>
             <ComboBox x:Name="cmbTipoCedula"
                       Style="{StaticResource FocusComboBox}"
-                      Background="White"
+                      Background="{DynamicResource CardBackgroundBrush}"
                       BorderBrush="#D1D5DB"
                       BorderThickness="1"
                       Height="42"
@@ -232,11 +232,11 @@
             <TextBlock Text="Teléfono"
                        FontSize="14"
                        FontWeight="SemiBold"
-                       Foreground="#374151"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8"/>
             <TextBox x:Name="txtTelefono"
                      Style="{StaticResource FocusTextBox}"
-                     Background="White"
+                     Background="{DynamicResource CardBackgroundBrush}"
                      BorderBrush="#D1D5DB"
                      BorderThickness="1"
                      Padding="12,10"
@@ -247,11 +247,11 @@
             <TextBlock Text="Email Principal *"
                        FontSize="14"
                        FontWeight="SemiBold"
-                       Foreground="#374151"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8"/>
             <TextBox x:Name="txtEmail"
                      Style="{StaticResource FocusTextBox}"
-                     Background="White"
+                     Background="{DynamicResource CardBackgroundBrush}"
                      BorderBrush="#D1D5DB"
                      BorderThickness="1"
                      Padding="12,10"

@@ -7,27 +7,27 @@
         WindowStartupLocation="CenterOwner"
         WindowStyle="SingleBorderWindow"
         ResizeMode="NoResize"
-        Background="White"
-        Foreground="#1E293B"
+        Background="{DynamicResource CardBackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
         FontFamily="Segoe UI"
         FontSize="14">
 
-    <Grid Background="White">
+    <Grid Background="{DynamicResource CardBackgroundBrush}">
         <StackPanel Margin="30" VerticalAlignment="Stretch">
             
             <!-- Título con icono -->
             <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                 <TextBlock Text="⚠️" FontSize="32" Margin="0,0,15,0"/>
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Confirmar Desactivación" FontSize="18" FontWeight="Bold" Foreground="#1E293B"/>
-                    <TextBlock Text="{Binding PropiedadNombre}" FontSize="14" Foreground="#64748B" Margin="0,5,0,0"/>
+                    <TextBlock Text="Confirmar Desactivación" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    <TextBlock Text="{Binding PropiedadNombre}" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,5,0,0"/>
                 </StackPanel>
             </StackPanel>
 
             <!-- Descripción -->
             <TextBlock Text="¿Estás seguro de que deseas desactivar esta propiedad?" 
                        FontSize="13"
-                       Foreground="#475569"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
                        TextWrapping="Wrap"
                        Margin="0,0,0,20"/>
 
@@ -35,7 +35,7 @@
             <TextBlock Text="Motivo de desactivación (opcional)" 
                        FontSize="12"
                        FontWeight="SemiBold"
-                       Foreground="#1E293B"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8"/>
             
             <Border Background="#F1F5F9"
@@ -48,7 +48,7 @@
                          Height="80"
                          Padding="12,10"
                          FontSize="12"
-                         Foreground="#1E293B"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
                          Background="Transparent"
                          BorderThickness="0"
                          TextWrapping="Wrap"
@@ -72,7 +72,7 @@
                         Padding="15,10"
                         Click="CancelarButton_Click"
                         Background="#E2E8F0"
-                        Foreground="#1E293B"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
                         Cursor="Hand"
                         BorderThickness="0">
                     <Button.Style>

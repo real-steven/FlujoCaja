@@ -5,7 +5,7 @@
         Title="Tutorial del Sistema" 
         Height="700" Width="1000"
         WindowStartupLocation="CenterOwner"
-        Background="#F3F4F6">
+        Background="{DynamicResource BackgroundBrush}">
     
     <Grid>
         <local:TutorialControl/>

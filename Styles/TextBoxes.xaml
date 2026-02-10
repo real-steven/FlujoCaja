@@ -5,7 +5,7 @@
     <Style x:Key="ModernTextBox" TargetType="TextBox">
         <Setter Property="Padding" Value="12,10"/>
         <Setter Property="FontSize" Value="14"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Background" Value="White"/>
         <Setter Property="Template">
@@ -39,7 +39,7 @@
     <Style x:Key="ModernPasswordBox" TargetType="PasswordBox">
         <Setter Property="Padding" Value="12,10"/>
         <Setter Property="FontSize" Value="14"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Background" Value="White"/>
         <Setter Property="Template">
@@ -67,3 +67,4 @@
     </Style>
 
 </ResourceDictionary>
+

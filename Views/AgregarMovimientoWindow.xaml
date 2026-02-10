@@ -4,7 +4,7 @@
         Title="Agregar Movimiento"
         Height="600" Width="550"
         WindowStartupLocation="CenterOwner"
-        Background="#F3F4F6"
+        Background="{DynamicResource BackgroundBrush}"
         FontFamily="Segoe UI"
         ResizeMode="NoResize">
 
@@ -35,10 +35,10 @@
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20,15">
             <StackPanel>
                 <!-- Tipo -->
-                <TextBlock Text="Tipo*" FontSize="13" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+                <TextBlock Text="Tipo*" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
                 <ComboBox x:Name="cmbTipo"
                           SelectionChanged="CmbTipo_SelectionChanged"
-                          Background="White"
+                          Background="{DynamicResource CardBackgroundBrush}"
                           BorderBrush="#E5E7EB"
                           BorderThickness="1"
                           Padding="10,8"
@@ -104,7 +104,7 @@
                                                       MinWidth="{TemplateBinding ActualWidth}"
                                                       MaxHeight="{TemplateBinding MaxDropDownHeight}">
                                                     <Border x:Name="DropDownBorder"
-                                                            Background="White"
+                                                            Background="{DynamicResource CardBackgroundBrush}"
                                                             BorderThickness="1"
                                                             BorderBrush="#E5E7EB"
                                                             CornerRadius="8">
@@ -125,7 +125,7 @@
                 </ComboBox>
 
                 <!-- Categoría -->
-                <TextBlock Text="Categoría*" FontSize="13" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+                <TextBlock Text="Categoría*" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
                 <Grid Margin="0,0,0,5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -133,7 +133,7 @@
                     <ComboBox x:Name="cmbCategoria"
                               IsEditable="True"
                               DisplayMemberPath="Nombre"
-                              Background="White"
+                              Background="{DynamicResource CardBackgroundBrush}"
                               BorderBrush="#E5E7EB"
                               BorderThickness="1"
                               Padding="10,8"
@@ -143,14 +143,14 @@
                 <CheckBox x:Name="chkGuardarCategoria"
                           Content="💾 Guardar esta categoría para uso futuro"
                           FontSize="12"
-                          Foreground="#6B7280"
+                          Foreground="{DynamicResource TextSecondaryBrush}"
                           Margin="0,5,0,12"
                           ToolTip="Si está marcado, la categoría se guardará en la base de datos y estará disponible en el futuro"/>
 
                 <!-- Monto -->
-                <TextBlock Text="Monto*" FontSize="13" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+                <TextBlock Text="Monto*" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
                 <TextBox x:Name="txtMonto"
-                         Background="White"
+                         Background="{DynamicResource CardBackgroundBrush}"
                          BorderBrush="#E5E7EB"
                          BorderThickness="1"
                          Padding="10,8"
@@ -176,9 +176,9 @@
                 </TextBox>
 
                 <!-- Fecha -->
-                <TextBlock Text="Fecha*" FontSize="13" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+                <TextBlock Text="Fecha*" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
                 <DatePicker x:Name="dpFecha"
-                            Background="White"
+                            Background="{DynamicResource CardBackgroundBrush}"
                             BorderBrush="#E5E7EB"
                             BorderThickness="1"
                             Padding="10,8"
@@ -186,9 +186,9 @@
                             Margin="0,0,0,12"/>
 
                 <!-- Descripción -->
-                <TextBlock Text="Descripción" FontSize="13" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,6"/>
+                <TextBlock Text="Descripción" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
                 <TextBox x:Name="txtDescripcion"
-                         Background="White"
+                         Background="{DynamicResource CardBackgroundBrush}"
                          BorderBrush="#E5E7EB"
                          BorderThickness="1"
                          Padding="10,8"
@@ -219,7 +219,7 @@
         </ScrollViewer>
 
         <!-- Botones -->
-        <Border Grid.Row="2" Background="White" Padding="20,15" BorderBrush="#E5E7EB" BorderThickness="0,1,0,0">
+        <Border Grid.Row="2" Background="{DynamicResource CardBackgroundBrush}" Padding="20,15" BorderBrush="#E5E7EB" BorderThickness="0,1,0,0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -238,7 +238,7 @@
                         Margin="0,0,5,0">
                     <Button.Style>
                         <Style TargetType="Button">
-                            <Setter Property="Background" Value="#6B7280"/>
+                            <Setter Property="Background" Value="{DynamicResource TextSecondaryBrush}"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="Button">

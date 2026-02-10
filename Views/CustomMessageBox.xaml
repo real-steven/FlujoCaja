@@ -12,7 +12,7 @@
         Background="Transparent"
         AllowsTransparency="True">
     
-    <Border Background="White" 
+    <Border Background="{DynamicResource CardBackgroundBrush}" 
             CornerRadius="16"
             Padding="0"
             BorderThickness="1"
@@ -79,7 +79,7 @@
                                Text="Mensaje"
                                FontSize="15"
                                LineHeight="22"
-                               Foreground="#1E293B"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
                                TextWrapping="Wrap"
                                VerticalAlignment="Center"/>
                 </Grid>

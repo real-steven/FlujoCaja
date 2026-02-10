@@ -1,6 +1,7 @@
 using System.Windows;
 using FlujoCajaWpf.Models;
 using FlujoCajaWpf.ViewModels;
+using FlujoCajaWpf.Services;
 
 namespace FlujoCajaWpf.Views
 {
@@ -10,6 +11,7 @@ namespace FlujoCajaWpf.Views
         {
             InitializeComponent();
             DataContext = new MenuPrincipalViewModel(this, usuario);
+            ActualizarIconoTema();
         }
 
         private async void AbrirGestion_Click(object sender, RoutedEventArgs e)
@@ -40,6 +42,18 @@ namespace FlujoCajaWpf.Views
             {
                 viewModel.CambiarOrdenamiento();
             }
+        }
+
+        private void CambiarTema_Click(object sender, RoutedEventArgs e)
+        {
+            ThemeService.ModoOscuro = !ThemeService.ModoOscuro;
+            ActualizarIconoTema();
+        }
+
+        private void ActualizarIconoTema()
+        {
+            btnTema.Content = ThemeService.ModoOscuro ? "☀️" : "🌙";
+            btnTema.ToolTip = ThemeService.ModoOscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro";
         }
     }
 }

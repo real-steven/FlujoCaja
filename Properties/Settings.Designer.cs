@@ -24,5 +24,17 @@ namespace FlujoCajaWpf.Properties {
                 this["SavedEmail"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ModoOscuro {
+            get {
+                return ((bool)(this["ModoOscuro"]));
+            }
+            set {
+                this["ModoOscuro"] = value;
+            }
+        }
     }
 }

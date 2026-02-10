@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using FlujoCajaWpf.Data;
+using FlujoCajaWpf.Services;
 
 namespace FlujoCajaWpf;
 
@@ -11,6 +12,9 @@ public partial class App : Application
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        // Cargar tema guardado
+        ThemeService.CargarTema();
 
         // Configurar manejo global de excepciones
         DispatcherUnhandledException += (s, args) =>

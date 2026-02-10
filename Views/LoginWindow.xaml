@@ -8,7 +8,7 @@
         Height="550" Width="850"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Background="{StaticResource BackgroundBrush}">
+        Background="{DynamicResource BackgroundBrush}">
     
     <Grid>
         <Grid.ColumnDefinitions>
@@ -44,8 +44,8 @@
         </Border>
 
         <!-- Panel derecho - Formulario de login -->
-        <Border Grid.Column="1" Background="{StaticResource BackgroundBrush}" Padding="30,15">
-            <Border Background="White" CornerRadius="12" Padding="30">
+        <Border Grid.Column="1" Background="{DynamicResource BackgroundBrush}" Padding="30,15">
+            <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="12" Padding="30">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.1" Color="Black"/>
                 </Border.Effect>
@@ -53,18 +53,18 @@
                     <TextBlock Text="Bienvenido" 
                                FontSize="26" 
                                FontWeight="Bold" 
-                               Foreground="{StaticResource DarkBlueBrush}"
+                               Foreground="{DynamicResource DarkBlueBrush}"
                                Margin="0,0,0,8"/>
                     <TextBlock Text="Inicia sesión para continuar" 
                                FontSize="13" 
-                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
                                Margin="0,0,0,25"/>
 
                 <!-- Email -->
                 <TextBlock Text="Email" 
                            FontSize="14" 
                            FontWeight="Medium"
-                           Foreground="{StaticResource TextPrimaryBrush}"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
                            Margin="0,0,0,8"/>
                 <TextBox x:Name="txtEmail"
                          Style="{StaticResource ModernTextBox}"
@@ -75,7 +75,7 @@
                 <TextBlock Text="Contraseña" 
                            FontSize="14" 
                            FontWeight="Medium"
-                           Foreground="{StaticResource TextPrimaryBrush}"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
                            Margin="0,0,0,8"/>
                 <PasswordBox x:Name="txtPassword"
                              Style="{StaticResource ModernPasswordBox}"
@@ -107,7 +107,7 @@
 
                 <!-- Texto informativo -->
                 <TextBlock TextAlignment="Center"
-                           Foreground="{StaticResource TextSecondaryBrush}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
                            FontSize="12">
                     <Run Text="Sistema de Gestión de Flujo de Caja"/>
                     <LineBreak/>
@@ -118,3 +118,4 @@
         </Border>
     </Grid>
 </Window>
+
