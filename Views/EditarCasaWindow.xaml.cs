@@ -27,7 +27,8 @@ namespace FlujoCajaWpf.Views
                 CategoriaId = casa.CategoriaId,
                 Moneda = casa.Moneda,
                 Activo = casa.Activo,
-                Notas = casa.Notas
+                Notas = casa.Notas,
+                EmailPrincipal = casa.EmailPrincipal
             };
             Loaded += async (s, e) => await CargarDatosAsync();
         }
@@ -69,6 +70,7 @@ namespace FlujoCajaWpf.Views
                 // Cargar datos de la casa
                 txtNombre.Text = casa.Nombre;
                 chkActiva.IsChecked = casa.Activo;
+                txtEmailPrincipal.Text = casa.EmailPrincipal ?? string.Empty;
                 txtNotas.Text = casa.Notas ?? string.Empty;
 
                 // Seleccionar moneda
@@ -152,6 +154,7 @@ namespace FlujoCajaWpf.Views
                 casa.CategoriaId = (cmbCategoria.SelectedItem as CategoriaSupabase)!.Id;
                 casa.Moneda = (cmbMoneda.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "USD";
                 casa.Activo = chkActiva.IsChecked ?? true;
+                casa.EmailPrincipal = string.IsNullOrWhiteSpace(txtEmailPrincipal.Text) ? null : txtEmailPrincipal.Text.Trim();
                 casa.Notas = string.IsNullOrWhiteSpace(txtNotas.Text) ? null : txtNotas.Text.Trim();
 
                 // Llamar al helper para actualizar

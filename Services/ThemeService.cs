@@ -46,6 +46,13 @@ namespace FlujoCajaWpf.Services
                 app.Resources["BorderBrush"] = new SolidColorBrush(Color.FromRgb(70, 70, 70));
                 app.Resources["InputBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(45, 45, 45));
                 app.Resources["HoverBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(65, 65, 65));
+                app.Resources["DataGridRowBrush"] = new SolidColorBrush(Color.FromRgb(55, 55, 55));
+                app.Resources["DataGridHeaderBrush"] = new SolidColorBrush(Color.FromRgb(41, 41, 41));
+                app.Resources["DataGridHeaderForegroundBrush"] = new SolidColorBrush(Colors.White);
+                app.Resources["DataGridHoverBrush"] = new SolidColorBrush(Color.FromRgb(70, 70, 70));
+                app.Resources["DataGridSelectedBrush"] = new SolidColorBrush(Color.FromRgb(30, 58, 97));
+                app.Resources["DataGridSelectedForegroundBrush"] = new SolidColorBrush(Colors.White);
+                app.Resources["RowErrorBrush"] = new SolidColorBrush(Color.FromRgb(80, 20, 20)); // Rojo oscuro modo oscuro
             }
             else
             {
@@ -58,6 +65,13 @@ namespace FlujoCajaWpf.Services
                 app.Resources["BorderBrush"] = new SolidColorBrush(Color.FromRgb(229, 231, 235));
                 app.Resources["InputBackgroundBrush"] = new SolidColorBrush(Colors.White);
                 app.Resources["HoverBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(240, 240, 240));
+                app.Resources["DataGridRowBrush"] = new SolidColorBrush(Colors.White);
+                app.Resources["DataGridHeaderBrush"] = new SolidColorBrush(Color.FromRgb(249, 250, 251));
+                app.Resources["DataGridHeaderForegroundBrush"] = new SolidColorBrush(Colors.Black);
+                app.Resources["DataGridHoverBrush"] = new SolidColorBrush(Color.FromRgb(249, 250, 251));
+                app.Resources["DataGridSelectedBrush"] = new SolidColorBrush(Color.FromRgb(239, 246, 255));
+                app.Resources["DataGridSelectedForegroundBrush"] = new SolidColorBrush(Colors.Black);
+                app.Resources["RowErrorBrush"] = new SolidColorBrush(Color.FromRgb(254, 242, 242)); // Rojo claro modo claro
             }
             
             // Forzar actualización de todas las ventanas abiertas

@@ -129,7 +129,8 @@ namespace FlujoCajaWpf.Views
                     CategoriaId = (cmbCategoria.SelectedItem as CategoriaSupabase)!.Id,
                     Moneda = (cmbMoneda.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "USD",
                     Activo = chkActiva.IsChecked ?? true,
-                    Notas = string.IsNullOrWhiteSpace(txtNotas.Text) ? null : txtNotas.Text.Trim()
+                    Notas = string.IsNullOrWhiteSpace(txtNotas.Text) ? null : txtNotas.Text.Trim(),
+                    EmailPrincipal = string.IsNullOrWhiteSpace(txtEmailPrincipal.Text) ? null : txtEmailPrincipal.Text.Trim()
                 };
 
                 // Llamar al helper para insertar
@@ -192,6 +193,7 @@ namespace FlujoCajaWpf.Views
             cmbMoneda.SelectedIndex = 0; // USD por defecto
             chkActiva.IsChecked = true;
             txtNotas.Clear();
+            txtEmailPrincipal.Clear();
             fotosSeleccionadas.Clear();
             
             // Enfocar el primer campo

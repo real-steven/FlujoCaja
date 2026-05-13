@@ -1,8 +1,9 @@
-<Window x:Class="FlujoCajaWpf.Views.AgregarMovimientoWindow"
+﻿<Window x:Class="FlujoCajaWpf.Views.AgregarMovimientoWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Icon="pack://application:,,,/Resources/APPSamara.png"
         Title="Agregar Movimiento"
-        Height="600" Width="550"
+        Height="700" Width="550"
         WindowStartupLocation="CenterOwner"
         Background="{DynamicResource BackgroundBrush}"
         FontFamily="Segoe UI"
@@ -38,8 +39,9 @@
                 <TextBlock Text="Tipo*" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
                 <ComboBox x:Name="cmbTipo"
                           SelectionChanged="CmbTipo_SelectionChanged"
-                          Background="{DynamicResource CardBackgroundBrush}"
-                          BorderBrush="#E5E7EB"
+                          Background="{DynamicResource InputBackgroundBrush}"
+                          Foreground="{DynamicResource TextPrimaryBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}"
                           BorderThickness="1"
                           Padding="10,8"
                           FontSize="13"
@@ -61,8 +63,8 @@
                                                             <Setter.Value>
                                                                 <ControlTemplate TargetType="ToggleButton">
                                                                     <Border x:Name="Border" 
-                                                                            Background="{TemplateBinding Background}"
-                                                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                                                            Background="{DynamicResource InputBackgroundBrush}"
+                                                                            BorderBrush="{DynamicResource BorderBrush}"
                                                                             BorderThickness="{TemplateBinding BorderThickness}"
                                                                             CornerRadius="8">
                                                                         <Grid>
@@ -92,7 +94,8 @@
                                                               ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
                                                               Margin="10,8,32,8"
                                                               VerticalAlignment="Center"
-                                                              HorizontalAlignment="Left"/>
+                                                              HorizontalAlignment="Left"
+                                                              TextElement.Foreground="{DynamicResource TextPrimaryBrush}"/>
                                             <Popup x:Name="Popup"
                                                    Placement="Bottom"
                                                    IsOpen="{TemplateBinding IsDropDownOpen}"
@@ -120,8 +123,8 @@
                             </Setter>
                         </Style>
                     </ComboBox.Style>
-                    <ComboBoxItem Content="💰 Ingreso"/>
-                    <ComboBoxItem Content="💸 Egreso"/>
+                    <ComboBoxItem Content="💰 Ingreso" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    <ComboBoxItem Content="💸 Egreso" Foreground="{DynamicResource TextPrimaryBrush}"/>
                 </ComboBox>
 
                 <!-- Categoría -->
@@ -133,12 +136,74 @@
                     <ComboBox x:Name="cmbCategoria"
                               IsEditable="True"
                               DisplayMemberPath="Nombre"
-                              Background="{DynamicResource CardBackgroundBrush}"
-                              BorderBrush="#E5E7EB"
-                              BorderThickness="1"
-                              Padding="10,8"
                               FontSize="13"
-                              ToolTip="Selecciona una categoría existente o escribe una nueva"/>
+                              ToolTip="Selecciona una categoría existente o escribe una nueva">
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ComboBox">
+                                            <Grid>
+                                                <Border Background="{DynamicResource InputBackgroundBrush}"
+                                                        BorderBrush="{DynamicResource BorderBrush}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="8">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="32"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBox x:Name="PART_EditableTextBox"
+                                                                 Grid.Column="0"
+                                                                 Background="Transparent"
+                                                                 BorderThickness="0"
+                                                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                 CaretBrush="{DynamicResource TextPrimaryBrush}"
+                                                                 SelectionBrush="{DynamicResource TextPrimaryBrush}"
+                                                                 Padding="10,8"
+                                                                 FontSize="13"
+                                                                 VerticalAlignment="Center"
+                                                                 IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                                                        <ToggleButton Grid.Column="1"
+                                                                      IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                                                      Background="Transparent"
+                                                                      BorderThickness="0"
+                                                                      Focusable="False"
+                                                                      ClickMode="Press"
+                                                                      Cursor="Hand">
+                                                            <Path Fill="{DynamicResource TextSecondaryBrush}"
+                                                                  HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"
+                                                                  Data="M 0 0 L 4 4 L 8 0 Z"/>
+                                                        </ToggleButton>
+                                                    </Grid>
+                                                </Border>
+                                                <Popup x:Name="PART_Popup"
+                                                       Placement="Bottom"
+                                                       IsOpen="{TemplateBinding IsDropDownOpen}"
+                                                       AllowsTransparency="True"
+                                                       Focusable="False"
+                                                       PopupAnimation="Slide">
+                                                    <Border Background="{DynamicResource InputBackgroundBrush}"
+                                                            BorderBrush="{DynamicResource BorderBrush}"
+                                                            BorderThickness="1"
+                                                            MinWidth="{TemplateBinding ActualWidth}"
+                                                            MaxHeight="200"
+                                                            CornerRadius="8">
+                                                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="4,6,4,6">
+                                                            <StackPanel IsItemsHost="True"
+                                                                        TextElement.Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                                        </ScrollViewer>
+                                                    </Border>
+                                                </Popup>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+
                 </Grid>
                 <CheckBox x:Name="chkGuardarCategoria"
                           Content="💾 Guardar esta categoría para uso futuro"
@@ -148,10 +213,11 @@
                           ToolTip="Si está marcado, la categoría se guardará en la base de datos y estará disponible en el futuro"/>
 
                 <!-- Monto -->
-                <TextBlock Text="Monto*" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
+                <TextBlock x:Name="lblMonto" Text="Monto*" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
                 <TextBox x:Name="txtMonto"
-                         Background="{DynamicResource CardBackgroundBrush}"
-                         BorderBrush="#E5E7EB"
+                         Background="{DynamicResource InputBackgroundBrush}"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         BorderBrush="{DynamicResource BorderBrush}"
                          BorderThickness="1"
                          Padding="10,8"
                          FontSize="13"
@@ -178,18 +244,67 @@
                 <!-- Fecha -->
                 <TextBlock Text="Fecha*" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
                 <DatePicker x:Name="dpFecha"
-                            Background="{DynamicResource CardBackgroundBrush}"
-                            BorderBrush="#E5E7EB"
-                            BorderThickness="1"
-                            Padding="10,8"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
                             FontSize="13"
-                            Margin="0,0,0,12"/>
+                            Margin="0,0,0,12">
+                    <DatePicker.Style>
+                        <Style TargetType="DatePicker">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="DatePicker">
+                                        <Border Background="{DynamicResource InputBackgroundBrush}"
+                                                BorderBrush="{DynamicResource BorderBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="8"
+                                                Padding="10,8">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <DatePickerTextBox x:Name="PART_TextBox"
+                                                                   Grid.Column="0"
+                                                                   Background="Transparent"
+                                                                   BorderThickness="0"
+                                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                   FontSize="13"/>
+                                                <Button x:Name="PART_Button"
+                                                        Grid.Column="1"
+                                                        Background="Transparent"
+                                                        BorderThickness="0"
+                                                        Foreground="{DynamicResource TextPrimaryBrush}"
+                                                        Cursor="Hand"
+                                                        Width="28">
+                                                    <Path Data="M6 2v2M18 2v2M3 8h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"
+                                                          Stroke="{DynamicResource TextPrimaryBrush}" StrokeThickness="1.5"
+                                                          Width="16" Height="16" Stretch="Uniform"/>
+                                                </Button>
+                                                <Popup x:Name="PART_Popup" PlacementTarget="{Binding ElementName=PART_Button}"
+                                                       Placement="Bottom" AllowsTransparency="True"/>
+                                            </Grid>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="CalendarStyle">
+                                <Setter.Value>
+                                    <Style TargetType="Calendar">
+                                        <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                                        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                                    </Style>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DatePicker.Style>
+                </DatePicker>
 
                 <!-- Descripción -->
                 <TextBlock Text="Descripción" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
                 <TextBox x:Name="txtDescripcion"
-                         Background="{DynamicResource CardBackgroundBrush}"
-                         BorderBrush="#E5E7EB"
+                         Background="{DynamicResource InputBackgroundBrush}"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         BorderBrush="{DynamicResource BorderBrush}"
                          BorderThickness="1"
                          Padding="10,8"
                          FontSize="13"
@@ -215,11 +330,85 @@
                         </Style>
                     </TextBox.Style>
                 </TextBox>
+
+                <!-- Imagen (opcional) -->
+                <TextBlock Text="Imagen (opcional)" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
+                <Border x:Name="borderDragDropMov"
+                        AllowDrop="True"
+                        DragOver="DragDropMov_DragOver"
+                        DragLeave="DragDropMov_DragLeave"
+                        Drop="DragDropMov_Drop"
+                        MouseLeftButtonUp="DragDropMov_Click"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="2"
+                        CornerRadius="10"
+                        Background="{DynamicResource CardBackgroundBrush}"
+                        Height="110"
+                        Cursor="Hand"
+                        Margin="0,0,0,12">
+                    <Grid>
+                        <!-- Estado vacío -->
+                        <StackPanel x:Name="panelDragDropVacio"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="📎"
+                                       FontSize="28"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,6"/>
+                            <TextBlock Text="Arrastra una imagen o haz clic para seleccionar"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="PNG, JPG, JPEG, WEBP"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <!-- Estado con imagen seleccionada -->
+                        <Grid x:Name="panelDragDropSeleccionado" Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0"
+                                    Width="70" Height="70"
+                                    CornerRadius="8"
+                                    Margin="14,0,10,0"
+                                    ClipToBounds="True">
+                                <Image x:Name="imgPreviewMov" Stretch="UniformToFill"/>
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,12,0">
+                                <TextBlock Text="✅ Imagen seleccionada"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Foreground="#10B981"
+                                           Margin="0,0,0,3"/>
+                                <TextBlock x:Name="txtNombreArchivoMov"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                           TextWrapping="Wrap"/>
+                                <Button Content="🔄 Cambiar"
+                                        Click="CambiarImagenMov_Click"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Foreground="#3B82F6"
+                                        FontSize="11"
+                                        Cursor="Hand"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,4,0,0"
+                                        Padding="0"/>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Border>
+
             </StackPanel>
         </ScrollViewer>
 
         <!-- Botones -->
-        <Border Grid.Row="2" Background="{DynamicResource CardBackgroundBrush}" Padding="20,15" BorderBrush="#E5E7EB" BorderThickness="0,1,0,0">
+        <Border Grid.Row="2" Background="{DynamicResource CardBackgroundBrush}" Padding="20,15" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

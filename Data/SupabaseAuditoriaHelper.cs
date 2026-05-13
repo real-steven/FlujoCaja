@@ -56,6 +56,7 @@ namespace FlujoCajaWpf.Data
             string? modulo = null,
             string? usuarioEmail = null,
             string? tipoAccion = null,
+            string? buscar = null,
             DateTime? fechaDesde = null,
             DateTime? fechaHasta = null,
             int pagina = 1,
@@ -84,25 +85,32 @@ namespace FlujoCajaWpf.Data
                 if (fechaHasta.HasValue)
                     query = query.Where(a => a.Fecha <= fechaHasta.Value);
 
-                // Obtener total de registros (para paginación)
-                var resultadoTotal = await query.Get();
-                int totalRegistros = resultadoTotal?.Models?.Count ?? 0;
-
-                // Aplicar paginación
-                int inicio = (pagina - 1) * registrosPorPagina;
-                query = query
+                // Obtener todos los registros (filtros de servidor ya aplicados)
+                var resultadoTotal = await query
                     .Order("fecha", Supabase.Postgrest.Constants.Ordering.Descending)
-                    .Range(inicio, inicio + registrosPorPagina - 1);
+                    .Get();
 
-                var resultado = await query.Get();
+                var todosModels = resultadoTotal?.Models ?? new List<AuditoriaSupabase>();
 
-                if (resultado?.Models == null)
+                // Filtro de texto client-side
+                if (!string.IsNullOrWhiteSpace(buscar))
                 {
-                    return (false, null, 0, "Error al cargar auditorías");
+                    var b = buscar.ToLower();
+                    todosModels = todosModels.Where(a =>
+                        (a.EntidadNombre?.ToLower().Contains(b) ?? false) ||
+                        (a.Descripcion?.ToLower().Contains(b) ?? false) ||
+                        (a.UsuarioEmail?.ToLower().Contains(b) ?? false)
+                    ).ToList();
                 }
 
+                int totalRegistros = todosModels.Count;
+
+                // Paginación en memoria
+                int inicio = (pagina - 1) * registrosPorPagina;
+                var paginados = todosModels.Skip(inicio).Take(registrosPorPagina).ToList();
+
                 // Convertir a modelo de UI
-                var auditorias = resultado.Models.Select(a => new Auditoria
+                var auditorias = paginados.Select(a => new Auditoria
                 {
                     Id = a.Id,
                     UsuarioEmail = a.UsuarioEmail,

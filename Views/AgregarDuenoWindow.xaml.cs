@@ -106,6 +106,17 @@ namespace FlujoCajaWpf.Views
 
                 if (resultado.Success)
                 {
+                    // 📊 REGISTRAR EN HISTORIAL
+                    var user = SupabaseAuthHelper.GetCurrentUser();
+                    await SupabaseAuditoriaHelper.RegistrarAccionAsync(
+                        user?.Email ?? "desconocido",
+                        "dueno",
+                        "crear",
+                        null,
+                        nuevoDueno.NombreCompleto,
+                        $"Creó nuevo dueño: {nuevoDueno.NombreCompleto}"
+                    );
+
                     CustomMessageBox.Show(
                         "El dueño ha sido registrado exitosamente",
                         "Éxito",

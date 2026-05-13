@@ -35,15 +35,33 @@ namespace FlujoCajaWpf.Views.Controls
                     var categorias = resultadoCategorias.Success ? resultadoCategorias.Data : new List<CategoriaSupabase>();
                     
                     // Crear ViewModels para mostrar en el grid
-                    todasLasCasas = casas.Select(c => new CasaViewModel
+                    var viewModels = new List<CasaViewModel>();
+                    foreach (var c in casas)
                     {
-                        Casa = c,
-                        Nombre = c.Nombre,
-                        DuenoNombre = duenos?.FirstOrDefault(d => d.Id == c.DuenoId)?.NombreCompleto ?? "Desconocido",
-                        CategoriaNombre = categorias?.FirstOrDefault(cat => cat.Id == c.CategoriaId)?.Nombre ?? "Desconocida",
-                        Moneda = c.Moneda,
-                        EstadoTexto = c.Activo ? "Activa" : "Inactiva"
-                    }).ToList();
+                        // Recopilar correos: email_principal + correos_casa activos
+                        var correosList = new List<string>();
+                        if (!string.IsNullOrWhiteSpace(c.EmailPrincipal))
+                            correosList.Add(c.EmailPrincipal);
+
+                        var correosAdicionales = await SupabaseCorreoCasaHelper.ObtenerCorreosPorCasaAsync(c.Id);
+                        foreach (var ca in correosAdicionales)
+                        {
+                            if (!correosList.Any(e => string.Equals(e, ca.Email, StringComparison.OrdinalIgnoreCase)))
+                                correosList.Add(ca.Email);
+                        }
+
+                        viewModels.Add(new CasaViewModel
+                        {
+                            Casa = c,
+                            Nombre = c.Nombre,
+                            DuenoNombre = duenos?.FirstOrDefault(d => d.Id == c.DuenoId)?.NombreCompleto ?? "Desconocido",
+                            CategoriaNombre = categorias?.FirstOrDefault(cat => cat.Id == c.CategoriaId)?.Nombre ?? "Desconocida",
+                            Moneda = c.Moneda,
+                            EstadoTexto = c.Activo ? "Activa" : "Inactiva",
+                            CorreosTexto = correosList.Count > 0 ? string.Join(", ", correosList) : "—"
+                        });
+                    }
+                    todasLasCasas = viewModels;
                     
                     dgCasas.ItemsSource = todasLasCasas;
                     ActualizarContador(todasLasCasas.Count);
@@ -126,7 +144,8 @@ namespace FlujoCajaWpf.Views.Controls
                 CategoriaId = casaViewModel.Casa.CategoriaId,
                 Moneda = casaViewModel.Casa.Moneda,
                 Activo = casaViewModel.Casa.Activo,
-                Notas = casaViewModel.Casa.Notas
+                Notas = casaViewModel.Casa.Notas,
+                EmailPrincipal = casaViewModel.Casa.EmailPrincipal
             };
 
             var editarWindow = new EditarCasaWindow(casaSupabase);
@@ -204,5 +223,6 @@ namespace FlujoCajaWpf.Views.Controls
         public string CategoriaNombre { get; set; } = string.Empty;
         public string Moneda { get; set; } = string.Empty;
         public string EstadoTexto { get; set; } = string.Empty;
+        public string CorreosTexto { get; set; } = string.Empty;
     }
 }

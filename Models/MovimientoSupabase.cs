@@ -35,5 +35,8 @@ namespace FlujoCajaWpf.Models
 
         [Column("tipo_movimiento")]
         public string TipoMovimiento { get; set; } = "Ingreso"; // "Ingreso" o "Gasto"
+
+        [Column("imagen_url")]
+        public string? ImagenUrl { get; set; }
     }
 }

@@ -1,0 +1,227 @@
+﻿<Window x:Class="FlujoCajaWpf.Views.PerfilUsuarioDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Icon="pack://application:,,,/Resources/APPSamara.png"
+        Title="Mi Perfil"
+        Height="580" Width="460"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{DynamicResource BackgroundBrush}"
+        FontFamily="Segoe UI">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Padding="24,18">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#0F172A" Offset="0"/>
+                    <GradientStop Color="#1E3A8A" Offset="0.5"/>
+                    <GradientStop Color="#3B82F6" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <StackPanel>
+                <TextBlock Text="👤 Mi Perfil"
+                           FontSize="18" FontWeight="Bold" Foreground="White"/>
+                <TextBlock Text="Edita tu información personal y contraseña."
+                           FontSize="12" Foreground="#E0E7FF" Margin="0,4,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Contenido -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="28,24,28,0">
+
+                <!-- Avatar -->
+                <StackPanel HorizontalAlignment="Center" Margin="0,0,0,24">
+                    <!-- Círculo con foto o iniciales -->
+                    <Grid Width="90" Height="90" Margin="0,0,0,10">
+                        <!-- Fondo círculo -->
+                        <Ellipse Fill="#3B82F6"/>
+                        <!-- Imagen de perfil -->
+                        <Ellipse x:Name="elipseAvatar" Visibility="Collapsed">
+                            <Ellipse.Fill>
+                                <ImageBrush x:Name="imgAvatarBrush" Stretch="UniformToFill"/>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <!-- Iniciales (cuando no hay foto) -->
+                        <TextBlock x:Name="txtIniciales"
+                                   Text="?"
+                                   FontSize="32" FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                        <!-- Botón editar foto -->
+                        <Button x:Name="btnCambiarFoto"
+                                Click="CambiarFoto_Click"
+                                Width="26" Height="26"
+                                HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                Cursor="Hand" ToolTip="Cambiar foto de perfil"
+                                BorderThickness="0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="#10B981" CornerRadius="13"
+                                            Width="26" Height="26">
+                                        <TextBlock Text="📷" FontSize="12"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </Grid>
+                    <TextBlock x:Name="txtRolBadge"
+                               Text="usuario"
+                               FontSize="11" FontWeight="SemiBold"
+                               Foreground="White" HorizontalAlignment="Center"
+                               Padding="10,3" Background="#3B82F6">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Setters>
+                                    <Setter Property="Background" Value="#3B82F6"/>
+                                </Style.Setters>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+
+                <!-- Campos -->
+                <Grid Margin="0,0,0,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Nombre" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="txtNombre" Height="36" Padding="10,0"
+                                 FontSize="13" VerticalContentAlignment="Center"
+                                 Background="{DynamicResource CardBackgroundBrush}"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Apellido" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="txtApellido" Height="36" Padding="10,0"
+                                 FontSize="13" VerticalContentAlignment="Center"
+                                 Background="{DynamicResource CardBackgroundBrush}"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Margin="0,0,0,14">
+                    <TextBlock Text="Correo electrónico" FontSize="11" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                    <TextBox x:Name="txtEmail" Height="36" Padding="10,0"
+                             FontSize="13" VerticalContentAlignment="Center"
+                             IsReadOnly="True" Opacity="0.6"
+                             Background="{DynamicResource CardBackgroundBrush}"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                             ToolTip="El correo no se puede cambiar desde aquí."/>
+                </StackPanel>
+
+                <StackPanel Margin="0,0,0,14">
+                    <TextBlock Text="Teléfono" FontSize="11" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                    <TextBox x:Name="txtTelefono" Height="36" Padding="10,0"
+                             FontSize="13" VerticalContentAlignment="Center"
+                             Background="{DynamicResource CardBackgroundBrush}"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
+                </StackPanel>
+
+                <StackPanel Margin="0,0,0,14">
+                    <TextBlock Text="Rol" FontSize="11" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                    <TextBox x:Name="txtRol" Height="36" Padding="10,0"
+                             FontSize="13" VerticalContentAlignment="Center"
+                             IsReadOnly="True" Opacity="0.6"
+                             Background="{DynamicResource CardBackgroundBrush}"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"/>
+                </StackPanel>
+
+                <!-- Miembro desde -->
+                <TextBlock x:Name="txtMiembroDesde"
+                           Text="Miembro desde: —"
+                           FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
+                           Margin="0,0,0,20"/>
+
+                <!-- Error guardar -->
+                <TextBlock x:Name="txtError" Text="" Foreground="#EF4444"
+                           FontSize="12" TextWrapping="Wrap" Visibility="Collapsed" Margin="0,0,0,8"/>
+
+                <!-- Botón guardar -->
+                <Button x:Name="btnGuardar"
+                        Content="Guardar cambios"
+                        Click="Guardar_Click"
+                        Height="40" FontSize="14" FontWeight="SemiBold"
+                        Foreground="White" BorderThickness="0" Cursor="Hand"
+                        Margin="0,0,0,12">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#3B82F6"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#2563EB"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Background" Value="#9CA3AF"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- Separador -->
+                <Separator Margin="0,4,0,16" Background="{DynamicResource BorderBrush}"/>
+
+                <!-- Botón cambiar contraseña -->
+                <Button Content="🔴 Cambiar contraseña"
+                        Click="CambiarPassword_Click"
+                        Height="40" FontSize="13"
+                        Foreground="White" BorderThickness="0" Cursor="Hand"
+                        Margin="0,0,0,24">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#EF4444"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#DC2626"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

@@ -123,6 +123,17 @@ namespace FlujoCajaWpf.Views.Controls
                 
                 if (eliminado.Success)
                 {
+                    // 📊 REGISTRAR EN HISTORIAL
+                    var user = SupabaseAuthHelper.GetCurrentUser();
+                    await SupabaseAuditoriaHelper.RegistrarAccionAsync(
+                        user?.Email ?? "desconocido",
+                        "categoria",
+                        "eliminar",
+                        categoria.Id,
+                        categoria.Nombre,
+                        $"Eliminó categoría: {categoria.Nombre}"
+                    );
+
                     CustomMessageBox.Show(
                         $"Categoría '{categoria.Nombre}' eliminada exitosamente",
                         "Éxito",

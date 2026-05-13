@@ -1,6 +1,7 @@
-<Window x:Class="FlujoCajaWpf.Views.HistorialWindow"
+﻿<Window x:Class="FlujoCajaWpf.Views.HistorialWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Icon="pack://application:,,,/Resources/APPSamara.png"
         Title="📊 Historial del Sistema" 
         Height="700" Width="1200"
         WindowStartupLocation="CenterScreen"
@@ -57,7 +58,7 @@
                         Content="✕ Cerrar" 
                         VerticalAlignment="Center"
                         Padding="20,10"
-                        Background="#3B82F6"
+                        Background="#DC2626"
                         Foreground="White"
                         BorderThickness="0"
                         FontSize="14"
@@ -79,7 +80,7 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#2563EB"/>
+                                    <Setter Property="Background" Value="#B91C1C"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -110,12 +111,12 @@
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="Border" Property="Background" Value="#EFF6FF"/>
+                                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DataGridSelectedBrush}"/>
                                             <Setter TargetName="Border" Property="BorderBrush" Value="#3B82F6"/>
                                             <Setter TargetName="Border" Property="BorderThickness" Value="1,2,1,0"/>
                                         </Trigger>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="Border" Property="Background" Value="#F3F4F6"/>
+                                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DataGridHoverBrush}"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -123,7 +124,7 @@
                         </Setter>
                         <Setter Property="FontSize" Value="14"/>
                         <Setter Property="FontWeight" Value="SemiBold"/>
-                        <Setter Property="Foreground" Value="#374151"/>
+                        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
                     </Style>
                 </TabControl.Resources>
 
@@ -150,7 +151,7 @@
 
                                     <StackPanel Grid.Column="0" Margin="0,0,10,0">
                                         <TextBlock Text="Usuario" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
-                                        <ComboBox Name="cmbUsuarioCasas" Height="36" FontSize="13"/>
+                                        <ComboBox Name="cmbUsuarioCasas" Height="36" FontSize="13" SelectionChanged="FiltrosCasas_Changed"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="1" Margin="0,0,10,0">
@@ -255,7 +256,7 @@
 
                                 <StackPanel Grid.Column="0" Margin="0,0,10,0">
                                     <TextBlock Text="Usuario" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
-                                    <ComboBox Name="cmbUsuarioMovimientos" Height="36" FontSize="13"/>
+                                    <ComboBox Name="cmbUsuarioMovimientos" Height="36" FontSize="13" SelectionChanged="FiltrosMovimientos_Changed"/>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Margin="0,0,10,0">
@@ -375,26 +376,373 @@
                 </TabItem>
 
                 <!-- Tab Dueños -->
-                <TabItem Header="👤 Dueños">
+                <TabItem Header="&#x1F464; Dueños">
                     <Grid Background="{DynamicResource CardBackgroundBrush}">
-                        <TextBlock Text="Próximamente: Historial de Dueños" 
-                                   HorizontalAlignment="Center" 
-                                   VerticalAlignment="Center"
-                                   FontSize="16" 
-                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Filtros Dueños -->
+                        <Border Grid.Row="0" Background="{DynamicResource BackgroundBrush}" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1" Padding="20">
+                            <StackPanel>
+                                <TextBlock Text="Filtros" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,10"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                        <TextBlock Text="Usuario" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+                                        <ComboBox Name="cmbUsuarioDuenos" Height="36" FontSize="13" SelectionChanged="FiltrosDuenos_Changed"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                                        <TextBlock Text="Acción" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+                                        <ComboBox Name="cmbAccionDuenos" Height="36" FontSize="13" SelectionChanged="FiltrosDuenos_Changed">
+                                            <ComboBoxItem Content="Todas" IsSelected="True" Tag=""/>
+                                            <ComboBoxItem Content="➕ Crear" Tag="crear"/>
+                                            <ComboBoxItem Content="✏️ Editar" Tag="editar"/>
+                                            <ComboBoxItem Content="❌ Eliminar" Tag="eliminar"/>
+                                        </ComboBox>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2" Margin="0,0,10,0">
+                                        <TextBlock Text="Buscar" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+                                        <TextBox Name="txtBuscarDuenos" Height="36" FontSize="13" Padding="10,8" TextChanged="FiltrosDuenos_Changed"/>
+                                    </StackPanel>
+
+                                    <Button Grid.Column="3" Content="🔍 Buscar"
+                                            VerticalAlignment="Bottom"
+                                            Padding="20,8"
+                                            Background="#3B82F6"
+                                            Foreground="White"
+                                            BorderThickness="0"
+                                            FontSize="13"
+                                            Cursor="Hand"
+                                            Click="BtnBuscarDuenos_Click"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- DataGrid Dueños -->
+                        <DataGrid Name="dgDuenos"
+                                  Grid.Row="1"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  SelectionMode="Single"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  HeadersVisibility="Column"
+                                  GridLinesVisibility="Horizontal"
+                                  RowHeight="50"
+                                  Background="{DynamicResource CardBackgroundBrush}"
+                                  BorderThickness="0"
+                                  FontSize="13">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Fecha" Binding="{Binding FechaTexto}" Width="140"/>
+                                <DataGridTextColumn Header="Usuario" Binding="{Binding UsuarioEmail}" Width="200"/>
+                                <DataGridTextColumn Header="Dueño" Binding="{Binding EntidadNombre}" Width="180"/>
+                                <DataGridTextColumn Header="Acción" Binding="{Binding AccionTexto}" Width="120"/>
+                                <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!-- Paginación Dueños -->
+                        <Border Grid.Row="2" Background="{DynamicResource BackgroundBrush}" BorderBrush="#E5E7EB" BorderThickness="0,1,0,0" Padding="20,15">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <TextBlock Name="txtInfoDuenos" Text="Mostrando registros"
+                                               VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Name="btnAnteriorDuenos" Content="◀ Anterior"
+                                            Padding="15,8" Margin="0,0,10,0"
+                                            Background="{DynamicResource CardBackgroundBrush}" BorderBrush="#D1D5DB" BorderThickness="1"
+                                            FontSize="13" Cursor="Hand" Click="BtnAnteriorDuenos_Click"/>
+                                    <TextBlock Name="txtPaginaDuenos" Text="Página"
+                                               VerticalAlignment="Center" Margin="10,0"
+                                               FontSize="13" FontWeight="SemiBold"/>
+                                    <Button Name="btnSiguienteDuenos" Content="Siguiente ▶"
+                                            Padding="15,8" Margin="10,0,0,0"
+                                            Background="{DynamicResource CardBackgroundBrush}" BorderBrush="#D1D5DB" BorderThickness="1"
+                                            FontSize="13" Cursor="Hand" Click="BtnSiguienteDuenos_Click"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
                     </Grid>
                 </TabItem>
 
                 <!-- Tab Categorías -->
-                <TabItem Header="📁 Categorías">
+                <TabItem Header="&#x1F4C1; Categorías">
                     <Grid Background="{DynamicResource CardBackgroundBrush}">
-                        <TextBlock Text="Próximamente: Historial de Categorías" 
-                                   HorizontalAlignment="Center" 
-                                   VerticalAlignment="Center"
-                                   FontSize="16" 
-                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Filtros Categorías -->
+                        <Border Grid.Row="0" Background="{DynamicResource BackgroundBrush}" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1" Padding="20">
+                            <StackPanel>
+                                <TextBlock Text="Filtros" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,10"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                        <TextBlock Text="Usuario" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+                                        <ComboBox Name="cmbUsuarioCategorias" Height="36" FontSize="13" SelectionChanged="FiltrosCategorias_Changed"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                                        <TextBlock Text="Acción" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+                                        <ComboBox Name="cmbAccionCategorias" Height="36" FontSize="13" SelectionChanged="FiltrosCategorias_Changed">
+                                            <ComboBoxItem Content="Todas" IsSelected="True" Tag=""/>
+                                            <ComboBoxItem Content="➕ Crear" Tag="crear"/>
+                                            <ComboBoxItem Content="✏️ Editar" Tag="editar"/>
+                                            <ComboBoxItem Content="❌ Eliminar" Tag="eliminar"/>
+                                        </ComboBox>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2" Margin="0,0,10,0">
+                                        <TextBlock Text="Buscar" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+                                        <TextBox Name="txtBuscarCategorias" Height="36" FontSize="13" Padding="10,8" TextChanged="FiltrosCategorias_Changed"/>
+                                    </StackPanel>
+
+                                    <Button Grid.Column="3" Content="🔍 Buscar"
+                                            VerticalAlignment="Bottom"
+                                            Padding="20,8"
+                                            Background="#3B82F6"
+                                            Foreground="White"
+                                            BorderThickness="0"
+                                            FontSize="13"
+                                            Cursor="Hand"
+                                            Click="BtnBuscarCategorias_Click"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- DataGrid Categorías -->
+                        <DataGrid Name="dgCategorias"
+                                  Grid.Row="1"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  SelectionMode="Single"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  HeadersVisibility="Column"
+                                  GridLinesVisibility="Horizontal"
+                                  RowHeight="50"
+                                  Background="{DynamicResource CardBackgroundBrush}"
+                                  BorderThickness="0"
+                                  FontSize="13">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Fecha" Binding="{Binding FechaTexto}" Width="140"/>
+                                <DataGridTextColumn Header="Usuario" Binding="{Binding UsuarioEmail}" Width="200"/>
+                                <DataGridTextColumn Header="Categoría" Binding="{Binding EntidadNombre}" Width="180"/>
+                                <DataGridTextColumn Header="Acción" Binding="{Binding AccionTexto}" Width="120"/>
+                                <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!-- Paginación Categorías -->
+                        <Border Grid.Row="2" Background="{DynamicResource BackgroundBrush}" BorderBrush="#E5E7EB" BorderThickness="0,1,0,0" Padding="20,15">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <TextBlock Name="txtInfoCategorias" Text="Mostrando registros"
+                                               VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Name="btnAnteriorCategorias" Content="◀ Anterior"
+                                            Padding="15,8" Margin="0,0,10,0"
+                                            Background="{DynamicResource CardBackgroundBrush}" BorderBrush="#D1D5DB" BorderThickness="1"
+                                            FontSize="13" Cursor="Hand" Click="BtnAnteriorCategorias_Click"/>
+                                    <TextBlock Name="txtPaginaCategorias" Text="Página"
+                                               VerticalAlignment="Center" Margin="10,0"
+                                               FontSize="13" FontWeight="SemiBold"/>
+                                    <Button Name="btnSiguienteCategorias" Content="Siguiente ▶"
+                                            Padding="15,8" Margin="10,0,0,0"
+                                            Background="{DynamicResource CardBackgroundBrush}" BorderBrush="#D1D5DB" BorderThickness="1"
+                                            FontSize="13" Cursor="Hand" Click="BtnSiguienteCategorias_Click"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
                     </Grid>
                 </TabItem>
+
+                <!-- Tab Correos -->
+                <TabItem Header="&#x1F4E7; Correos">
+                    <Grid Background="{DynamicResource CardBackgroundBrush}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Filtros Correos -->
+                        <Border Grid.Row="0" Background="{DynamicResource BackgroundBrush}" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1" Padding="20">
+                            <StackPanel>
+                                <TextBlock Text="Filtros" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,10"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                        <TextBlock Text="Usuario" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+                                        <ComboBox Name="cmbUsuarioCorreos" Height="36" FontSize="13" SelectionChanged="FiltrosCorreos_Changed"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                                        <TextBlock Text="Casa" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+                                        <ComboBox Name="cmbCasaCorreos" Height="36" FontSize="13" SelectionChanged="FiltrosCorreos_Changed"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2" Margin="0,0,10,0">
+                                        <TextBlock Text="Estado" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+                                        <ComboBox Name="cmbEstadoCorreos" Height="36" FontSize="13" SelectionChanged="FiltrosCorreos_Changed">
+                                            <ComboBoxItem Content="Todos" IsSelected="True" Tag=""/>
+                                            <ComboBoxItem Content="&#x2705; Enviado" Tag="enviado"/>
+                                            <ComboBoxItem Content="&#x274C; Error" Tag="error"/>
+                                        </ComboBox>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="3" Margin="0,0,10,0">
+                                        <TextBlock Text="Buscar" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+                                        <TextBox Name="txtBuscarCorreos" Height="36" FontSize="13" Padding="10,8" TextChanged="FiltrosCorreos_Changed"/>
+                                    </StackPanel>
+
+                                    <Button Grid.Column="4" Content="&#x1F50D; Buscar"
+                                            VerticalAlignment="Bottom"
+                                            Padding="20,8"
+                                            Background="#3B82F6"
+                                            Foreground="White"
+                                            BorderThickness="0"
+                                            FontSize="13"
+                                            Cursor="Hand"
+                                            Click="BtnBuscarCorreos_Click"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- DataGrid Correos -->
+                        <DataGrid Name="dgCorreos"
+                                  Grid.Row="1"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  SelectionMode="Single"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  HeadersVisibility="Column"
+                                  GridLinesVisibility="Horizontal"
+                                  RowHeight="50"
+                                  Background="{DynamicResource CardBackgroundBrush}"
+                                  BorderThickness="0"
+                                  FontSize="13">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Fecha" Binding="{Binding FechaTexto}" Width="140"/>
+                                <DataGridTextColumn Header="Usuario" Binding="{Binding UsuarioEmail}" Width="170"/>
+                                <DataGridTextColumn Header="Casa" Binding="{Binding CasaNombre}" Width="130"/>
+                                <DataGridTextColumn Header="Destinatarios" Binding="{Binding Destinatarios}" Width="180"/>
+                                <DataGridTextColumn Header="Asunto" Binding="{Binding Asunto}" Width="180"/>
+                                <DataGridTextColumn Header="Adjuntos" Binding="{Binding AdjuntosTexto}" Width="110"/>
+                                <DataGridTextColumn Header="Estado" Binding="{Binding EstadoTexto}" Width="90"/>
+                                <DataGridTemplateColumn Header="Ver" Width="80">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <Button Content="&#x1F4C4;"
+                                                        ToolTip="Abrir PDF"
+                                                        Width="30" Height="30"
+                                                        Margin="0,0,4,0"
+                                                        Background="Transparent"
+                                                        BorderThickness="0"
+                                                        FontSize="16"
+                                                        Cursor="Hand"
+                                                        Tag="{Binding UrlPdf}"
+                                                        Click="BtnAbrirPdf_Click">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding UrlPdf}" Value="{x:Null}">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding UrlPdf}" Value="">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                </Button>
+                                                <Button Content="&#x1F4CA;"
+                                                        ToolTip="Abrir Excel"
+                                                        Width="30" Height="30"
+                                                        Background="Transparent"
+                                                        BorderThickness="0"
+                                                        FontSize="16"
+                                                        Cursor="Hand"
+                                                        Tag="{Binding UrlExcel}"
+                                                        Click="BtnAbrirExcel_Click">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding UrlExcel}" Value="{x:Null}">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding UrlExcel}" Value="">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                </Button>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!-- Paginación Correos -->
+                        <Border Grid.Row="2" Background="{DynamicResource BackgroundBrush}" BorderBrush="#E5E7EB" BorderThickness="0,1,0,0" Padding="20,15">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <TextBlock Name="txtInfoCorreos" Text="Mostrando registros"
+                                               VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Name="btnAnteriorCorreos" Content="◀ Anterior"
+                                            Padding="15,8" Margin="0,0,10,0"
+                                            Background="{DynamicResource CardBackgroundBrush}" BorderBrush="#D1D5DB" BorderThickness="1"
+                                            FontSize="13" Cursor="Hand" Click="BtnAnteriorCorreos_Click"/>
+                                    <TextBlock Name="txtPaginaCorreos" Text="Página"
+                                               VerticalAlignment="Center" Margin="10,0"
+                                               FontSize="13" FontWeight="SemiBold"/>
+                                    <Button Name="btnSiguienteCorreos" Content="Siguiente ▶"
+                                            Padding="15,8" Margin="10,0,0,0"
+                                            Background="{DynamicResource CardBackgroundBrush}" BorderBrush="#D1D5DB" BorderThickness="1"
+                                            FontSize="13" Cursor="Hand" Click="BtnSiguienteCorreos_Click"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
             </TabControl>
         </Grid>
     </Grid>

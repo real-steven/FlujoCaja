@@ -46,6 +46,17 @@ namespace FlujoCajaWpf.Views
 
                 if (resultado.Success)
                 {
+                    // 📊 REGISTRAR EN HISTORIAL
+                    var user = SupabaseAuthHelper.GetCurrentUser();
+                    await SupabaseAuditoriaHelper.RegistrarAccionAsync(
+                        user?.Email ?? "desconocido",
+                        "categoria",
+                        "crear",
+                        null,
+                        nuevaCategoria.Nombre,
+                        $"Creó nueva categoría: {nuevaCategoria.Nombre}"
+                    );
+
                     CustomMessageBox.Show(
                         "La categoría se ha creado exitosamente.",
                         "Éxito",

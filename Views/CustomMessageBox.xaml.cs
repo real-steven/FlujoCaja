@@ -206,7 +206,16 @@ namespace FlujoCajaWpf.Views
             MessageBoxButtons botones = MessageBoxButtons.OK)
         {
             var dialog = new CustomMessageBox(mensaje, titulo, tipo, botones);
-            dialog.Owner = Application.Current.MainWindow;
+            var owner = Application.Current.MainWindow;
+            if (owner != null && owner != dialog)
+            {
+                dialog.Owner = owner;
+                dialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            }
+            else
+            {
+                dialog.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
             dialog.ShowDialog();
             return dialog.DialogResultValue;
         }

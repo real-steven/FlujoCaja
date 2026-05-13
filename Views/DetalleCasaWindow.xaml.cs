@@ -1,14 +1,16 @@
 using FlujoCajaWpf.Data;
 using FlujoCajaWpf.Models;
+using FlujoCajaWpf.Services;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using System.IO;
-using System.Net.Http;
 
 namespace FlujoCajaWpf.Views
 {
@@ -21,6 +23,10 @@ namespace FlujoCajaWpf.Views
         private HojaMensual? hojaSeleccionada = null;
         private List<Nota> notasCasa = new List<Nota>();
         private List<FotoCasaSupabase> fotosCasa = new List<FotoCasaSupabase>();
+        private ObservableCollection<MovimientoIA> _movimientosIA = new ObservableCollection<MovimientoIA>();
+
+        // Lista estática para ComboBox de tipo en tabla IA
+        public static readonly string[] TiposMovimientoIA = { "Ingreso", "Gasto" };
 
         public DetalleCasaWindow(Casa casa)
         {
@@ -35,6 +41,7 @@ namespace FlujoCajaWpf.Views
 
         private async Task CargarDatosAsync()
         {
+            await SupabaseHojaMensualHelper.AsegurarHojaProximoMesAsync(_casa.Id);
             await CargarEstadoGeneralAsync();
             await CargarFiltrosResumenAsync();
             await CargarHojasMensualesAsync();
@@ -94,6 +101,11 @@ namespace FlujoCajaWpf.Views
             if (cmbMes.SelectedItem == null) return;
 
             hojaSeleccionada = cmbMes.SelectedItem as HojaMensual;
+            await CargarMovimientosAsync();
+        }
+
+        private async void RefrescarMovimientos_Click(object sender, RoutedEventArgs e)
+        {
             await CargarMovimientosAsync();
         }
 
@@ -478,36 +490,36 @@ namespace FlujoCajaWpf.Views
 
         #endregion
 
-        private async void TabResumen_Click(object sender, RoutedEventArgs e)
+        private void ResetTabButtons()
         {
-            btnTabResumen.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(59, 130, 246));
-            btnTabResumen.Foreground = System.Windows.Media.Brushes.White;
-            btnTabMovimientos.Background = System.Windows.Media.Brushes.Transparent;
-            btnTabMovimientos.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(107, 114, 128));
-            btnTabDetalles.Background = System.Windows.Media.Brushes.Transparent;
-            btnTabDetalles.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(107, 114, 128));
-
-            tabResumen.Visibility = Visibility.Visible;
+            var gray = new SolidColorBrush(Color.FromRgb(107, 114, 128));
+            btnTabResumen.Background       = Brushes.Transparent;  btnTabResumen.Foreground       = gray;
+            btnTabMovimientos.Background   = Brushes.Transparent;  btnTabMovimientos.Foreground   = gray;
+            btnTabDetalles.Background      = Brushes.Transparent;  btnTabDetalles.Foreground      = gray;
+            btnTabMovimientosIA.Background = Brushes.Transparent;  btnTabMovimientosIA.Foreground = gray;
+            tabResumen.Visibility = Visibility.Collapsed;
             tabMovimientos.Visibility = Visibility.Collapsed;
             tabDetalles.Visibility = Visibility.Collapsed;
-            
-            // Recargar todos los datos del resumen al cambiar a esta pestaña
+            tabMovimientosIA.Visibility = Visibility.Collapsed;
+        }
+
+        private async void TabResumen_Click(object sender, RoutedEventArgs e)
+        {
+            ResetTabButtons();
+            btnTabResumen.Background = new SolidColorBrush(Color.FromRgb(59, 130, 246));
+            btnTabResumen.Foreground = Brushes.White;
+            tabResumen.Visibility = Visibility.Visible;
+
             await CargarEstadoGeneralAsync();
             await CargarFiltrosResumenAsync();
         }
 
         private void TabMovimientos_Click(object sender, RoutedEventArgs e)
         {
-            btnTabResumen.Background = System.Windows.Media.Brushes.Transparent;
-            btnTabResumen.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(107, 114, 128));
-            btnTabMovimientos.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(59, 130, 246));
-            btnTabMovimientos.Foreground = System.Windows.Media.Brushes.White;
-            btnTabDetalles.Background = System.Windows.Media.Brushes.Transparent;
-            btnTabDetalles.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(107, 114, 128));
-
-            tabResumen.Visibility = Visibility.Collapsed;
+            ResetTabButtons();
+            btnTabMovimientos.Background = new SolidColorBrush(Color.FromRgb(59, 130, 246));
+            btnTabMovimientos.Foreground = Brushes.White;
             tabMovimientos.Visibility = Visibility.Visible;
-            tabDetalles.Visibility = Visibility.Collapsed;
         }
 
         private void BuscarMovimiento_TextChanged(object sender, TextChangedEventArgs e)
@@ -538,6 +550,182 @@ namespace FlujoCajaWpf.Views
             txtContadorMovimientos.Text = count == 1 ? "1 movimiento" : $"{count} movimientos";
         }
 
+        private async void DescargarReporte_Click(object sender, RoutedEventArgs e)
+        {
+            if (hojaSeleccionada == null)
+            {
+                CustomMessageBox.Show(
+                    "Selecciona un mes antes de generar el reporte.",
+                    "Sin mes seleccionado",
+                    CustomMessageBox.MessageBoxType.Warning,
+                    CustomMessageBox.MessageBoxButtons.OK);
+                return;
+            }
+
+            if (todosLosMovimientos.Count == 0)
+            {
+                CustomMessageBox.Show(
+                    "No hay movimientos registrados en este mes.",
+                    "Sin movimientos",
+                    CustomMessageBox.MessageBoxType.Warning,
+                    CustomMessageBox.MessageBoxButtons.OK);
+                return;
+            }
+
+            // 1. Elegir formato
+            string mesAnio = $"{hojaSeleccionada.NombreMes} {hojaSeleccionada.Anio}";
+            var dialogo = new ReporteFormatoDialog(_casa.Nombre, mesAnio);
+            dialogo.Owner = this;
+            if (dialogo.ShowDialog() != true) return;
+
+            bool esPdfTabla = dialogo.FormatoSeleccionado == ReporteFormatoDialog.FormatoReporte.PdfTabla;
+
+            // 2. SaveFileDialog (siempre PDF)
+            var save = new SaveFileDialog
+            {
+                Title = "Guardar reporte",
+                FileName = $"Reporte_{_casa.Nombre.Replace(" ", "_")}_{hojaSeleccionada.Anio}_{hojaSeleccionada.Mes:D2}",
+                Filter = "PDF (*.pdf)|*.pdf",
+                DefaultExt = "pdf"
+            };
+
+            if (save.ShowDialog() != true) return;
+
+            var btn = sender as System.Windows.Controls.Button;
+            if (btn != null) btn.IsEnabled = false;
+
+            try
+            {
+                var datos = new ReporteService.DatosReporte(
+                    CasaNombre: _casa.Nombre,
+                    DuenoNombre: _casa.DuenoNombre ?? "—",
+                    Moneda: _casa.Moneda ?? "USD",
+                    MesAnio: mesAnio,
+                    Movimientos: todosLosMovimientos
+                );
+
+                if (esPdfTabla)
+                    await ReporteService.GenerarPdfAsync(datos, save.FileName);
+                else
+                    await ReporteService.GenerarPdfFacturasAsync(datos, save.FileName, ObtenerImagenMovimientoAsync);
+
+                // 3. Abrir el archivo
+                Process.Start(new ProcessStartInfo(save.FileName) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                CustomMessageBox.Show(
+                    $"Error al generar el reporte:\n{ex.Message}",
+                    "Error",
+                    CustomMessageBox.MessageBoxType.Error,
+                    CustomMessageBox.MessageBoxButtons.OK);
+            }
+            finally
+            {
+                if (btn != null) btn.IsEnabled = true;
+            }
+        }
+
+        private async void EnviarReporte_Click(object sender, RoutedEventArgs e)
+        {
+            if (hojaSeleccionada == null)
+            {
+                CustomMessageBox.Show(
+                    "Selecciona un mes antes de enviar el reporte.",
+                    "Sin mes seleccionado",
+                    CustomMessageBox.MessageBoxType.Warning,
+                    CustomMessageBox.MessageBoxButtons.OK);
+                return;
+            }
+
+            if (todosLosMovimientos.Count == 0)
+            {
+                CustomMessageBox.Show(
+                    "No hay movimientos registrados en este mes.",
+                    "Sin movimientos",
+                    CustomMessageBox.MessageBoxType.Warning,
+                    CustomMessageBox.MessageBoxButtons.OK);
+                return;
+            }
+
+            var btn = sender as System.Windows.Controls.Button;
+            if (btn != null) btn.IsEnabled = false;
+
+            string? rutaPdfTabla = null;
+            string? rutaPdfImagenes = null;
+
+            try
+            {
+                string mesAnio = $"{hojaSeleccionada.NombreMes} {hojaSeleccionada.Anio}";
+                var datos = new ReporteService.DatosReporte(
+                    CasaNombre: _casa.Nombre,
+                    DuenoNombre: _casa.DuenoNombre ?? "—",
+                    Moneda: _casa.Moneda ?? "USD",
+                    MesAnio: mesAnio,
+                    Movimientos: todosLosMovimientos
+                );
+
+                // 1. Generar ambos PDFs en carpeta temporal
+                string nombreBase = $"Reporte_{_casa.Nombre.Replace(" ", "_")}_{hojaSeleccionada.Anio}_{hojaSeleccionada.Mes:D2}";
+                rutaPdfTabla = Path.Combine(Path.GetTempPath(), $"{nombreBase}_Tabla.pdf");
+                rutaPdfImagenes = Path.Combine(Path.GetTempPath(), $"{nombreBase}_Imagenes.pdf");
+
+                await Task.WhenAll(
+                    ReporteService.GenerarPdfAsync(datos, rutaPdfTabla),
+                    ReporteService.GenerarPdfFacturasAsync(datos, rutaPdfImagenes, ObtenerImagenMovimientoAsync)
+                );
+
+                // 2. Abrir diálogo de envío
+                var enviarDialog = new EnviarReporteDialog(_casa, rutaPdfTabla, rutaPdfImagenes) { Owner = this };
+                enviarDialog.ShowDialog();
+
+                // 3. Confirmación si fue exitoso
+                if (enviarDialog.EnvioFueExitoso)
+                {
+                    CustomMessageBox.Show(
+                        $"✅ Reporte enviado correctamente.\n\nPropiedad: {_casa.Nombre}\nPeríodo: {mesAnio}\nDestinatarios: {enviarDialog.DestinatariosEnviados}",
+                        "Correo enviado",
+                        CustomMessageBox.MessageBoxType.Success,
+                        CustomMessageBox.MessageBoxButtons.OK);
+                }
+            }
+            catch (Exception ex)
+            {
+                CustomMessageBox.Show(
+                    $"Error al preparar el reporte:\n{ex.Message}",
+                    "Error",
+                    CustomMessageBox.MessageBoxType.Error,
+                    CustomMessageBox.MessageBoxButtons.OK);
+            }
+            finally
+            {
+                if (btn != null) btn.IsEnabled = true;
+
+                // Limpiar archivos temporales
+                try { if (rutaPdfTabla != null && File.Exists(rutaPdfTabla)) File.Delete(rutaPdfTabla); } catch { }
+                try { if (rutaPdfImagenes != null && File.Exists(rutaPdfImagenes)) File.Delete(rutaPdfImagenes); } catch { }
+            }
+        }
+
+        private async void LeerComprobante_Click(object sender, RoutedEventArgs e)
+        {
+            int anio = DateTime.Now.Year;
+            int mes  = DateTime.Now.Month;
+
+            var hoja = hojasDisponibles.FirstOrDefault(h => h.Mes == mes && h.Anio == anio);
+            var emailUsuario = SupabaseAuthHelper.GetCurrentUser()?.Email ?? "";
+
+            var dlg = new ImportarFacturasDialog(_casa.Id, mes, anio, hoja?.Id, emailUsuario)
+            {
+                Owner = this,
+                ArchivoCompletado = CargarMovimientosIAAsync
+            };
+            dlg.ShowDialog();
+
+            // Recarga final por si el dialog se cerró antes de terminar el último archivo
+            await CargarMovimientosIAAsync();
+        }
+
         private async void NuevoMovimiento_Click(object sender, RoutedEventArgs e)
         {
             if (hojaSeleccionada == null)
@@ -551,7 +739,7 @@ namespace FlujoCajaWpf.Views
                 return;
             }
 
-            var ventana = new AgregarMovimientoWindow(_casa.Id, hojaSeleccionada.Id, _casa.Nombre);
+            var ventana = new AgregarMovimientoWindow(_casa.Id, hojaSeleccionada.Id, _casa.Nombre, _casa.Moneda);
             ventana.Owner = this;
             
             if (ventana.ShowDialog() == true)
@@ -560,14 +748,129 @@ namespace FlujoCajaWpf.Views
             }
         }
 
-        private async void EditarMovimiento_Click(object sender, RoutedEventArgs e)
+        private async void AdjuntarImagen_Click(object sender, RoutedEventArgs e)
         {
+            var button = sender as Button;
+            var movimiento = button?.Tag as Movimiento;
+            if (movimiento == null) return;
+
+            if (movimiento.TieneImagen)
+            {
+                // Resolver URL: si es path privado, generar URL firmada temporal
+                string urlParaMostrar = movimiento.ImagenUrl!;
+                if (!urlParaMostrar.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+                    !urlParaMostrar.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                {
+                    var signedUrl = await SupabaseStorageHelper.ObtenerUrlFirmadaMovimientoAsync(urlParaMostrar);
+                    if (signedUrl == null)
+                    {
+                        CustomMessageBox.Show("No se pudo obtener acceso a la imagen.", "Error",
+                            CustomMessageBox.MessageBoxType.Error, CustomMessageBox.MessageBoxButtons.OK);
+                        return;
+                    }
+                    urlParaMostrar = signedUrl;
+                }
+
+                // ── Movimiento YA tiene imagen: abrir VerImagenDialog ──
+                var verDialog = new VerImagenDialog(urlParaMostrar);
+                verDialog.Owner = this;
+                verDialog.ShowDialog();
+
+                if (verDialog.QuiereEliminar)
+                {
+                    // Eliminar imagen del Storage y limpiar DB
+                    await SupabaseStorageHelper.EliminarImagenMovimientoAsync(movimiento.ImagenUrl!);
+                    var delResult = await SupabaseMovimientoHelper.ActualizarImagenMovimientoAsync(movimiento.Id, null);
+                    if (delResult.Success)
+                    {
+                        movimiento.ImagenUrl = null;
+                        dgMovimientos.Items.Refresh();
+                        CustomMessageBox.Show("Imagen eliminada correctamente.", "Éxito",
+                            CustomMessageBox.MessageBoxType.Success, CustomMessageBox.MessageBoxButtons.OK);
+                    }
+                    else
+                    {
+                        CustomMessageBox.Show($"Error al eliminar: {delResult.Error}", "Error",
+                            CustomMessageBox.MessageBoxType.Error, CustomMessageBox.MessageBoxButtons.OK);
+                    }
+                }
+                else if (!string.IsNullOrEmpty(verDialog.RutaImagenSeleccionada))
+                {
+                    // Reemplazar: eliminar antigua y subir nueva
+                    await SupabaseStorageHelper.EliminarImagenMovimientoAsync(movimiento.ImagenUrl!);
+                    await SubirYGuardarImagenAsync(movimiento, verDialog.RutaImagenSeleccionada);
+                }
+            }
+            else
+            {
+                // ── Movimiento SIN imagen: abrir AdjuntarImagenDialog ──
+                var adjDialog = new AdjuntarImagenDialog();
+                adjDialog.Owner = this;
+
+                if (adjDialog.ShowDialog() == true && !string.IsNullOrEmpty(adjDialog.RutaImagenSeleccionada))
+                {
+                    await SubirYGuardarImagenAsync(movimiento, adjDialog.RutaImagenSeleccionada);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sube la imagen al bucket privado de facturas y guarda el storage path en la BD.
+        /// </summary>
+        private async Task SubirYGuardarImagenAsync(Movimiento movimiento, string rutaLocal)
+        {
+            try
+            {
+                var imageBytes = await File.ReadAllBytesAsync(rutaLocal);
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(rutaLocal).ToLowerInvariant()}";
+                var uploadResult = await SupabaseStorageHelper.SubirImagenMovimientoAsync(imageBytes, fileName, _casa.Id);
+
+                if (!uploadResult.Success)
+                {
+                    CustomMessageBox.Show($"Error al subir la imagen: {uploadResult.Error}", "Error",
+                        CustomMessageBox.MessageBoxType.Error, CustomMessageBox.MessageBoxButtons.OK);
+                    return;
+                }
+
+                // uploadResult.Path es el storage path privado (ej: "5/abc123.jpg")
+                var updateResult = await SupabaseMovimientoHelper.ActualizarImagenMovimientoAsync(movimiento.Id, uploadResult.Path);
+                if (updateResult.Success)
+                {
+                    movimiento.ImagenUrl = uploadResult.Path;
+                    dgMovimientos.Items.Refresh();
+                    CustomMessageBox.Show("Imagen guardada correctamente.", "Éxito",
+                        CustomMessageBox.MessageBoxType.Success, CustomMessageBox.MessageBoxButtons.OK);
+                }
+                else
+                {
+                    CustomMessageBox.Show($"Error al guardar la referencia: {updateResult.Error}", "Error",
+                        CustomMessageBox.MessageBoxType.Error, CustomMessageBox.MessageBoxButtons.OK);
+                }
+            }
+            catch (Exception ex)
+            {
+                CustomMessageBox.Show($"Error inesperado: {ex.Message}", "Error",
+                    CustomMessageBox.MessageBoxType.Error, CustomMessageBox.MessageBoxButtons.OK);
+            }
+        }
+
+        /// <summary>
+        /// Descarga los bytes de la imagen de un movimiento (maneja paths privados y URLs legacy).
+        /// Usado por ReporteService.GenerarPdfFacturasAsync.
+        /// </summary>
+        private static async Task<byte[]?> ObtenerImagenMovimientoAsync(Movimiento m)
+        {
+            if (string.IsNullOrEmpty(m.ImagenUrl)) return null;
+            return await SupabaseStorageHelper.DescargarImagenMovimientoAsync(m.ImagenUrl);
+        }
+
+        private async void EditarMovimiento_Click(object sender, RoutedEventArgs e)        {
             var button = sender as Button;
             var movimiento = button?.Tag as Movimiento;
             
             if (movimiento == null) return;
 
-            var ventana = new AgregarMovimientoWindow(_casa.Id, movimiento.HojaMensualId ?? 0, _casa.Nombre, movimiento);
+            var ventana = new AgregarMovimientoWindow(_casa.Id, movimiento.HojaMensualId ?? 0, _casa.Nombre, _casa.Moneda, movimiento);
             ventana.Owner = this;
             
             if (ventana.ShowDialog() == true)
@@ -632,16 +935,10 @@ namespace FlujoCajaWpf.Views
 
         private void TabDetalles_Click(object sender, RoutedEventArgs e)
         {
-            tabResumen.Visibility = Visibility.Collapsed;
-            tabMovimientos.Visibility = Visibility.Collapsed;
-            tabDetalles.Visibility = Visibility.Visible;
-
-            btnTabResumen.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("Transparent"));
-            btnTabResumen.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6B7280"));
-            btnTabMovimientos.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("Transparent"));
-            btnTabMovimientos.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6B7280"));
+            ResetTabButtons();
             btnTabDetalles.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3B82F6"));
             btnTabDetalles.Foreground = new SolidColorBrush(Colors.White);
+            tabDetalles.Visibility = Visibility.Visible;
 
             CargarDetallesCasa();
         }
@@ -654,7 +951,7 @@ namespace FlujoCajaWpf.Views
             txtDetalleCategoria.Text = _casa.CategoriaNombre;
             txtDetalleMoneda.Text = _casa.Moneda;
             txtDetalleEstado.Text = _casa.Activo ? "✅ Activo" : "❌ Inactivo";
-            txtDetalleFecha.Text = _casa.FechaCreacion.ToString("dd/MM/yyyy");
+            txtLinkContrato.Text = _casa.LinkContrato ?? string.Empty;
 
             // Cargar notas
             await CargarNotasAsync();
@@ -739,18 +1036,53 @@ namespace FlujoCajaWpf.Views
 
             if (nota == null) return;
 
+            var cardBg = Application.Current.Resources["CardBackgroundBrush"] as Brush ?? Brushes.White;
+            var inputBg = Application.Current.Resources["InputBackgroundBrush"] as Brush ?? Brushes.White;
+            var textPrimary = Application.Current.Resources["TextPrimaryBrush"] as Brush ?? Brushes.Black;
+            var borderBrush = Application.Current.Resources["BorderBrush"] as Brush
+                              ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E5E7EB"));
+            var headerGradient = Application.Current.Resources["PrimaryGradient"] as Brush
+                                 ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E3A8A"));
+
             var ventana = new Window
             {
                 Title = "Editar Nota",
                 Width = 500,
-                Height = 300,
+                SizeToContent = SizeToContent.Height,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Owner = this,
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F3F4F6"))
+                Background = cardBg,
+                WindowStyle = WindowStyle.SingleBorderWindow,
+                ResizeMode = ResizeMode.NoResize
             };
 
-            var stackPanel = new StackPanel { Margin = new Thickness(20) };
-            
+            // Layout principal
+            var rootGrid = new Grid();
+            rootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            rootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+            // Header azul
+            var header = new Border
+            {
+                Background = headerGradient,
+                Padding = new Thickness(25, 18, 25, 18)
+            };
+            var headerText = new TextBlock
+            {
+                Text = "✏️  Editar Nota",
+                FontSize = 20,
+                FontWeight = FontWeights.Bold,
+                Foreground = Brushes.White
+            };
+            header.Child = headerText;
+            Grid.SetRow(header, 0);
+            rootGrid.Children.Add(header);
+
+            // Contenido
+            var stackPanel = new StackPanel { Margin = new Thickness(25, 20, 25, 25) };
+            Grid.SetRow(stackPanel, 1);
+            rootGrid.Children.Add(stackPanel);
+
             var textBox = new TextBox
             {
                 Text = nota.Contenido,
@@ -759,9 +1091,11 @@ namespace FlujoCajaWpf.Views
                 MinHeight = 150,
                 Padding = new Thickness(10),
                 FontSize = 14,
-                Background = Brushes.White,
-                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E5E7EB")),
-                BorderThickness = new Thickness(1)
+                Background = inputBg,
+                Foreground = textPrimary,
+                BorderBrush = borderBrush,
+                BorderThickness = new Thickness(1),
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto
             };
 
             var buttonPanel = new StackPanel
@@ -840,7 +1174,7 @@ namespace FlujoCajaWpf.Views
             buttonPanel.Children.Add(btnCancelar);
             stackPanel.Children.Add(textBox);
             stackPanel.Children.Add(buttonPanel);
-            ventana.Content = stackPanel;
+            ventana.Content = rootGrid;
 
             ventana.ShowDialog();
         }
@@ -1033,8 +1367,8 @@ namespace FlujoCajaWpf.Views
 
         private async void EliminarFoto_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            var foto = button?.Tag as FotoCasaSupabase;
+            var menuItem = sender as MenuItem;
+            var foto = menuItem?.Tag as FotoCasaSupabase;
 
             if (foto == null) return;
 
@@ -1383,6 +1717,330 @@ namespace FlujoCajaWpf.Views
         private void Cerrar_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        // ==================== TAB MOVIMIENTOS IA ====================
+
+        private async void TabMovimientosIA_Click(object sender, RoutedEventArgs e)
+        {
+            ResetTabButtons();
+            btnTabMovimientosIA.Background = new SolidColorBrush(Color.FromRgb(245, 158, 11));
+            btnTabMovimientosIA.Foreground = Brushes.White;
+            tabMovimientosIA.Visibility = Visibility.Visible;
+
+            // Inicializar filtros si aún no están poblados
+            if (cmbIAAnio.Items.Count == 0)
+            {
+                var anios = await SupabaseHojaMensualHelper.ObtenerAniosDisponiblesAsync(_casa.Id);
+                cmbIAAnio.ItemsSource = anios;
+                var anioActual = DateTime.Now.Year;
+                cmbIAAnio.SelectedItem = anios.Contains(anioActual) ? (object)anioActual : anios.FirstOrDefault();
+            }
+
+            if (cmbIAMes.SelectedItem == null)
+            {
+                foreach (ComboBoxItem item in cmbIAMes.Items)
+                {
+                    if (item.Tag is string t && int.TryParse(t, out int m) && m == DateTime.Now.Month)
+                    {
+                        cmbIAMes.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+
+            await CargarMovimientosIAAsync();
+        }
+
+        private async void CmbIAAnio_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            => await CargarMovimientosIAAsync();
+
+        private async void CmbIAMes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            => await CargarMovimientosIAAsync();
+
+        private async Task CargarMovimientosIAAsync()
+        {
+            if (cmbIAAnio.SelectedItem is not int anio) return;
+            if (cmbIAMes.SelectedItem is not ComboBoxItem mesItem) return;
+            if (!int.TryParse(mesItem.Tag?.ToString(), out int mes)) return;
+
+            var lista = await SupabaseMovimientoIAHelper.ObtenerPorCasaAsync(_casa.Id, mes, anio);
+            _movimientosIA.Clear();
+            foreach (var m in lista) _movimientosIA.Add(m);
+
+            dgMovimientosIA.ItemsSource = _movimientosIA;
+            txtNoDataIA.Visibility = _movimientosIA.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+            // Actualizar badge
+            ActualizarBadgeIA();
+        }
+
+        private void ActualizarBadgeIA()
+        {
+            var pendientes = _movimientosIA.Count(m => m.Estado != "aprobado");
+            badgeIA.Visibility = pendientes > 0 ? Visibility.Visible : Visibility.Collapsed;
+            txtBadgeIA.Text = pendientes.ToString();
+        }
+
+        private void IASeleccionarTodos_Click(object sender, RoutedEventArgs e)
+        {
+            var todosSeleccionados = _movimientosIA.All(m => m.Seleccionado);
+            foreach (var m in _movimientosIA)
+                m.Seleccionado = !todosSeleccionados;
+        }
+
+        private async void IABorrarSeleccionados_Click(object sender, RoutedEventArgs e)
+        {
+            // Forzar commit de cualquier celda en edición antes de leer los valores
+            dgMovimientosIA.CommitEdit(DataGridEditingUnit.Row, true);
+
+            var seleccionados = _movimientosIA.Where(m => m.Seleccionado).ToList();
+            if (!seleccionados.Any())
+            {
+                CustomMessageBox.Show("Selecciona al menos un registro para borrar.",
+                    "Sin selección", CustomMessageBox.MessageBoxType.Warning, CustomMessageBox.MessageBoxButtons.OK);
+                return;
+            }
+
+            var confirmacion = CustomMessageBox.Show(
+                $"¿Borrar {seleccionados.Count} registro(s) de movimientos IA?",
+                "Confirmar eliminación", CustomMessageBox.MessageBoxType.Warning, CustomMessageBox.MessageBoxButtons.YesNo);
+
+            if (confirmacion != true) return;
+
+            var (ok, err) = await SupabaseMovimientoIAHelper.EliminarVariosAsync(seleccionados.Select(m => m.Id));
+            if (ok)
+                await CargarMovimientosIAAsync();
+            else
+                CustomMessageBox.Show($"Error al borrar: {err}", "Error",
+                    CustomMessageBox.MessageBoxType.Error, CustomMessageBox.MessageBoxButtons.OK);
+        }
+
+        private async void IAAceptarSeleccionados_Click(object sender, RoutedEventArgs e)
+        {
+            // Forzar commit de cualquier celda en edición antes de leer los valores
+            dgMovimientosIA.CommitEdit(DataGridEditingUnit.Row, true);
+
+            var seleccionados = _movimientosIA.Where(m => m.Seleccionado && m.Fecha.HasValue && m.Monto.HasValue).ToList();
+            if (!seleccionados.Any())
+            {
+                CustomMessageBox.Show("Selecciona registros que tengan fecha y monto para poder aceptarlos.",
+                    "Sin datos completos", CustomMessageBox.MessageBoxType.Warning, CustomMessageBox.MessageBoxButtons.OK);
+                return;
+            }
+
+            // Siempre usar el mes/año de los filtros del tab IA (mes vigente de trabajo),
+            // independientemente de la fecha de la factura.
+            if (cmbIAMes.SelectedItem is not ComboBoxItem mesItem
+                || !int.TryParse(mesItem.Tag?.ToString(), out int mes)
+                || cmbIAAnio.SelectedItem is not int anio)
+            {
+                CustomMessageBox.Show("Selecciona el mes y año de destino en los filtros.",
+                    "Sin filtro", CustomMessageBox.MessageBoxType.Warning, CustomMessageBox.MessageBoxButtons.OK);
+                return;
+            }
+
+            var hoja = hojasDisponibles.FirstOrDefault(h => h.Mes == mes && h.Anio == anio);
+
+            if (hoja == null)
+            {
+                CustomMessageBox.Show($"No existe hoja mensual para {mesItem.Content} {anio}. Asegúrate de que ese mes esté creado.",
+                    "Hoja no encontrada", CustomMessageBox.MessageBoxType.Error, CustomMessageBox.MessageBoxButtons.OK);
+                return;
+            }
+
+            // Mostrar estado de carga
+            btnIAAceptar.IsEnabled = false;
+            var txtBtnAceptar = btnIAAceptar.FindName("") as System.Windows.Controls.TextBlock;
+            var originalContent = btnIAAceptar.Content;
+            btnIAAceptar.Content = new System.Windows.Controls.TextBlock
+            {
+                Text = "⏳ Procesando...",
+                FontSize = 12,
+                FontWeight = FontWeights.SemiBold
+            };
+
+            try
+            {
+                var usuario = SupabaseAuthHelper.GetCurrentUser();
+
+                // 1. Construir todos los movimientos de una vez
+                var movimientosDb = seleccionados.Select(ia => new MovimientoSupabase
+                {
+                    CasaId         = _casa.Id,
+                    HojaMensualId  = hoja.Id,
+                    Fecha          = ia.Fecha!.Value,
+                    Monto          = ia.Monto!.Value,
+                    Descripcion    = ia.Descripcion ?? "",
+                    Categoria      = ia.Categoria ?? "",
+                    TipoMovimiento = ia.TipoMovimiento == "Ingreso" ? "Ingreso" : "Gasto",
+                    ImagenUrl      = ia.FacturaUrl,
+                    FechaCreacion  = DateTime.Now
+                }).ToList();
+
+                // 2. Batch insert — 1 sola llamada HTTP para todos
+                var (ok, insertedIds, err) = await SupabaseMovimientoHelper.InsertarBatchAsync(movimientosDb);
+                if (!ok)
+                {
+                    CustomMessageBox.Show($"Error al crear movimientos: {err}", "Error",
+                        CustomMessageBox.MessageBoxType.Error, CustomMessageBox.MessageBoxButtons.OK);
+                    return;
+                }
+
+                // 3. Bulk update IA records — 1 sola llamada HTTP para todos
+                var iaIds = seleccionados.Select(s => s.Id);
+                await SupabaseMovimientoIAHelper.MarcarAprobadosBatchAsync(iaIds, usuario?.Email ?? "desconocido");
+
+                CustomMessageBox.Show(
+                    $"{insertedIds.Count} movimiento(s) creados correctamente.",
+                    "Éxito", CustomMessageBox.MessageBoxType.Success, CustomMessageBox.MessageBoxButtons.OK);
+
+                // Quitar los aprobados de la lista local
+                var aprobadosIds = new HashSet<int>(seleccionados.Select(s => s.Id));
+                foreach (var item in _movimientosIA.Where(m => aprobadosIds.Contains(m.Id)).ToList())
+                    _movimientosIA.Remove(item);
+
+                txtNoDataIA.Visibility = _movimientosIA.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+                ActualizarBadgeIA();
+            }
+            finally
+            {
+                btnIAAceptar.Content  = originalContent;
+                btnIAAceptar.IsEnabled = true;
+            }
+        }
+
+        private async void IAImportarFacturas_Click(object sender, RoutedEventArgs e)
+        {
+            int anio = DateTime.Now.Year;
+            int mes  = DateTime.Now.Month;
+            int? hojaId = null;
+
+            if (cmbIAAnio.SelectedItem is int a) anio = a;
+            if (cmbIAMes.SelectedItem is ComboBoxItem mi && int.TryParse(mi.Tag?.ToString(), out int m)) mes = m;
+
+            var hoja = hojasDisponibles.FirstOrDefault(h => h.Mes == mes && h.Anio == anio);
+            hojaId = hoja?.Id;
+
+            var emailUsuario = SupabaseAuthHelper.GetCurrentUser()?.Email ?? "";
+
+            var dlg = new ImportarFacturasDialog(_casa.Id, mes, anio, hojaId, emailUsuario)
+            {
+                Owner = this,
+                ArchivoCompletado = CargarMovimientosIAAsync
+            };
+            dlg.ShowDialog();
+
+            // Recarga final por si el dialog se cerró antes de terminar el último archivo
+            await CargarMovimientosIAAsync();
+        }
+
+        /// <summary>
+        /// Muestra preview de la factura cargada: imagen + descarga + cerrar.
+        /// </summary>
+        private void IAVerFoto_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as Button)?.Tag is not MovimientoIA ia) return;
+
+            if (string.IsNullOrWhiteSpace(ia.FacturaUrl))
+            {
+                CustomMessageBox.Show("Este registro no tiene imagen adjunta.",
+                    "Sin imagen", CustomMessageBox.MessageBoxType.Warning, CustomMessageBox.MessageBoxButtons.OK);
+                return;
+            }
+
+            var dlg = new FotoPreviewDialog(ia.FacturaUrl) { Owner = this };
+            dlg.ShowDialog();
+        }
+
+        /// <summary>
+        /// Persiste en Supabase los cambios inline de una fila IA al salir de la edición.
+        /// </summary>
+        private void dgMovimientosIA_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            if (e.EditAction != DataGridEditAction.Commit) return;
+            if (e.Row.Item is not MovimientoIA ia) return;
+
+            // Esperar a que WPF aplique el commit antes de leer los valores
+            Dispatcher.BeginInvoke(new Action(async () =>
+            {
+                await SupabaseMovimientoIAHelper.ActualizarConDatosIAAsync(
+                    ia.Id, ia.Fecha, ia.Monto, ia.Descripcion, ia.Categoria,
+                    ia.TipoMovimiento, ia.Estado, ia.RawJson);
+            }), System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        private async void IAEliminarFila_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as Button)?.Tag is not MovimientoIA ia) return;
+
+            var conf = CustomMessageBox.Show("¿Eliminar este registro IA?",
+                "Confirmar", CustomMessageBox.MessageBoxType.Warning, CustomMessageBox.MessageBoxButtons.YesNo);
+            if (conf != true) return;
+
+            await SupabaseMovimientoIAHelper.EliminarAsync(ia.Id);
+            await CargarMovimientosIAAsync();
+        }
+
+        private void SeleccionarContrato_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog
+            {
+                Title = "Seleccionar contrato",
+                Filter = "Documentos|*.pdf;*.xlsx;*.xls;*.docx;*.doc|Todos los archivos|*.*"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                txtLinkContrato.Text = dialog.FileName;
+            }
+        }
+
+        private void AbrirContrato_Click(object sender, RoutedEventArgs e)
+        {
+            var link = txtLinkContrato.Text.Trim();
+            if (string.IsNullOrEmpty(link)) return;
+
+            try
+            {
+                Process.Start(new ProcessStartInfo(link) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                CustomMessageBox.Show(
+                    $"No se pudo abrir el contrato: {ex.Message}",
+                    "Error",
+                    CustomMessageBox.MessageBoxType.Error,
+                    CustomMessageBox.MessageBoxButtons.OK
+                );
+            }
+        }
+
+        private async void GuardarContrato_Click(object sender, RoutedEventArgs e)
+        {
+            _casa.LinkContrato = txtLinkContrato.Text.Trim();
+
+            var casaDb = _casa.ToSupabase();
+            var resultado = await SupabaseCasaHelper.ActualizarCasaAsync(casaDb);
+
+            if (resultado.Success)
+            {
+                CustomMessageBox.Show(
+                    "Contrato guardado correctamente",
+                    "Éxito",
+                    CustomMessageBox.MessageBoxType.Success,
+                    CustomMessageBox.MessageBoxButtons.OK
+                );
+            }
+            else
+            {
+                CustomMessageBox.Show(
+                    $"Error al guardar: {resultado.Error}",
+                    "Error",
+                    CustomMessageBox.MessageBoxType.Error,
+                    CustomMessageBox.MessageBoxButtons.OK
+                );
+            }
         }
     }
 }

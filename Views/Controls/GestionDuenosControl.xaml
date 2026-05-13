@@ -20,9 +20,9 @@
             
             <!-- Búsqueda -->
             <Border Grid.Column="0"
-                    Background="White"
+                    Background="{DynamicResource InputBackgroundBrush}"
                     CornerRadius="8"
-                    BorderBrush="#E5E7EB"
+                    BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="1"
                     Padding="12,10"
                     MaxWidth="400"
@@ -153,14 +153,14 @@
                    x:Name="txtContador"
                    Text="Cargando..."
                    FontSize="14"
-                   Foreground="#6B7280"
+                   Foreground="{DynamicResource TextSecondaryBrush}"
                    Margin="0,0,0,15"/>
         
         <!-- DataGrid -->
         <Border Grid.Row="2"
-                Background="White"
+                Background="{DynamicResource CardBackgroundBrush}"
                 CornerRadius="12"
-                BorderBrush="#E5E7EB"
+                BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="1">
             <Grid>
                 <DataGrid x:Name="dgDuenos"
@@ -172,17 +172,17 @@
                           HeadersVisibility="Column"
                           RowHeight="50"
                           FontSize="13"
-                          Background="White"
+                          Background="{DynamicResource DataGridRowBrush}"
                           BorderThickness="0">
                     
                     <DataGrid.Resources>
                         <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="Background" Value="#F9FAFB"/>
-                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="Background" Value="{DynamicResource DataGridHeaderBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource DataGridHeaderForegroundBrush}"/>
                             <Setter Property="FontWeight" Value="SemiBold"/>
                             <Setter Property="FontSize" Value="14"/>
                             <Setter Property="Padding" Value="15,12"/>
-                            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
                             <Setter Property="BorderThickness" Value="0,0,0,2"/>
                         </Style>
                         
@@ -190,22 +190,24 @@
                             <Setter Property="BorderThickness" Value="0"/>
                             <Setter Property="Padding" Value="15,0"/>
                             <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
                             <Style.Triggers>
                                 <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="#EFF6FF"/>
-                                    <Setter Property="Foreground" Value="Black"/>
+                                    <Setter Property="Background" Value="{DynamicResource DataGridSelectedBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource DataGridSelectedForegroundBrush}"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
                         
                         <Style TargetType="DataGridRow">
-                            <Setter Property="Background" Value="White"/>
+                            <Setter Property="Background" Value="{DynamicResource DataGridRowBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#F9FAFB"/>
+                                    <Setter Property="Background" Value="{DynamicResource DataGridHoverBrush}"/>
                                 </Trigger>
                                 <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="#EFF6FF"/>
+                                    <Setter Property="Background" Value="{DynamicResource DataGridSelectedBrush}"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -307,7 +309,7 @@
                 Grid.RowSpan="3"
                 Background="#80000000"
                 Visibility="Collapsed">
-            <Border Background="White"
+            <Border Background="{DynamicResource CardBackgroundBrush}"
                     CornerRadius="12"
                     Padding="30,20"
                     HorizontalAlignment="Center"
@@ -336,7 +338,7 @@
                     <TextBlock Text="Cargando..."
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="#1F2937"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
                                HorizontalAlignment="Center"/>
                 </StackPanel>
             </Border>

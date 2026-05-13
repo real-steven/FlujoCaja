@@ -50,7 +50,8 @@ namespace FlujoCajaWpf.Data
         }
 
         /// <summary>
-        /// Crea automáticamente hojas mensuales para casa nueva: todo 2025 + enero y febrero 2026
+        /// Crea automáticamente hojas mensuales para casa nueva:
+        /// todo 2025 + desde enero 2026 hasta el mes siguiente al actual.
         /// </summary>
         public static async Task<(bool Success, string? Error)> CrearHojasMensualesParaCasaNuevaAsync(int casaId)
         {
@@ -71,32 +72,27 @@ namespace FlujoCajaWpf.Data
                     });
                 }
 
-                // Agregar enero 2026
-                hojasMensuales.Add(new HojaMensualSupabase
+                // Desde enero 2026 hasta el mes siguiente al actual (inclusive)
+                var cursor = new DateTime(2026, 1, 1);
+                var hasta = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1);
+                while (cursor <= hasta)
                 {
-                    CasaId = casaId,
-                    Mes = 1,
-                    Anio = 2026,
-                    Cerrada = false,
-                    FechaCreacion = DateTime.UtcNow
-                });
+                    hojasMensuales.Add(new HojaMensualSupabase
+                    {
+                        CasaId = casaId,
+                        Mes = cursor.Month,
+                        Anio = cursor.Year,
+                        Cerrada = false,
+                        FechaCreacion = DateTime.UtcNow
+                    });
+                    cursor = cursor.AddMonths(1);
+                }
 
-                // Agregar febrero 2026
-                hojasMensuales.Add(new HojaMensualSupabase
-                {
-                    CasaId = casaId,
-                    Mes = 2,
-                    Anio = 2026,
-                    Cerrada = false,
-                    FechaCreacion = DateTime.UtcNow
-                });
-
-                // Insertar todas las hojas
                 await SupabaseHelper.Client
                     .From<HojaMensualSupabase>()
                     .Insert(hojasMensuales);
 
-                Console.WriteLine($"✓ Creadas 14 hojas mensuales para casa {casaId} (2025 completo + ene-feb 2026)");
+                Console.WriteLine($"✓ Creadas {hojasMensuales.Count} hojas mensuales para casa {casaId} (2025 completo + ene-{hasta:MMMM} {hasta.Year})");
                 return (true, null);
             }
             catch (Exception ex)
@@ -209,6 +205,40 @@ namespace FlujoCajaWpf.Data
             catch (Exception ex)
             {
                 return (false, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Garantiza que exista la hoja del mes siguiente al actual para una casa.
+        /// Debe llamarse al abrir DetalleCasaWindow para mantener siempre 1 mes adelante.
+        /// </summary>
+        public static async Task AsegurarHojaProximoMesAsync(int casaId)
+        {
+            try
+            {
+                var proximo = DateTime.Now.AddMonths(1);
+                var mes = proximo.Month;
+                var anio = proximo.Year;
+
+                var existe = await ObtenerHojaPorPeriodoAsync(casaId, mes, anio);
+                if (existe != null) return;
+
+                await SupabaseHelper.Client
+                    .From<HojaMensualSupabase>()
+                    .Insert(new HojaMensualSupabase
+                    {
+                        CasaId = casaId,
+                        Mes = mes,
+                        Anio = anio,
+                        Cerrada = false,
+                        FechaCreacion = DateTime.UtcNow
+                    });
+
+                Console.WriteLine($"✓ Hoja {mes}/{anio} creada automáticamente para casa {casaId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al asegurar hoja próximo mes: {ex.Message}");
             }
         }
     }

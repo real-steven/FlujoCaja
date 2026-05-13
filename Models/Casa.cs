@@ -15,6 +15,8 @@ namespace FlujoCajaWpf.Models
         public string? RutaImagen { get; set; }
         public string Moneda { get; set; } = "USD";
         public string? Notas { get; set; }
+        public string? EmailPrincipal { get; set; }
+        public string? LinkContrato { get; set; }
         public DateTime FechaCreacion { get; set; }
 
         /// <summary>
@@ -32,6 +34,8 @@ namespace FlujoCajaWpf.Models
                 RutaImagen = casaDb.RutaImagen,
                 Moneda = casaDb.Moneda,
                 Notas = casaDb.Notas,
+                EmailPrincipal = casaDb.EmailPrincipal,
+                LinkContrato = casaDb.LinkContrato,
                 FechaCreacion = casaDb.FechaCreacion
             };
         }
@@ -51,6 +55,8 @@ namespace FlujoCajaWpf.Models
                 RutaImagen = this.RutaImagen,
                 Moneda = this.Moneda,
                 Notas = this.Notas,
+                EmailPrincipal = this.EmailPrincipal,
+                LinkContrato = this.LinkContrato,
                 FechaCreacion = this.FechaCreacion
             };
         }

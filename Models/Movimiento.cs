@@ -33,5 +33,7 @@ namespace FlujoCajaWpf.Models
         public bool Activo { get; set; } = true;
         public DateTime? FechaCreacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
+        public string? ImagenUrl { get; set; }
+        public bool TieneImagen => !string.IsNullOrWhiteSpace(ImagenUrl);
     }
 }

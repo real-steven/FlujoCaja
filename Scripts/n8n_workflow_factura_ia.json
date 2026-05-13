@@ -1,0 +1,66 @@
+{
+  "name": "Factura IA - FlujoCaja",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "factura-ia",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook-001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "factura-ia"
+    },
+    {
+      "parameters": {
+        "jsCode": "const TOKEN_ESPERADO = 'SamaraRental2026';\nconst headers = $input.first().json.headers || {};\nconst authHeader = headers.authorization || headers.Authorization || '';\nconst token = authHeader.replace('Bearer ', '').trim();\nif (TOKEN_ESPERADO && token !== TOKEN_ESPERADO) {\n  throw new Error('401 - Token invalido');\n}\nreturn [{ json: $input.first().json.body }];"
+      },
+      "id": "node-token-002",
+      "name": "Validar Token",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $input.first().json;\nconst GEMINI_KEY = 'AIzaSyBPzVNfWHzsXHUhNexVJjRSw9I3FW5R4yc';\nconst GEMINI_URL = 'https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=' + GEMINI_KEY;\n\n// LOG: verificar payload\nconsole.log('=== casaId ===', payload.casaId);\nconsole.log('=== nombreArchivo ===', payload.nombreArchivo);\nconsole.log('=== imagenMimeType ===', payload.imagenMimeType);\nconsole.log('=== imagenBase64 length ===', payload.imagenBase64 ? payload.imagenBase64.length : 0);\n\nif (!payload.imagenBase64) {\n  throw new Error('imagenBase64 esta vacio o no llego en el payload');\n}\n\n// 1. Usar base64 enviado directamente desde la app (sin descarga HTTP)\nconst base64 = payload.imagenBase64;\nconst mimeType = payload.imagenMimeType || 'image/jpeg';\n\nconsole.log('=== Base64 recibido OK, mimeType:', mimeType);\n\n// 2. Prompt para Gemini\nconst tipo = payload.tipo || 'Ingreso';\nconst prompt = 'Eres un asistente experto en contabilidad. Analiza esta imagen de factura o comprobante de pago. El tipo de movimiento sugerido es: ' + tipo + '. Responde UNICAMENTE con JSON valido puro, sin bloques markdown, sin texto adicional. Estructura exacta: {\"fecha\": \"YYYY-MM-DD\", \"monto\": 12345.00, \"descripcion\": \"descripcion breve\", \"categoria\": \"categoria especifica\", \"estado\": \"completo\"}. Reglas: fecha en formato YYYY-MM-DD (null si no se ve), monto numero decimal positivo sin simbolos (null si no se ve), descripcion max 100 chars, categoria especifica como Electricidad/Agua/Internet/Renta/Mantenimiento/Seguro/Impuesto, estado completo solo si todos los campos estan presentes de lo contrario parcial.';\n\nconst geminiBody = {\n  contents: [{\n    parts: [\n      { text: prompt },\n      { inline_data: { mime_type: mimeType, data: base64 } }\n    ]\n  }],\n  generationConfig: { temperature: 0.1, maxOutputTokens: 512 }\n};\n\n// 3. Llamar a Gemini\nlet geminiRawResponse;\ntry {\n  geminiRawResponse = await this.helpers.httpRequest({\n    method: 'POST',\n    url: GEMINI_URL,\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify(geminiBody),\n    returnFullResponse: true,\n    ignoreHttpStatusErrors: true,\n  });\n} catch(e) {\n  throw new Error('Error HTTP al llamar Gemini: ' + e.message);\n}\n\nconsole.log('=== Gemini HTTP status:', geminiRawResponse.statusCode);\nconsole.log('=== Gemini body snippet:', JSON.stringify(geminiRawResponse.body).substring(0, 300));\n\nif (geminiRawResponse.statusCode !== 200) {\n  const errBody = typeof geminiRawResponse.body === 'string' ? geminiRawResponse.body : JSON.stringify(geminiRawResponse.body);\n  throw new Error('Gemini error ' + geminiRawResponse.statusCode + ': ' + errBody.substring(0, 400));\n}\n\nconst geminiData = typeof geminiRawResponse.body === 'string' ? JSON.parse(geminiRawResponse.body) : geminiRawResponse.body;\n\n// 4. Parsear respuesta\nlet resultado = { fecha: null, monto: null, descripcion: null, categoria: null, estado: 'parcial' };\n\ntry {\n  const parts = geminiData && geminiData.candidates && geminiData.candidates[0] && geminiData.candidates[0].content && geminiData.candidates[0].content.parts;\n  const text = parts && parts[0] ? parts[0].text : null;\n  if (!text) throw new Error('Sin texto en respuesta de Gemini');\n\n  let cleanText = text.trim();\n  const m1 = cleanText.match(/```json\\s*([\\s\\S]*?)\\s*```/);\n  const m2 = cleanText.match(/```\\s*([\\s\\S]*?)\\s*```/);\n  const m3 = cleanText.match(/(\\{[\\s\\S]*\\})/);\n  if (m1) cleanText = m1[1].trim();\n  else if (m2) cleanText = m2[1].trim();\n  else if (m3) cleanText = m3[1].trim();\n\n  const parsed = JSON.parse(cleanText);\n\n  let monto = null;\n  if (parsed.monto != null) {\n    monto = Math.abs(parseFloat(String(parsed.monto).replace(/[^0-9.]/g, '')));\n    if (isNaN(monto)) monto = null;\n  }\n\n  let fecha = null;\n  if (parsed.fecha) {\n    const d = new Date(parsed.fecha);\n    if (!isNaN(d.getTime())) fecha = d.toISOString().split('T')[0];\n  }\n\n  const completo = fecha && monto && parsed.descripcion && parsed.categoria;\n  resultado = {\n    fecha: fecha,\n    monto: monto,\n    descripcion: parsed.descripcion || null,\n    categoria: parsed.categoria || null,\n    estado: completo ? 'completo' : 'parcial'\n  };\n} catch (parseErr) {\n  resultado.descripcion = 'Error de parseo: ' + parseErr.message.substring(0, 80);\n}\n\nreturn [{ json: resultado }];"
+      },
+      "id": "node-ia-003",
+      "name": "Procesar con IA",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "node-respond-004",
+      "name": "Responder al Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Validar Token", "type": "main", "index": 0 }]]
+    },
+    "Validar Token": {
+      "main": [[{ "node": "Procesar con IA", "type": "main", "index": 0 }]]
+    },
+    "Procesar con IA": {
+      "main": [[{ "node": "Responder al Webhook", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true
+  },
+  "tags": []
+}

@@ -33,6 +33,12 @@ namespace FlujoCajaWpf.Models
         [Column("notas")]
         public string? Notas { get; set; }
 
+        [Column("email_principal")]
+        public string? EmailPrincipal { get; set; }
+
+        [Column("link_contrato")]
+        public string? LinkContrato { get; set; }
+
         [Column("fechacreacion")]
         public DateTime FechaCreacion { get; set; }
     }

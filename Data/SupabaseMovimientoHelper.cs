@@ -30,13 +30,16 @@ namespace FlujoCajaWpf.Data
                 var movimientos = resultadoMovimientos.Models.Select(m => new Movimiento
                 {
                     Id = m.Id,
-                    CasaId = m.CasaId,                    HojaMensualId = m.HojaMensualId,                    CategoriaNombre = m.Categoria,
+                    CasaId = m.CasaId,
+                    HojaMensualId = m.HojaMensualId,
+                    CategoriaNombre = m.Categoria,
                     Tipo = m.TipoMovimiento,
                     Monto = m.Monto,
                     Fecha = m.Fecha,
                     Descripcion = m.Descripcion,
                     Activo = m.Activo,
-                    FechaCreacion = m.FechaCreacion
+                    FechaCreacion = m.FechaCreacion,
+                    ImagenUrl = m.ImagenUrl
                 }).ToList();
 
                 return (true, movimientos, null);
@@ -80,7 +83,8 @@ namespace FlujoCajaWpf.Data
                     Fecha = m.Fecha,
                     Descripcion = m.Descripcion,
                     Activo = m.Activo,
-                    FechaCreacion = m.FechaCreacion
+                    FechaCreacion = m.FechaCreacion,
+                    ImagenUrl = m.ImagenUrl
                 }).ToList();
 
                 return (true, movimientos, null);
@@ -127,6 +131,39 @@ namespace FlujoCajaWpf.Data
             }
         }
 
+        public static async Task<(bool Success, int? Id, string? Error)> InsertarAsync(MovimientoSupabase movimiento)
+        {
+            try
+            {
+                var client = SupabaseHelper.Client;
+                var result = await client.From<MovimientoSupabase>().Insert(movimiento);
+                var inserted = result.Models.FirstOrDefault();
+                return (true, inserted?.Id, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, null, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Inserta múltiples movimientos en una sola llamada HTTP (batch insert).
+        /// </summary>
+        public static async Task<(bool Success, List<int> Ids, string? Error)> InsertarBatchAsync(List<MovimientoSupabase> movimientos)
+        {
+            try
+            {
+                var client = SupabaseHelper.Client;
+                var result = await client.From<MovimientoSupabase>().Insert(movimientos);
+                var ids = result.Models.Select(m => m.Id).ToList();
+                return (true, ids, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, new List<int>(), ex.Message);
+            }
+        }
+
         public static async Task<(bool Success, string? Error)> ActualizarMovimientoAsync(MovimientoSupabase movimiento)
         {
             try
@@ -149,6 +186,23 @@ namespace FlujoCajaWpf.Data
                 await client.From<MovimientoSupabase>()
                     .Where(m => m.Id == id)
                     .Delete();
+                return (true, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        public static async Task<(bool Success, string? Error)> ActualizarImagenMovimientoAsync(int id, string? imagenUrl)
+        {
+            try
+            {
+                var client = SupabaseHelper.Client;
+                await client.From<MovimientoSupabase>()
+                    .Where(m => m.Id == id)
+                    .Set(m => m.ImagenUrl!, imagenUrl)
+                    .Update();
                 return (true, null);
             }
             catch (Exception ex)

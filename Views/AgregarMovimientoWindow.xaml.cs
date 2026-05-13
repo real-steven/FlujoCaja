@@ -1,9 +1,12 @@
 using FlujoCajaWpf.Data;
 using FlujoCajaWpf.Models;
+using Microsoft.Win32;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace FlujoCajaWpf.Views
 {
@@ -12,21 +15,31 @@ namespace FlujoCajaWpf.Views
         private int _casaId;
         private int _hojaMensualId;
         private string _casaNombre;
+        private string _moneda;
         private Movimiento? _movimiento;
         private bool _esEdicion = false;
+        private string? _rutaImagenSeleccionada;
+        private static readonly string[] _extensionesPermitidas = { ".jpg", ".jpeg", ".png", ".webp" };
 
-        public AgregarMovimientoWindow(int casaId, int hojaMensualId, string casaNombre, Movimiento? movimiento = null)
+        public AgregarMovimientoWindow(int casaId, int hojaMensualId, string casaNombre, string moneda = "USD", Movimiento? movimiento = null)
         {
             InitializeComponent();
             _casaId = casaId;
             _hojaMensualId = hojaMensualId;
             _casaNombre = casaNombre;
+            _moneda = moneda;
             _movimiento = movimiento;
             _esEdicion = movimiento != null;
 
+            var simbolo = moneda == "CRC" ? "₡" : "$";
+            lblMonto.Text = $"Monto* ({simbolo} {moneda})";
+
             dpFecha.SelectedDate = DateTime.Now;
 
-            Loaded += async (s, e) => await CargarCategoriasAsync();
+            Loaded += async (s, e) =>
+            {
+                await CargarCategoriasAsync();
+            };
 
             if (_esEdicion && _movimiento != null)
             {
@@ -197,6 +210,23 @@ namespace FlujoCajaWpf.Views
                 Activo = true
             };
 
+            // Subir imagen si hay una seleccionada
+            if (!string.IsNullOrEmpty(_rutaImagenSeleccionada))
+            {
+                try
+                {
+                    var imageBytes = await File.ReadAllBytesAsync(_rutaImagenSeleccionada);
+                    var fileName = $"{Guid.NewGuid()}{Path.GetExtension(_rutaImagenSeleccionada).ToLowerInvariant()}";
+                    var uploadResult = await SupabaseStorageHelper.SubirImagenMovimientoAsync(imageBytes, fileName, _casaId);
+                    if (uploadResult.Success)
+                        movimientoSupabase.ImagenUrl = uploadResult.Path;
+                }
+                catch
+                {
+                    // No bloquear el guardado si falla la imagen
+                }
+            }
+
             if (_esEdicion && _movimiento != null)
             {
                 movimientoSupabase.Id = _movimiento.Id;
@@ -295,6 +325,95 @@ namespace FlujoCajaWpf.Views
         {
             DialogResult = false;
             Close();
+        }
+
+        // ==================== IMAGEN - DRAG & DROP ====================
+
+        private void DragDropMov_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var archivos = (string[])e.Data.GetData(DataFormats.FileDrop);
+                var ext = Path.GetExtension(archivos[0]).ToLowerInvariant();
+                if (_extensionesPermitidas.Contains(ext))
+                {
+                    e.Effects = DragDropEffects.Copy;
+                    borderDragDropMov.BorderBrush = System.Windows.Media.Brushes.DodgerBlue;
+                    borderDragDropMov.Background = System.Windows.Media.Brushes.AliceBlue;
+                    e.Handled = true;
+                    return;
+                }
+            }
+            e.Effects = DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private void DragDropMov_DragLeave(object sender, DragEventArgs e)
+        {
+            borderDragDropMov.BorderBrush = new System.Windows.Media.SolidColorBrush(
+                (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#CBD5E1"));
+            borderDragDropMov.Background = new System.Windows.Media.SolidColorBrush(
+                (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#F8FAFC"));
+        }
+
+        private void DragDropMov_Drop(object sender, DragEventArgs e)
+        {
+            DragDropMov_DragLeave(sender, e);
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+            var archivos = (string[])e.Data.GetData(DataFormats.FileDrop);
+            var ruta = archivos[0];
+            var ext = Path.GetExtension(ruta).ToLowerInvariant();
+            if (!_extensionesPermitidas.Contains(ext))
+            {
+                CustomMessageBox.Show("Solo se permiten PNG, JPG, JPEG o WEBP.", "Formato no válido",
+                    CustomMessageBox.MessageBoxType.Warning, CustomMessageBox.MessageBoxButtons.OK);
+                return;
+            }
+            AplicarImagenMov(ruta);
+        }
+
+        private void DragDropMov_Click(object sender, MouseButtonEventArgs e)
+        {
+            AbrirSelectorImagenMov();
+        }
+
+        private void CambiarImagenMov_Click(object sender, RoutedEventArgs e)
+        {
+            AbrirSelectorImagenMov();
+        }
+
+        private void AbrirSelectorImagenMov()
+        {
+            var dialog = new OpenFileDialog
+            {
+                Title = "Seleccionar imagen",
+                Filter = "Imágenes|*.jpg;*.jpeg;*.png;*.webp|Todos los archivos|*.*"
+            };
+            if (dialog.ShowDialog() == true)
+                AplicarImagenMov(dialog.FileName);
+        }
+
+        private void AplicarImagenMov(string ruta)
+        {
+            try
+            {
+                _rutaImagenSeleccionada = ruta;
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(ruta);
+                bitmap.DecodePixelWidth = 140;
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                imgPreviewMov.Source = bitmap;
+                txtNombreArchivoMov.Text = Path.GetFileName(ruta);
+                panelDragDropVacio.Visibility = Visibility.Collapsed;
+                panelDragDropSeleccionado.Visibility = Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+                CustomMessageBox.Show($"No se pudo cargar la imagen: {ex.Message}", "Error",
+                    CustomMessageBox.MessageBoxType.Error, CustomMessageBox.MessageBoxButtons.OK);
+            }
         }
     }
 }

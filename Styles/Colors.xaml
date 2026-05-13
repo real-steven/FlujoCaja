@@ -26,6 +26,13 @@
     <SolidColorBrush x:Key="BorderBrush" Color="#E5E7EB"/>
     <SolidColorBrush x:Key="InputBackgroundBrush" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="HoverBackgroundBrush" Color="#F0F0F0"/>
+    <SolidColorBrush x:Key="DataGridRowBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="DataGridHeaderBrush" Color="#F9FAFB"/>
+    <SolidColorBrush x:Key="DataGridHeaderForegroundBrush" Color="#000000"/>
+    <SolidColorBrush x:Key="DataGridHoverBrush" Color="#F9FAFB"/>
+    <SolidColorBrush x:Key="DataGridSelectedBrush" Color="#EFF6FF"/>
+    <SolidColorBrush x:Key="DataGridSelectedForegroundBrush" Color="#000000"/>
+    <SolidColorBrush x:Key="RowErrorBrush" Color="#FEF2F2"/>
     
     <!-- Brushes principales (fijas, no cambian con tema) -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryBlue}"/>

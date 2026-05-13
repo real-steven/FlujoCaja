@@ -570,75 +570,20 @@ Guardar:
 
 ---
 
-### 🔄 SPRINT 6: Panel de Resumen Consolidado (PENDIENTE)
-  - Filtros por:
-    - Casa
-    - Rango de fechas
-    - Tipo (Ingreso/Gasto)
-    - Categoría
-  - Botones: Agregar Movimiento, Editar, Eliminar
-  - Totales: Ingresos, Gastos, Balance
-
-- [ ] AgregarMovimientoWindow.xaml
-  - ComboBox Casa
-  - ComboBox Categoría Movimiento
-  - TextBox Monto
-  - DatePicker Fecha
-  - TextBox Descripción
-  - CheckBox Recurrente
-
-- [ ] SupabaseMovimientoHelper.cs
-  - InsertarMovimiento()
-  - ActualizarMovimiento()
-  - EliminarMovimiento()
-  - ObtenerMovimientosPorCasa()
-  - ObtenerMovimientosPorFecha()
-
-**Modelo de Datos:**
-```csharp
-public class Movimiento
-{
-    public Guid Id { get; set; }
-    public Guid CasaId { get; set; }
-    public Guid CategoriaMovimientoId { get; set; }
-    public decimal Monto { get; set; }
-    public DateTime Fecha { get; set; }
-    public string Tipo { get; set; } // "Ingreso" o "Gasto"
-    public string Descripcion { get; set; }
-    public bool EsRecurrente { get; set; }
-    public Guid UsuarioId { get; set; }
-**Progreso:** 100% completado ✅
-
----
-
-### 🔄 SPRINT 6: Panel de Resumen Consolidado (PENDIENTE)
+### ✅ SPRINT 6: Panel de Resumen Consolidado (COMPLETADO)
 **Objetivo:** Dashboard con KPIs y gráficos
 
-**Funcionalidades a Implementar:**
-- [ ] ResumenConsolidadoControl.xaml
-  - Cards con métricas:
-    - Total Casas Activas
-    - Total Ingresos del Mes
-    - Total Gastos del Mes
-    - Balance Neto
-    - Casa con Mayor Ingreso
-    - Casa con Mayor Gasto
-  
-  - Gráficos (LiveCharts o similar):
-    - Gráfico de barras: Ingresos vs Gastos por mes
-    - Gráfico de pastel: Distribución de gastos por categoría
-    - Gráfico de líneas: Evolución del balance
+**Implementado:**
+- ResumenConsolidadoWindow.xaml / ResumenConsolidadoControl.xaml con cards de métricas y filtros básicos.
+- Filtros por Casa, rango de fechas y tipo de movimiento.
+- Totales de Ingresos, Gastos y Balance.
+- Gráficos de comparación de Ingresos vs Gastos y evolución del balance.
+- Integración con `SupabaseMovimientoHelper` para cargar movimientos y balances.
+- Ventana de reporte generada desde `DetalleCasaWindow`.
 
-- [ ] Filtros:
-  - Rango de fechas
-  - Por Casa específica
-  - Por Categoría
-
-**Librerías Sugeridas:**
-- LiveCharts2 para WPF
-- ScottPlot
-
-**Prioridad:** Media-Baja
+**Notas:**
+- El panel de resumen está disponible en el menú principal.
+- Se mantiene la arquitectura MVVM y el estilo visual del proyecto.
 
 ---
 
@@ -669,21 +614,80 @@ public class Movimiento
 
 ---
 
-### 🔄 SPRINT 7: Reportes y Exportación (FUTURO)
-**Objetivo:** Generar reportes en PDF/Excel
+### ✅ SPRINT 7: Reportes, Exportación y Correo (EN PROGRESO - ~90%)
+**Objetivo:** Generar reportes en PDF/Excel, enviarlos por correo y registrar logs de envío
 
-**Funcionalidades:**
-- [ ] Reporte de Ingresos/Gastos por Casa
-- [ ] Reporte Consolidado Mensual
-- [ ] Exportar a Excel
-- [ ] Exportar a PDF
-- [ ] Imprimir reportes
+---
 
-**Librerías Sugeridas:**
-- iTextSharp para PDF
-- EPPlus para Excel
+#### ✅ Historia 16: Generar reporte mensual en pantalla (CERRADA)
+- [x] `ResumenConsolidadoWindow.xaml/.cs` — Dashboard con KPIs (total casas, balances USD/CRC, DataGrid por casa)
+- [x] `ReporteFormatoDialog.xaml/.cs` — Diálogo selector de formato (PDF / Excel)
+- [x] Filtros de año y mes en ResumenConsolidado
+- [x] `BalanceMensual.cs` — Modelo para cálculo de balance por período
+- [x] Integrado en `MenuPrincipalWindow` como opción de navegación
 
-**Prioridad:** Baja
+**Librerías instaladas:** `QuestPDF v2024.12.4`, `ClosedXML v0.102.3`, `LiveChartsCore v2.0.0-rc6.1`
+
+---
+
+#### ✅ Historia 17: Exportar reporte en PDF y Excel (CERRADA)
+- [x] `ReporteService.cs` (Services/) con:
+  - `GenerarPdfAsync()` — PDF con tabla de movimientos, resumen de totales, colores y header corporativo (QuestPDF)
+  - `GenerarExcelAsync()` — Excel con cabeceras formateadas, filas alternadas, hipervínculos a imágenes, resumen final (ClosedXML)
+  - `DatosReporte` record con CasaNombre, DuenoNombre, Moneda, MesAnio, Movimientos
+- [x] Flujo en `DetalleCasaWindow.xaml.cs`:
+  - Botón "📄 Reporte" → `ReporteFormatoDialog` → `SaveFileDialog` → Generar → Abrir archivo
+  - Luego ofrece `EnviarReporteDialog` para envío por correo
+- [x] Columna "Imagen adjunta" en Excel como hipervínculo a URL de Supabase Storage
+
+---
+
+#### ✅ Historia 18: Envío de reportes por correo electrónico (IMPLEMENTADO)
+- [x] `EmailService.cs` (Services/) — Servicio de envío vía SDK oficial de **Resend** (`Resend v0.2.2`):
+  - `EnviarAsync()` con destinatarios múltiples y adjuntos
+  - `EsEmailValido()` con regex compilado
+  - `CrearAttachment()` verificando existencia del archivo
+- [x] `EnviarReporteDialog.xaml/.cs` — Diálogo completo de envío:
+  - Lista de destinatarios con checkboxes (email principal + correos adicionales de BD)
+  - Agregar correo nuevo con opción de guardar en BD
+  - Vista previa de asunto y cuerpo HTML
+  - Indicador de archivos adjuntos (PDF y/o Excel)
+  - Estado de envío con mensajes de éxito/error
+- [x] `EnviarReporteViewModel.cs` — ViewModel MVVM completo con:
+  - `CorreoItem` seleccionable (ObservableCollection)
+  - Preview dinámico de destinatarios, asunto y mensaje
+  - Confirmación antes de enviar
+  - `BuildHtmlBody()` — Plantilla HTML corporativa con colores del sistema
+- [x] `SupabaseCorreoCasaHelper.cs` — CRUD de correos por casa:
+  - `ObtenerCorreosPorCasaAsync()`, `InsertarCorreoAsync()`, `EliminarCorreoAsync()`
+  - `ActualizarEmailPrincipalAsync()` — Actualiza email_principal en tabla casas
+- [x] `CorreoCasaSupabase.cs` — Modelo tabla `correos_casa`
+- [x] `Casa.cs` / `CasaSupabase.cs` — Propiedad `EmailPrincipal` mapeada a columna `email_principal`
+- [x] `Scripts/06_agregar_email_casas_y_tabla_correos.sql` — Migración: columna `email_principal` en casas + tabla `correos_casa` con RLS
+- [x] `appsettings.json` — Sección `Resend` con `ApiKey` y `From` configurados
+- [x] `HistorialWindow.xaml/.cs` — Interfaz de historial de envíos de correo con filtros y paginación
+
+**Pendiente de validación:**
+- [ ] Prueba end-to-end real de envío con Resend
+- [ ] Confirmar que el dominio `From` esté verificado para producción
+- [ ] Verificar el flujo con email del dueño y correos adicionales
+
+---
+
+#### ✅ Historia 19: Registrar log de envíos de reportes (IMPLEMENTADO)
+- [x] `Scripts/08_create_log_correos_table.sql` — Script de creación de la tabla `log_correos`
+- [x] `Models/LogCorreoSupabase.cs` — Modelo Supabase para log de correos
+- [x] `Data/SupabaseLogCorreoHelper.cs` — Helper de logs de correo con registro y consulta
+- [x] `Views/HistorialWindow.xaml/.cs` — Pestaña e interfaz de historial de correos con filtros por usuario, casa y estado
+- [x] `EnviarReporteViewModel.EnviarAsync()` — Registra envíos exitosos y errores en el log
+- [x] `SupabaseLogCorreoHelper.ObtenerLogsAsync()` — Consulta con paginación y filtros
+- [x] `SupabaseLogCorreoHelper.ObtenerUsuariosAsync()` / `ObtenerCasasAsync()` — Filtros dinámicos para el historial
+
+**Notas:**
+- El log de envíos de correo ya está integrado en `HistorialWindow`.
+- La funcionalidad de almacenamiento de logs está implementada y solo requiere revisión final de datos.
+
+**Prioridad:** Alta (esta pieza ya está en código, resta validar y cerrar Sprint 7)
 
 ---
 
@@ -698,6 +702,105 @@ public class Movimiento
 - [ ] Registro de actividad
 
 **Prioridad:** Baja
+
+---
+
+### 🔄 SPRINT 9: Facturas IA y Privacidad de Reportes (PENDIENTE)
+**Objetivo:** Integrar carga de facturas con IA, revisión humana y reportes PDF privados manteniendo el estilo actual.
+
+**Parte 1 — Privacidad y reportes PDF**
+1. Cambiar el bucket de fotos/facturas a privado en Supabase Storage. No usar URL pública directa.
+2. Crear o actualizar políticas RLS y reglas de storage para que solo el cliente autenticado y los procesos autorizados puedan leer las facturas.
+3. Agregar soporte de URLs firmadas/autenticadas en `SupabaseStorageHelper.cs` para descarga temporal desde la app.
+4. Modificar la generación de reportes para eliminar la exportación directa a Excel. Solo se generará PDF.
+5. Mantener el flujo de datos de la tabla de la app y generar un PDF de tabla + PDF de fotos (o un solo PDF de fotos con tabla incluida). Cada movimiento debe:
+   - ir numerado
+   - coincidir con el orden por fecha de la tabla
+   - mostrar los datos principales de la app
+   - mostrar la imagen debajo en el mismo orden
+6. Actualizar `ReporteService.cs` para soportar:
+   - PDF de tabla de movimientos con formato corporativo
+   - PDF de fotos con plantilla tabular + galería ordenada
+   - URLs firmadas de imágenes privadas cuando se renderiza el PDF dentro de la app
+7. Adaptar `DetalleCasaWindow.xaml.cs` y botones de reporte:
+   - `Generar reporte PDF` (cambia de Excel+PDF a solo PDF)
+   - `Generar reporte de fotos` o `PDF de facturas` con plantilla de imágenes
+8. Documentar los cambios en Supabase, incluída la creación del bucket privado y el uso de service_role para n8n si es necesario.
+
+**Parte 2 — Movimientos IA**
+1. Cambiar pestañas de `DetalleCasaWindow` a: `Resumen`, `Movimientos`, `Movimientos IA`, `Detalles`.
+2. Crear en UI una nueva pestaña `Movimientos IA` basada en la estructura actual de movimientos.
+3. Agregar en esa pestaña botones superiores:
+   - `Seleccionar todos`
+   - `Borrar seleccionados`
+   - `Aceptar seleccionados`
+   - `Importar facturas IA`
+4. Añadir checkbox por fila para selección individual y mantener el estado seleccionado en la tabla.
+5. Crear ventana emergente/modal con dos áreas drag & drop:
+   - una para `Ingresos`
+   - otra para `Egresos`
+   - cada área debe permitir también seleccionar carpeta/archivos vía explorador
+6. Al soltar archivos:
+   - subir cada factura al bucket privado de `facturas`
+   - enviar a n8n el archivo y metadatos (casaId, mes, año, tipo sugerido)
+   - recibir datos parseados: fecha, monto, categoría, descripción, proveedor, tipo_movimiento, raw_json
+7. Guardar los resultados en una tabla temporal de revisión tipo `movimientos_ia_temporales` o `facturas_pendientes` con campos:
+   - `casaid`, `hoja_mensual_id`, `mes`, `anio`
+   - `fecha`, `monto`, `categoria`, `descripcion`, `tipo_movimiento`
+   - `factura_url`, `estado`, `raw_json`, `usuario_creador`, `fecha_creacion`
+8. Mostrar en la pestaña IA los resultados automáticos:
+   - filas normales para lecturas correctas
+   - filas con sombra roja cuando el parseo es parcial o falla
+   - imagen adjunta visible
+   - botón `Reintentar` en cada fila para volver a enviar sólo esa factura a n8n
+   - botón `Cambiar foto` para reemplazar el archivo y reintentar
+9. Agregar validaciones visuales con colores y mensajes de error si faltan campos importantes.
+10. Al aceptar uno o varios movimientos:
+    - crear entradas en `movimientos` usando la hoja mensual correcta
+    - marcar los movimientos originales como `IA` con un detalle pequeño (por ejemplo `Descripcion += " (IA)"` o campo `Origen`)
+    - actualizar la fila temporal a `aprobado` y guardar `usuario_aprobo`/`fecha_aprobacion`
+11. Permitir eliminar los temporales seleccionados con `Borrar seleccionados`.
+12. Mantener el diseño actual: botones amarillos para acciones, verdes para aceptar; cards blancas con sombras; tipografía y esquema de colores consistentes.
+
+**Parte 3 — Panel de usuarios administrador**
+1. Agregar botón `Agregar Usuarios` en `MenuPrincipalWindow.xaml` visible solo para el usuario administrador.
+2. Detectar el rol admin desde el usuario actual y el DTO `Usuario` o el registro de `usuarios`.
+3. Crear una nueva ventana/pestaña `Usuarios` con:
+   - lista de usuarios existentes
+   - botón `Nuevo usuario`
+   - acción `Enviar correo de cambio de contraseña`
+   - acción `Eliminar usuario`
+4. Implementar la creación de usuario usando Supabase Auth y la tabla `usuarios`:
+   - crear auth user en Supabase
+   - guardar metadata local (`nombre`, `email`, `rol`, `activo`)
+   - enviar correo con Resend o usar el workflow de reseteo de Supabase si está disponible
+5. Implementar la eliminación/desactivación de usuarios usando `activo = false` y/o Supabase Auth API si se necesita eliminar del auth.
+6. Restringir el acceso de esta ventana solo a admin y mantener el botón oculto para usuarios normales.
+7. Mantener el estilo visual actual y soportar modo claro/oscuro.
+
+**Parte 4 — Cambios específicos en Supabase / Resend / n8n**
+1. Supabase Storage:
+   - convertir bucket de facturas/fotos a privado
+   - validar que `CasasFotos` y cualquier bucket nuevo tengan RLS correctas
+   - crear bucket privado `facturas` o `facturas_ia`
+2. Resend:
+   - configurar `From` con un dominio verificado
+   - usar Resend para correos de cambio de contraseña
+   - en appsettings.json guardar la sección Resend actualizada
+3. n8n:
+   - crear webhook seguro con token
+   - configurar nodo que descargue facturas desde Supabase con service_role o credenciales seguras
+   - procesar OCR/IA y devolver JSON normalizado
+   - opcional: insertar directamente en la tabla temporal si lo quieres automatizar
+4. Documentar todas las claves de servicio, endpoints y buckets nuevos en el README y `promptCopilot.md`.
+
+**Notas de ejecución:**
+- Usar nuevos helpers en `Data/` para no mezclar lógica con los helpers existentes.
+- Crear nuevas vistas/controles específicos para `Movimientos IA` y `Usuarios`.
+- No romper el flujo actual de `DetalleCasaWindow` ni la navegación de `MenuPrincipalWindow`.
+- Mantener consistencia de colores, tarjetas y estilo de botones como en el resto del sistema.
+
+**Prioridad:** Alta
 
 ---
 
@@ -731,13 +834,19 @@ Esperando tu confirmación...
 
 ### 📝 Notas Importantes para la Continuación
 
-**Estado Actual del Proyecto (Última Actualización: Enero 2026):**
+**Estado Actual del Proyecto (Última Actualización: Marzo 2026):**
 - Sprint 1: ✅ 100% Completado (Autenticación y Menú Principal)
 - Sprint 2: ✅ 100% Completado (CRUD Básico y Gestión)
 - Sprint 3: ✅ 100% Completado (Historial, Auditoría y Detalle de Casa)
 - Sprint 4: ✅ 100% Completado (Tutorial del Sistema)
 - Sprint 5: ✅ 100% Completado (Panel de Casas Inactivas)
-- Siguiente: Sprint 6 (Panel de Resumen Consolidado - Dashboard KPIs)
+- Sprint 6: ✅ 100% Completado (ResumenConsolidadoWindow con KPIs y filtros)
+- Sprint 7: 🔄 ~75% En Progreso:
+  - Historia 16 (Reporte en pantalla): ✅ CERRADA
+  - Historia 17 (Exportar PDF/Excel): ✅ CERRADA
+- Historia 18 (Envío por correo): ✅ Implementado, falta validación end-to-end
+- Historia 19 (Log de envíos): ✅ Implementado en código y en UI; revisar datos
+- Siguiente: Validar el log de envíos y completar Sprint 7
 
 **Características Principales Implementadas:**
 1. ✅ Sistema de autenticación con Supabase Auth
@@ -785,12 +894,15 @@ Esperando tu confirmación...
 6. Crear usuarios en Supabase Dashboard → Authentication → Users
 
 **Tablas Principales Implementadas:**
-- duenos, categorias, casas, categorias_movimientos
+- duenos, categorias, casas (con columna `email_principal`), categorias_movimientos
 - hojas_mensuales (cierres mensuales)
 - movimientos (con auditoría de usuario_creador_id, usuario_modificador_id)
 - notas_casa (SERIAL autoincrement)
 - fotos_casa (SERIAL autoincrement)
 - auditoria (con JSONB para datos anteriores/nuevos)
+- correos_casa (correos adicionales por casa para envío de reportes)
+- preferencias_usuario (modo oscuro por usuario)
+- **PENDIENTE:** log_envios_reportes (historial de envíos de correo — Historia 19)
 
 **Comandos de Desarrollo:**
 ```bash

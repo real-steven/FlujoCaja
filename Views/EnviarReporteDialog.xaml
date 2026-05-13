@@ -1,0 +1,425 @@
+﻿<Window x:Class="FlujoCajaWpf.Views.EnviarReporteDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Icon="pack://application:,,,/Resources/APPSamara.png"
+        Title="Enviar Reporte por Correo"
+        Height="680" Width="600"
+        MinHeight="580" MinWidth="520"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResizeWithGrip"
+        Background="{DynamicResource BackgroundBrush}"
+        FontFamily="Segoe UI">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>  <!-- Header -->
+            <RowDefinition Height="*"/>     <!-- Body scroll -->
+            <RowDefinition Height="Auto"/>  <!-- Estado + Footer -->
+        </Grid.RowDefinitions>
+
+        <!-- ── HEADER ────────────────────────────────────────────────────── -->
+        <Border Grid.Row="0" Padding="20,16">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#0F172A" Offset="0"/>
+                    <GradientStop Color="#1E3A8A" Offset="0.5"/>
+                    <GradientStop Color="#3B82F6" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <StackPanel>
+                <TextBlock Text="✉️ Enviar Reporte por Correo"
+                           FontSize="18" FontWeight="Bold" Foreground="White"/>
+                <TextBlock x:Name="txtSubtitulo"
+                           FontSize="12" Foreground="#E0E7FF" Margin="0,4,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ── BODY ──────────────────────────────────────────────────────── -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="20,16" x:Name="panelBody">
+
+                <!-- SECCIÓN: Destinatarios ─────────────────────────────── -->
+                <TextBlock Text="Destinatarios" FontSize="13" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8"/>
+
+                <!-- Lista checkboxes -->
+                <Border Background="{DynamicResource CardBackgroundBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="8" Padding="10,8" MaxHeight="180">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Correos}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding Seleccionado, Mode=TwoWay}"
+                                              Margin="2,5"
+                                              Foreground="{DynamicResource TextPrimaryBrush}"
+                                              FontSize="13">
+                                        <TextBlock TextWrapping="NoWrap">
+                                            <Run Text="{Binding Email, Mode=OneWay}" FontWeight="SemiBold"/>
+                                            <Run Text=" "/>
+                                            <Run Text="{Binding Etiqueta, Mode=OneWay, StringFormat='({0})'}"
+                                                 Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"/>
+                                        </TextBlock>
+                                    </CheckBox>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+
+                <!-- Agregar correo nuevo -->
+                <Border Margin="0,10,0,0"
+                        Background="{DynamicResource CardBackgroundBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="8" Padding="12,10">
+                    <StackPanel>
+                        <TextBlock Text="Agregar correo nuevo" FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,8"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0">
+                                <TextBox x:Name="txtNuevoCorreo"
+                                         Text="{Binding NuevoCorreo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Background="{DynamicResource InputBackgroundBrush}"
+                                         Foreground="{DynamicResource TextPrimaryBrush}"
+                                         BorderBrush="{DynamicResource BorderBrush}"
+                                         BorderThickness="1" Padding="8,6" FontSize="13"
+                                         Panel.ZIndex="1">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="TextBox">
+                                                        <Border Background="{TemplateBinding Background}"
+                                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                                CornerRadius="6">
+                                                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
+                                <!-- Placeholder hint -->
+                                <TextBlock Text="correo@ejemplo.com"
+                                           Foreground="#94A3B8" FontSize="13"
+                                           Margin="9,0,0,0" VerticalAlignment="Center"
+                                           IsHitTestVisible="False" Panel.ZIndex="0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding NuevoCorreo}" Value="">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Grid>
+                            <Button Grid.Column="2"
+                                    Command="{Binding AgregarCorreoCommand}"
+                                    Content="+ Agregar"
+                                    Foreground="White" BorderThickness="0"
+                                    Padding="14,6" FontSize="12" FontWeight="SemiBold" Cursor="Hand">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#3B82F6"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#2563EB"/>
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Background" Value="#94A3B8"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </Grid>
+
+                        <!-- Guardar en BD -->
+                        <CheckBox Margin="0,8,0,0"
+                                  IsChecked="{Binding GuardarNuevoCorreo, Mode=TwoWay}"
+                                  Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12">
+                            <TextBlock Text="Guardar en la base de datos para envíos futuros" TextWrapping="Wrap"/>
+                        </CheckBox>
+
+                        <!-- Error de validación -->
+                        <TextBlock Text="{Binding NuevoCorreoError}"
+                                   Foreground="#EF4444" FontSize="11" Margin="0,4,0,0"
+                                   Visibility="{Binding NuevoCorreoError,
+                                       Converter={StaticResource StringToVisibilityConverter}}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- SECCIÓN: Archivos ───────────────────────────────────── -->
+                <TextBlock Text="Archivos a enviar" FontSize="13" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,18,0,8"/>
+
+                <StackPanel Orientation="Horizontal">
+                    <!-- Toggle PDF Tabla -->
+                    <Border Width="140" Height="80" CornerRadius="10" Margin="0,0,10,0"
+                            Cursor="Hand">
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftClick" Command="{Binding TogglePdfTablaCommand}"/>
+                        </Border.InputBindings>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding EnviarPdfTabla}" Value="True">
+                                        <Setter Property="Background" Value="#EDE9FE"/>
+                                        <Setter Property="BorderBrush" Value="#7C3AED"/>
+                                        <Setter Property="BorderThickness" Value="2"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding EnviarPdfTabla}" Value="False">
+                                        <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+                                        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding HayPdfTabla}" Value="False">
+                                        <Setter Property="Opacity" Value="0.4"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="📋" FontSize="22" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Tabla" FontSize="12" FontWeight="Bold"
+                                       HorizontalAlignment="Center" Margin="0,4,0,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding EnviarPdfTabla}" Value="True">
+                                                <Setter Property="Foreground" Value="#7C3AED"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding EnviarPdfTabla}" Value="False">
+                                                <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Text="Movimientos" FontSize="10" HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Toggle PDF Imágenes -->
+                    <Border Width="140" Height="80" CornerRadius="10"
+                            Cursor="Hand">
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftClick" Command="{Binding TogglePdfImagenesCommand}"/>
+                        </Border.InputBindings>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding EnviarPdfImagenes}" Value="True">
+                                        <Setter Property="Background" Value="#ECFDF5"/>
+                                        <Setter Property="BorderBrush" Value="#059669"/>
+                                        <Setter Property="BorderThickness" Value="2"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding EnviarPdfImagenes}" Value="False">
+                                        <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+                                        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding HayPdfImagenes}" Value="False">
+                                        <Setter Property="Opacity" Value="0.4"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="🖼️" FontSize="22" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Imágenes" FontSize="12" FontWeight="Bold"
+                                       HorizontalAlignment="Center" Margin="0,4,0,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding EnviarPdfImagenes}" Value="True">
+                                                <Setter Property="Foreground" Value="#059669"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding EnviarPdfImagenes}" Value="False">
+                                                <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Text="Facturas" FontSize="10" HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- SECCIÓN: Vista previa ───────────────────────────────── -->
+                <TextBlock Text="Vista previa del correo" FontSize="13" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,18,0,8"/>
+
+                <Border Background="{DynamicResource CardBackgroundBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="8" Padding="14,12">
+                    <StackPanel>
+                        <!-- Para -->
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Para:" FontWeight="SemiBold" FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1" Text="{Binding PreviewDestinatarios}"
+                                       FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+                        <!-- Asunto -->
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Asunto:" FontWeight="SemiBold" FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            <TextBox Grid.Column="1" Text="{Binding PreviewAsunto, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}"
+                                     Background="Transparent" BorderThickness="0"
+                                     TextWrapping="Wrap"
+                                     ToolTip="Puedes editar el asunto antes de enviar"/>
+                        </Grid>
+                        <!-- Separator -->
+                        <Separator Margin="0,2,0,8" Background="{DynamicResource BorderBrush}"/>
+                        <!-- Mensaje editable -->
+                        <TextBox Text="{Binding PreviewMensaje, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}"
+                                 Background="Transparent" BorderThickness="0"
+                                 TextWrapping="Wrap" AcceptsReturn="True"
+                                 MinHeight="60" MaxHeight="140"
+                                 VerticalScrollBarVisibility="Auto"
+                                 ToolTip="Puedes editar el mensaje antes de enviar"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ── ESTADO + FOOTER ───────────────────────────────────────────── -->
+        <StackPanel Grid.Row="2">
+            <!-- Mensaje de estado -->
+            <Border Padding="20,8,20,0"
+                    Visibility="{Binding MensajeEstado,
+                        Converter={StaticResource StringToVisibilityConverter}}">
+                <TextBlock Text="{Binding MensajeEstado}"
+                           FontSize="12" TextWrapping="Wrap"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+            </Border>
+
+            <!-- Barra de progreso -->
+            <ProgressBar IsIndeterminate="True" Height="3" Margin="20,6,20,0"
+                         Background="Transparent"
+                         Foreground="#3B82F6"
+                         Visibility="{Binding EstaCargando,
+                             Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+            <!-- Botones -->
+            <Border Background="{DynamicResource CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0"
+                    Padding="20,12" Margin="0,8,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0"
+                            Command="{Binding CancelarCommand}"
+                            Content="Cancelar"
+                            Foreground="White" BorderThickness="0"
+                            Padding="0,10" FontSize="13" FontWeight="SemiBold" Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#6B7280"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#4B5563"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Grid.Column="2"
+                            Command="{Binding EnviarCommand}"
+                            Foreground="White" BorderThickness="0"
+                            Padding="28,10" FontSize="13" FontWeight="SemiBold" Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#1E3A8A"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#1E40AF"/>
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Background" Value="#94A3B8"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="✉️" FontSize="14" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="Enviar Reporte" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+        </StackPanel>
+
+        <!-- Overlay de carga -->
+        <Grid Grid.RowSpan="3"
+              Background="#88000000"
+              Visibility="{Binding EstaCargando,
+                  Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="200" Height="6"
+                             Background="#334155" Foreground="#60A5FA"/>
+                <TextBlock Text="Procesando..." Foreground="White" FontSize="14"
+                           HorizontalAlignment="Center" Margin="0,12,0,0"/>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</Window>

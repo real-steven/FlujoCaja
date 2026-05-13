@@ -32,6 +32,7 @@ namespace FlujoCajaWpf.ViewModels
         private string _textoOrdenamiento = "Nombre A-Z";
 
         public string NombreUsuario => $"👤 {_usuario.Email}";
+        public bool EsAdmin => _usuario.EsAdmin;
 
         public ObservableCollection<Propiedad> Propiedades
         {
@@ -230,10 +231,13 @@ namespace FlujoCajaWpf.ViewModels
 
         private async void CerrarSesion()
         {
-            var result = MessageBox.Show("¿Estás seguro que deseas cerrar sesión?", 
-                "Confirmar", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = Views.CustomMessageBox.Show(
+                "¿Estás seguro que deseas cerrar sesión?",
+                "Cerrar Sesión",
+                Views.CustomMessageBox.MessageBoxType.Warning,
+                Views.CustomMessageBox.MessageBoxButtons.YesNo);
 
-            if (result == MessageBoxResult.Yes)
+            if (result == true)
             {
                 await SupabaseAuthHelper.SignOutAsync();
                 var loginWindow = new LoginWindow();
